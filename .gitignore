@@ -1,0 +1,26 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# 학습 결과 (모델·로그·TensorBoard) — 크고 사람마다 다르므로 올리지 않는다
+results/
+
+# 수업 코드가 실행할 때마다 자동 생성하는 SUMO 파일
+# (netedit 등으로 직접 만든 도로 파일은 이 폴더가 아닌 다른 곳에 두고 올린다)
+env/sumo/
+
+# 수집 데이터 — 최종 데이터셋은 HuggingFace에 올린다
+data/*.npz
+data/*.jsonl
+data/*.jsonl.gz
+
+# 에디터·OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Claude Code 개인 설정
+.claude/settings.local.json
