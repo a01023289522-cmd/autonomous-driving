@@ -59,7 +59,7 @@
 
 ### 3-1. 처음 한 번만
 1. **설치**: https://git-fork.com (Windows / Mac)
-2. **이름·이메일**: 처음 실행 시 묻는다. GitHub 계정 이메일을 넣는다 (커밋에 작성자로 남음).
+2. **이름·이메일**: 설정에서 Git 이름·이메일을 GitHub 계정 이메일로 맞춘다 (커밋에 작성자로 남음).
 3. **GitHub 계정 연결**: Windows `File → Accounts` / Mac `Fork → Settings → Accounts` → `+` → GitHub → 브라우저에서 로그인.
 4. **저장소 초대 수락**: 비공개 저장소라 GitHub 이메일 또는 https://github.com/notifications 에서 초대를 수락해야 보인다.
 5. **Clone (내 컴퓨터로 받기)**: `File → Clone…` → URL `https://github.com/a01023289522-cmd/autonomous-driving.git` → 폴더 선택.
