@@ -29,9 +29,10 @@
 ## 🚀 처음 들어온 팀원이 할 일
 
 1. GitHub에서 이 저장소 **초대(invitation) 수락** (비공개 저장소라 초대받아야 보인다)
-2. **[Fork 사용법](docs/fork_guide.md)** 읽고 Fork 설치 → 이 저장소 Clone
+2. **[Git 협업 가이드](docs/git_guide.md)** 읽고 Git 프로그램 준비(Fork 권장, 익숙한 것 아무거나 OK) → 이 저장소 Clone
 3. **[프로젝트 개요](docs/project_overview.md)** 읽기 — 무엇을 만들고 어떻게 평가받는지
-4. **[진행 계획](docs/roadmap.md)** 에서 현재 단계와 내 할 일 확인
+4. **[한국 도로의 특징](docs/korean_road_features.md)** 읽기 — 평가 1순위가 "한국 도로 특징 반영"
+5. **[진행 계획](docs/roadmap.md)** 에서 현재 단계와 내 할 일 확인
 
 ## 📚 문서
 
@@ -39,8 +40,9 @@
 |---|---|
 | [docs/project_overview.md](docs/project_overview.md) | 프로젝트 주제, 평가 기준, 진행 단계, 수업 코드 구조 요약 |
 | [docs/roadmap.md](docs/roadmap.md) | 단계별 체크리스트, 결정 기록, 회의 기록 — **진행하면서 채워 나가는 곳** |
+| [docs/korean_road_features.md](docs/korean_road_features.md) | 한국 도로의 특징(교통 규칙·속도·구조)과 SUMO 구현 방법 |
 | [docs/sumo_reference.md](docs/sumo_reference.md) | SUMO 공식 문서 찾는 법, 자주 쓰는 페이지, 신호등 기본 사용법 |
-| [docs/fork_guide.md](docs/fork_guide.md) | Fork(Git 프로그램) 설치와 사용법, 팀 협업 규칙 |
+| [docs/git_guide.md](docs/git_guide.md) | Git 프로그램 고르기(Fork 권장), Fork 사용법, pull·push·merge 개념, 팀 규칙 |
 
 ## 🔗 수업 원본 저장소
 
@@ -55,4 +57,4 @@
 - 작업 시작 전에 항상 **Pull** 로 최신 상태를 받는다.
 - 학습 결과(`results/`), 큰 데이터 파일은 올리지 않는다. 데이터셋은 HuggingFace에 올린다.
 
-자세한 방법은 [Fork 사용법](docs/fork_guide.md)에 있다.
+자세한 방법은 [Git 협업 가이드](docs/git_guide.md)에 있다.
