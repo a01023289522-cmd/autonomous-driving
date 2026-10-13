@@ -12,7 +12,7 @@
 
 ## 0. 준비
 - [ ] 팀원 전원 저장소 초대 수락
-- [ ] 팀원 전원 Git 프로그램 준비 + Clone ([Git 협업 가이드](git_guide.md), Fork 권장)
+- [ ] 팀원 전원 Git 프로그램 준비 + Clone ([Git 협업 가이드](git_guide.md), GitHub Desktop 권장)
 - [ ] 팀원 전원 수업 코드 실행 확인 (`python view_road.py`)
 - [ ] 역할 분담 ([README 팀원 표](../README.md#-팀원) 채우기)
 - [ ] 정기 회의 시간 정하기:
