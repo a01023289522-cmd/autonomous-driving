@@ -13,7 +13,18 @@
 ```
 
 - 핵심은 **새 알고리즘이 아니라, 도로 환경과 시뮬레이션의 완성도**다.
-- 기본 목표: **충돌률(Collision Rate) ≤ 5%** (100 에피소드 이상 평가 기준)
+- **복잡한 도로보다, 프로젝트의 목적과 차량 interaction이 명확하게 드러나는 환경**을 높게 평가한다.
+- 최종 통과 기준: **Collision Rate < 5%**, **목적지 완주**, **충분한 일반 차량** — 자세한 내용은 [평가 기준](docs/evaluation.md)
+
+## 📅 일정
+
+| 일정 | 날짜 | 형식 |
+|---|---|---|
+| **중간발표** | 11월 초 (약 2주 뒤, 확정 시 기입) | 3분 — 도로 선정 이유, 구조 특징, interaction, 데이터 컬럼, 역할 분담 |
+| **최종발표** | **11/28(토) 13:00~19:00** | 13분 — 전체 과정 + **30초 이상 주행 영상** + 동료 평가 |
+| 최종 제출 | 확정 시 기입 | 프로젝트 페이지, 코드, 발표자료, Hugging Face 데이터 |
+
+할 일 순서는 [진행 계획](docs/roadmap.md)에 있다.
 
 ## 👥 팀원
 
@@ -21,7 +32,7 @@
 |---|---|---|
 | 박준수 | a01023289522-cmd | 미정 |
 | 최민기 | | 미정 |
-| 임재성 | | 미정 |
+| 임재성 | imjaeseong970-cpu | 미정 |
 | 임수진 | sUUjin-L | 미정 |
 
 역할 분담 예시는 [프로젝트 개요 — 역할 분담](docs/project_overview.md#6-역할-분담-예시)을 참고해서 정한다.
@@ -30,16 +41,18 @@
 
 1. GitHub에서 이 저장소 **초대(invitation) 수락** (비공개 저장소라 초대받아야 보인다)
 2. **[Git 협업 가이드](docs/git_guide.md)** 읽고 Git 프로그램 준비(**GitHub Desktop 권장**, 익숙한 것 아무거나 OK) → 이 저장소 Clone
-3. **[프로젝트 개요](docs/project_overview.md)** 읽기 — 무엇을 만들고 어떻게 평가받는지
-4. **[한국 도로의 특징](docs/korean_road_features.md)** 읽기 — 평가 1순위가 "한국 도로 특징 반영"
-5. **[진행 계획](docs/roadmap.md)** 에서 현재 단계와 내 할 일 확인
+3. **[평가 기준과 발표 일정](docs/evaluation.md)** 읽기 — **가장 중요한 문서.** 모든 결정은 여기 기준으로 검토한다
+4. **[프로젝트 개요](docs/project_overview.md)** 읽기 — 무엇을 만드는지, 수업 코드 구조
+5. **[한국 도로의 특징](docs/korean_road_features.md)** 읽기 — 도로에 넣을 "한국다운" 요소
+6. **[진행 계획](docs/roadmap.md)** 에서 현재 단계와 내 할 일 확인
 
 ## 📚 문서
 
 | 문서 | 내용 |
 |---|---|
+| [docs/evaluation.md](docs/evaluation.md) | ⭐ **평가 기준과 발표 일정** — 중간·최종발표 내용, 통과 기준, 동료 평가, 제출물, 결정 점검표 |
 | [docs/project_overview.md](docs/project_overview.md) | 프로젝트 주제, 평가 기준, 진행 단계, 수업 코드 구조 요약 |
-| [docs/roadmap.md](docs/roadmap.md) | 단계별 체크리스트, 결정 기록, 회의 기록 — **진행하면서 채워 나가는 곳** |
+| [docs/roadmap.md](docs/roadmap.md) | 일정, **할 일 순서**, 실험·문제 해결·결정·회의 기록 — **진행하면서 채워 나가는 곳** |
 | [docs/korean_road_features.md](docs/korean_road_features.md) | 한국 도로의 특징(교통 규칙·속도·구조)과 SUMO 구현 방법 |
 | [docs/sumo_reference.md](docs/sumo_reference.md) | SUMO 공식 문서 찾는 법, 자주 쓰는 페이지, 신호등 기본 사용법 |
 | [docs/git_guide.md](docs/git_guide.md) | Git 프로그램 고르기(GitHub Desktop 권장), GitHub Desktop·Fork 사용법, pull·push·merge 개념, 팀 규칙 |
