@@ -29,7 +29,7 @@
 ### 2-1. 처음 한 번만
 1. **설치**: https://desktop.github.com (Windows / Mac — 주소를 열면 GitHub Desktop 다운로드 페이지로 이동)
 2. **GitHub 로그인**: 처음 실행 시 `Sign in to GitHub.com` → 브라우저에서 로그인·승인
-3. **저장소 초대 수락**: 비공개 저장소라 GitHub 이메일 또는 https://github.com/notifications 에서 초대를 수락해야 보인다.
+3. **저장소 초대 수락**: GitHub 이메일 또는 https://github.com/notifications 에서 초대를 수락한다 (수락해야 push·PR 권한이 생김).
 4. **Clone (내 컴퓨터로 받기)**: `File → Clone repository…` → `GitHub.com` 탭에서 `a01023289522-cmd/autonomous-driving` 선택 → 저장할 폴더 지정 → `Clone`
 
 ### 2-2. 화면에서 찾을 것
@@ -61,7 +61,7 @@
 1. **설치**: https://git-fork.com (Windows / Mac)
 2. **이름·이메일**: 설정에서 Git 이름·이메일을 GitHub 계정 이메일로 맞춘다 (커밋에 작성자로 남음).
 3. **GitHub 계정 연결**: Windows `File → Accounts` / Mac `Fork → Settings → Accounts` → `+` → GitHub → 브라우저에서 로그인.
-4. **저장소 초대 수락**: 비공개 저장소라 GitHub 이메일 또는 https://github.com/notifications 에서 초대를 수락해야 보인다.
+4. **저장소 초대 수락**: GitHub 이메일 또는 https://github.com/notifications 에서 초대를 수락한다 (수락해야 push·PR 권한이 생김).
 5. **Clone (내 컴퓨터로 받기)**: `File → Clone…` → URL `https://github.com/a01023289522-cmd/autonomous-driving.git` → 폴더 선택.
 
 ### 3-2. 화면 구성
@@ -157,4 +157,4 @@ my-branch    ●──●──●  (내 작업) ──┘  ← PR로 확인 후
 | main에서 작업해버림 | 커밋 전이면 새 브랜치를 만들면 변경도 같이 따라온다 |
 | 커밋 메시지를 잘못 씀 | push 전이면 마지막 커밋 메시지 수정(Amend) 가능 |
 | 바꾼 내용 되돌리기 (Discard) | **커밋 안 한 변경은 되돌리면 영영 사라진다.** 신중하게 |
-| 저장소가 안 보임 | GitHub 초대를 수락했는지 확인 |
+| push가 권한 오류로 안 됨 | GitHub 초대를 수락했는지 확인 |

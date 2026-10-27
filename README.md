@@ -32,7 +32,7 @@
 | 이름 | GitHub ID | 담당 |
 |---|---|---|
 | 박준수 | a01023289522-cmd | 미정 |
-| 최민기 | | 미정 |
+| 최민기 | mingi-eee | 미정 |
 | 임재성 | imjaeseong970-cpu | 미정 |
 | 임수진 | sUUjin-L | 미정 |
 
@@ -40,7 +40,7 @@
 
 ## 🚀 처음 들어온 팀원이 할 일
 
-1. GitHub에서 이 저장소 **초대(invitation) 수락** (비공개 저장소라 초대받아야 보인다)
+1. GitHub에서 이 저장소 **초대(invitation) 수락** (수락해야 push·PR 등 쓰기 권한이 생긴다)
 2. **[Git 협업 가이드](docs/git_guide.md)** 읽고 Git 프로그램 준비(**GitHub Desktop 권장**, 익숙한 것 아무거나 OK) → 이 저장소 Clone
 3. **[평가 기준과 발표 일정](docs/evaluation.md)** 읽기 — **가장 중요한 문서.** 모든 결정은 여기 기준으로 검토한다
 4. **[프로젝트 개요](docs/project_overview.md)** 읽기 — 무엇을 만드는지, 수업 코드 구조
