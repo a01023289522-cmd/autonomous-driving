@@ -5,7 +5,7 @@
     <trip id="r2" depart="6.00" from="708509520" to="1024410190#2" type="car" departLane="best" />
     <trip id="r3" depart="9.00" from="4953325810" to="-4526039580#1" type="car" departLane="best" />
     <trip id="r4" depart="12.00" from="4868927720#0" to="4878820020" type="car" departLane="best" />
-    <trip id="r5" depart="15.00" from="-4526039570#1" to="383152660#1" type="car" departLane="best" />
+    <trip id="r5" depart="15.00" from="-4526039570#1" to="383152660#0" type="car" departLane="best" />
     <trip id="r6" depart="18.00" from="4868927720#1" to="4878820020" type="car" departLane="best" />
     <trip id="r7" depart="21.00" from="5477873690#0" to="-3718967780#2" type="car" departLane="best" />
     <trip id="r8" depart="24.00" from="4953325810" to="1024410190#2" type="car" departLane="best" />
@@ -30,7 +30,7 @@
     <trip id="r27" depart="81.00" from="5477873690#0" to="4953325790" type="car" departLane="best" />
     <trip id="r28" depart="84.00" from="4953325810" to="4255616100#3" type="car" departLane="best" />
     <trip id="r29" depart="87.00" from="via_sb" to="4878820020" type="car" departLane="best" />
-    <trip id="r30" depart="90.00" from="420073140#7" to="-5552317850#0" type="car" departLane="best" />
+    <trip id="r30" depart="90.00" from="420073140#6" to="-5552317850#0" type="car" departLane="best" />
     <trip id="r31" depart="93.00" from="via_sb" to="4878820020" type="car" departLane="best" />
     <trip id="r32" depart="96.00" from="708509520" to="4953325790" type="car" departLane="best" />
     <trip id="r33" depart="99.00" from="-3921433940" to="4953325790" type="car" departLane="best" />
@@ -54,179 +54,179 @@
     <trip id="r51" depart="153.00" from="4416386060#0" to="4526039570#1" type="car" departLane="best" />
     <trip id="r52" depart="156.00" from="4953325810" to="4878820020" type="car" departLane="best" />
     <trip id="r53" depart="159.00" from="3718967780#1" to="4878820020" type="car" departLane="best" />
-    <trip id="r54" depart="162.00" from="4868927790" to="4953325790" type="car" departLane="best" />
-    <trip id="r55" depart="165.00" from="586716220#0" to="1024410190#2" type="car" departLane="best" />
-    <trip id="r56" depart="168.00" from="4953325810" to="4878820020" type="car" departLane="best" />
-    <trip id="r57" depart="171.00" from="4720563970#1" to="1024410190#2" type="car" departLane="best" />
-    <trip id="r58" depart="174.00" from="708509520" to="4878820020" type="car" departLane="best" />
-    <trip id="r59" depart="177.00" from="5477873690#0" to="15379779880#1" type="car" departLane="best" />
-    <trip id="r60" depart="180.00" from="4255616100#3" to="4878820020" type="car" departLane="best" />
-    <trip id="r61" depart="183.00" from="4953325810" to="4878820020" type="car" departLane="best" />
-    <trip id="r62" depart="186.00" from="928788630" to="1024410190#2" type="car" departLane="best" />
-    <trip id="r63" depart="189.00" from="4953325810" to="4720447770" type="car" departLane="best" />
-    <trip id="r64" depart="192.00" from="586716280#0" to="4720447770" type="car" departLane="best" />
-    <trip id="r65" depart="195.00" from="4953325810" to="4720447770" type="car" departLane="best" />
-    <trip id="r66" depart="198.00" from="5477873690#0" to="-5612296410" type="car" departLane="best" />
-    <trip id="r67" depart="201.00" from="via_sb" to="4953325790" type="car" departLane="best" />
-    <trip id="r68" depart="204.00" from="708509520" to="4953325790" type="car" departLane="best" />
-    <trip id="r69" depart="207.00" from="5552317710#0" to="1024410190#2" type="car" departLane="best" />
-    <trip id="r70" depart="210.00" from="4953325810" to="420073140#7" type="car" departLane="best" />
-    <trip id="r71" depart="213.00" from="4953325810" to="-700813240" type="car" departLane="best" />
-    <trip id="r72" depart="216.00" from="4953325810" to="9669057330#0" type="car" departLane="best" />
-    <trip id="r73" depart="219.00" from="4953325810" to="4878820020" type="car" departLane="best" />
-    <trip id="r74" depart="222.00" from="708509520" to="via_sb" type="car" departLane="best" />
-    <trip id="r75" depart="225.00" from="5477873690#0" to="4953325790" type="car" departLane="best" />
-    <trip id="r76" depart="228.00" from="4416386060#0" to="4720447770" type="car" departLane="best" />
-    <trip id="r77" depart="231.00" from="708509520" to="4878820020" type="car" departLane="best" />
-    <trip id="r78" depart="234.00" from="5039133870#1" to="4953325790" type="car" departLane="best" />
-    <trip id="r79" depart="237.00" from="4416386060#0" to="5899587190#0" type="car" departLane="best" />
-    <trip id="r80" depart="240.00" from="383158340" to="10541571300#0" type="car" departLane="best" />
-    <trip id="r81" depart="243.00" from="4953325810" to="4878820020" type="car" departLane="best" />
-    <trip id="r82" depart="246.00" from="4526039640#2" to="4953325790" type="car" departLane="best" />
-    <trip id="r83" depart="249.00" from="4953325810" to="4878820020" type="car" departLane="best" />
-    <trip id="r84" depart="252.00" from="5477873690#0" to="4720447770" type="car" departLane="best" />
-    <trip id="r85" depart="255.00" from="3718967780#2" to="4878820020" type="car" departLane="best" />
-    <trip id="r86" depart="258.00" from="via_sb" to="via_sb" type="car" departLane="best" />
-    <trip id="r87" depart="261.00" from="3718967780#2" to="420073140#6" type="car" departLane="best" />
-    <trip id="r88" depart="264.00" from="708509520" to="4953325790" type="car" departLane="best" />
-    <trip id="r89" depart="267.00" from="4953325810" to="1024410190#2" type="car" departLane="best" />
-    <trip id="r90" depart="270.00" from="5477873690#0" to="via_nb" type="car" departLane="best" />
-    <trip id="r91" depart="273.00" from="5477873690#0" to="-3718967780#2" type="car" departLane="best" />
-    <trip id="r92" depart="276.00" from="5477873690#0" to="4720447770" type="car" departLane="best" />
-    <trip id="r93" depart="279.00" from="4953325810" to="4878820020" type="car" departLane="best" />
-    <trip id="r94" depart="282.00" from="5477873690#0" to="383167710" type="car" departLane="best" />
-    <trip id="r95" depart="285.00" from="5477873690#0" to="4720447770" type="car" departLane="best" />
-    <trip id="r96" depart="288.00" from="4953325810" to="4720447770" type="car" departLane="best" />
-    <trip id="r97" depart="291.00" from="-3171340970" to="4953325790" type="car" departLane="best" />
-    <trip id="r98" depart="294.00" from="5477873690#0" to="4720447770" type="car" departLane="best" />
-    <trip id="r99" depart="297.00" from="4953325810" to="-383152640#2" type="car" departLane="best" />
-    <trip id="r100" depart="300.00" from="383152570" to="4953325790" type="car" departLane="best" />
-    <trip id="r101" depart="303.00" from="708509520" to="4878820020" type="car" departLane="best" />
-    <trip id="r102" depart="306.00" from="5477873690#0" to="4953325790" type="car" departLane="best" />
-    <trip id="r103" depart="309.00" from="708509520" to="408392630#2" type="car" departLane="best" />
-    <trip id="r104" depart="312.00" from="4953325810" to="1024410190#2" type="car" departLane="best" />
-    <trip id="r105" depart="315.00" from="5477873690#0" to="4953325790" type="car" departLane="best" />
-    <trip id="r106" depart="318.00" from="4953325810" to="4878820020" type="car" departLane="best" />
-    <trip id="r107" depart="321.00" from="4416386060#0" to="4953325790" type="car" departLane="best" />
-    <trip id="r108" depart="324.00" from="5477873690#0" to="4953325790" type="car" departLane="best" />
-    <trip id="r109" depart="327.00" from="-4525977220#2" to="4953325790" type="car" departLane="best" />
-    <trip id="r110" depart="330.00" from="5477873690#0" to="4953325790" type="car" departLane="best" />
-    <trip id="r111" depart="333.00" from="5477873690#0" to="4720447770" type="car" departLane="best" />
-    <trip id="r112" depart="336.00" from="707253260" to="4953325790" type="car" departLane="best" />
-    <trip id="r113" depart="339.00" from="4868927730#1" to="4953325790" type="car" departLane="best" />
-    <trip id="r114" depart="342.00" from="4953325810" to="4720447770" type="car" departLane="best" />
-    <trip id="r115" depart="345.00" from="5477873690#0" to="4686028250#0" type="car" departLane="best" />
-    <trip id="r116" depart="348.00" from="-4255616100#3" to="3718967780#2" type="car" departLane="best" />
-    <trip id="r117" depart="351.00" from="7754717130#0" to="4878820020" type="car" departLane="best" />
+    <trip id="r54" depart="162.00" from="586716220#0" to="1024410190#2" type="car" departLane="best" />
+    <trip id="r55" depart="165.00" from="4953325810" to="4878820020" type="car" departLane="best" />
+    <trip id="r56" depart="168.00" from="4720563970#1" to="1024410190#2" type="car" departLane="best" />
+    <trip id="r57" depart="171.00" from="708509520" to="4878820020" type="car" departLane="best" />
+    <trip id="r58" depart="174.00" from="5477873690#0" to="15379779880#1" type="car" departLane="best" />
+    <trip id="r59" depart="177.00" from="4255616100#3" to="4878820020" type="car" departLane="best" />
+    <trip id="r60" depart="180.00" from="4953325810" to="4878820020" type="car" departLane="best" />
+    <trip id="r61" depart="183.00" from="928788630" to="1024410190#2" type="car" departLane="best" />
+    <trip id="r62" depart="186.00" from="4953325810" to="4720447770" type="car" departLane="best" />
+    <trip id="r63" depart="189.00" from="586716280#0" to="4720447770" type="car" departLane="best" />
+    <trip id="r64" depart="192.00" from="4953325810" to="4720447770" type="car" departLane="best" />
+    <trip id="r65" depart="195.00" from="5477873690#0" to="-5612296410" type="car" departLane="best" />
+    <trip id="r66" depart="198.00" from="via_sb" to="4953325790" type="car" departLane="best" />
+    <trip id="r67" depart="201.00" from="708509520" to="4953325790" type="car" departLane="best" />
+    <trip id="r68" depart="204.00" from="5552317710#0" to="1024410190#2" type="car" departLane="best" />
+    <trip id="r69" depart="207.00" from="4953325810" to="420073140#7" type="car" departLane="best" />
+    <trip id="r70" depart="210.00" from="4953325810" to="-700813240" type="car" departLane="best" />
+    <trip id="r71" depart="213.00" from="4953325810" to="9669057330#0" type="car" departLane="best" />
+    <trip id="r72" depart="216.00" from="4953325810" to="4878820020" type="car" departLane="best" />
+    <trip id="r73" depart="219.00" from="708509520" to="via_sb" type="car" departLane="best" />
+    <trip id="r74" depart="222.00" from="5477873690#0" to="4953325790" type="car" departLane="best" />
+    <trip id="r75" depart="225.00" from="4416386060#0" to="4720447770" type="car" departLane="best" />
+    <trip id="r76" depart="228.00" from="708509520" to="4878820020" type="car" departLane="best" />
+    <trip id="r77" depart="231.00" from="5039133870#1" to="4953325790" type="car" departLane="best" />
+    <trip id="r78" depart="234.00" from="4416386060#0" to="5899587190#0" type="car" departLane="best" />
+    <trip id="r79" depart="237.00" from="383158340" to="10541571300#0" type="car" departLane="best" />
+    <trip id="r80" depart="240.00" from="4953325810" to="4878820020" type="car" departLane="best" />
+    <trip id="r81" depart="243.00" from="4526039640#2" to="4953325790" type="car" departLane="best" />
+    <trip id="r82" depart="246.00" from="4953325810" to="4878820020" type="car" departLane="best" />
+    <trip id="r83" depart="249.00" from="5477873690#0" to="4720447770" type="car" departLane="best" />
+    <trip id="r84" depart="252.00" from="3718967780#2" to="4878820020" type="car" departLane="best" />
+    <trip id="r85" depart="255.00" from="via_sb" to="via_sb" type="car" departLane="best" />
+    <trip id="r86" depart="258.00" from="3718967780#2" to="420073140#6" type="car" departLane="best" />
+    <trip id="r87" depart="261.00" from="708509520" to="4953325790" type="car" departLane="best" />
+    <trip id="r88" depart="264.00" from="4953325810" to="1024410190#2" type="car" departLane="best" />
+    <trip id="r89" depart="267.00" from="5477873690#0" to="via_nb" type="car" departLane="best" />
+    <trip id="r90" depart="270.00" from="5477873690#0" to="-3718967780#2" type="car" departLane="best" />
+    <trip id="r91" depart="273.00" from="5477873690#0" to="4720447770" type="car" departLane="best" />
+    <trip id="r92" depart="276.00" from="4953325810" to="4878820020" type="car" departLane="best" />
+    <trip id="r93" depart="279.00" from="5477873690#0" to="383167710" type="car" departLane="best" />
+    <trip id="r94" depart="282.00" from="5477873690#0" to="4720447770" type="car" departLane="best" />
+    <trip id="r95" depart="285.00" from="4953325810" to="4720447770" type="car" departLane="best" />
+    <trip id="r96" depart="288.00" from="-3171340970" to="4953325790" type="car" departLane="best" />
+    <trip id="r97" depart="291.00" from="5477873690#0" to="4720447770" type="car" departLane="best" />
+    <trip id="r98" depart="294.00" from="4953325810" to="-383152640#2" type="car" departLane="best" />
+    <trip id="r99" depart="297.00" from="383152570" to="4953325790" type="car" departLane="best" />
+    <trip id="r100" depart="300.00" from="708509520" to="4878820020" type="car" departLane="best" />
+    <trip id="r101" depart="303.00" from="5477873690#0" to="4953325790" type="car" departLane="best" />
+    <trip id="r102" depart="306.00" from="708509520" to="408392630#2" type="car" departLane="best" />
+    <trip id="r103" depart="309.00" from="4953325810" to="1024410190#2" type="car" departLane="best" />
+    <trip id="r104" depart="312.00" from="5477873690#0" to="4953325790" type="car" departLane="best" />
+    <trip id="r105" depart="315.00" from="4953325810" to="4878820020" type="car" departLane="best" />
+    <trip id="r106" depart="318.00" from="4416386060#0" to="4953325790" type="car" departLane="best" />
+    <trip id="r107" depart="321.00" from="5477873690#0" to="4953325790" type="car" departLane="best" />
+    <trip id="r108" depart="324.00" from="-4525977220#2" to="4953325790" type="car" departLane="best" />
+    <trip id="r109" depart="327.00" from="5477873690#0" to="4953325790" type="car" departLane="best" />
+    <trip id="r110" depart="330.00" from="5477873690#0" to="4720447770" type="car" departLane="best" />
+    <trip id="r111" depart="333.00" from="707253260" to="4953325790" type="car" departLane="best" />
+    <trip id="r112" depart="336.00" from="4868927730#0" to="4953325790" type="car" departLane="best" />
+    <trip id="r113" depart="339.00" from="4953325810" to="4720447770" type="car" departLane="best" />
+    <trip id="r114" depart="342.00" from="5477873690#0" to="4686028250#0" type="car" departLane="best" />
+    <trip id="r115" depart="345.00" from="-4255616100#3" to="3718967780#2" type="car" departLane="best" />
+    <trip id="r116" depart="348.00" from="7754717130#0" to="4878820020" type="car" departLane="best" />
+    <trip id="r117" depart="351.00" from="708509520" to="1024410190#2" type="car" departLane="best" />
     <trip id="r118" depart="354.00" from="708509520" to="1024410190#2" type="car" departLane="best" />
-    <trip id="r119" depart="357.00" from="708509520" to="1024410190#2" type="car" departLane="best" />
-    <trip id="r120" depart="360.00" from="5477873690#0" to="4720447770" type="car" departLane="best" />
-    <trip id="r121" depart="363.00" from="4953325810" to="4878820020" type="car" departLane="best" />
-    <trip id="r122" depart="366.00" from="4953325810" to="4883933150#0" type="car" departLane="best" />
-    <trip id="r123" depart="369.00" from="-15371153830#1" to="4953325790" type="car" departLane="best" />
-    <trip id="r124" depart="372.00" from="4953325810" to="1024410190#2" type="car" departLane="best" />
+    <trip id="r119" depart="357.00" from="5477873690#0" to="4720447770" type="car" departLane="best" />
+    <trip id="r120" depart="360.00" from="4953325810" to="4878820020" type="car" departLane="best" />
+    <trip id="r121" depart="363.00" from="4953325810" to="4883933150#0" type="car" departLane="best" />
+    <trip id="r122" depart="366.00" from="-15371153830#1" to="4953325790" type="car" departLane="best" />
+    <trip id="r123" depart="369.00" from="4953325810" to="1024410190#2" type="car" departLane="best" />
+    <trip id="r124" depart="372.00" from="5477873690#0" to="4720447770" type="car" departLane="best" />
     <trip id="r125" depart="375.00" from="5477873690#0" to="4720447770" type="car" departLane="best" />
-    <trip id="r126" depart="378.00" from="5477873690#0" to="4720447770" type="car" departLane="best" />
-    <trip id="r127" depart="381.00" from="4953325810" to="4878820020" type="car" departLane="best" />
-    <trip id="r128" depart="384.00" from="4953325810" to="4720447770" type="car" departLane="best" />
+    <trip id="r126" depart="378.00" from="4953325810" to="4878820020" type="car" departLane="best" />
+    <trip id="r127" depart="381.00" from="4953325810" to="4720447770" type="car" departLane="best" />
+    <trip id="r128" depart="384.00" from="708509520" to="4878820020" type="car" departLane="best" />
     <trip id="r129" depart="387.00" from="708509520" to="4878820020" type="car" departLane="best" />
-    <trip id="r130" depart="390.00" from="708509520" to="4878820020" type="car" departLane="best" />
-    <trip id="r131" depart="393.00" from="4953325810" to="4878820020" type="car" departLane="best" />
-    <trip id="r132" depart="396.00" from="-1024410240" to="4720447770" type="car" departLane="best" />
-    <trip id="r133" depart="399.00" from="4953325810" to="4878820020" type="car" departLane="best" />
-    <trip id="r134" depart="402.00" from="4953325810" to="420073140#7" type="car" departLane="best" />
-    <trip id="r135" depart="405.00" from="5477873690#0" to="4720447770" type="car" departLane="best" />
-    <trip id="r136" depart="408.00" from="5477873690#0" to="4953325790" type="car" departLane="best" />
-    <trip id="r137" depart="411.00" from="5477873690#0" to="4526039570#1" type="car" departLane="best" />
-    <trip id="r138" depart="414.00" from="4416386060#0" to="-4255616100#3" type="car" departLane="best" />
-    <trip id="r139" depart="417.00" from="4953325810" to="4878820020" type="car" departLane="best" />
-    <trip id="r140" depart="420.00" from="5552317770" to="1024410190#2" type="car" departLane="best" />
-    <trip id="r141" depart="423.00" from="4953325810" to="4878820020" type="car" departLane="best" />
-    <trip id="r142" depart="426.00" from="4953325810" to="4720447770" type="car" departLane="best" />
-    <trip id="r143" depart="429.00" from="5477873690#0" to="-3718967780#2" type="car" departLane="best" />
-    <trip id="r144" depart="432.00" from="5477873690#0" to="4953325790" type="car" departLane="best" />
-    <trip id="r145" depart="435.00" from="4416386060#0" to="586716250#1" type="car" departLane="best" />
-    <trip id="r146" depart="438.00" from="5477873690#0" to="via_nb" type="car" departLane="best" />
-    <trip id="r147" depart="441.00" from="5477873690#0" to="5612296390#1" type="car" departLane="best" />
-    <trip id="r148" depart="444.00" from="708509520" to="4878820020" type="car" departLane="best" />
-    <trip id="r149" depart="447.00" from="708509520" to="4953325790" type="car" departLane="best" />
-    <trip id="r150" depart="450.00" from="4953325810" to="4720447770" type="car" departLane="best" />
-    <trip id="r151" depart="453.00" from="4953325810" to="4878820020" type="car" departLane="best" />
-    <trip id="r152" depart="456.00" from="5477873690#0" to="4720447770" type="car" departLane="best" />
-    <trip id="r153" depart="459.00" from="383152640#8" to="4720447770" type="car" departLane="best" />
-    <trip id="r154" depart="462.00" from="4953325810" to="4720447770" type="car" departLane="best" />
-    <trip id="r155" depart="465.00" from="4953325810" to="1024410190#2" type="car" departLane="best" />
-    <trip id="r156" depart="468.00" from="5477873690#0" to="-928788610" type="car" departLane="best" />
-    <trip id="r157" depart="471.00" from="4953325810" to="4878820020" type="car" departLane="best" />
-    <trip id="r158" depart="474.00" from="4953325810" to="3921272550#1" type="car" departLane="best" />
-    <trip id="r159" depart="477.00" from="4953325810" to="-3718967780#2" type="car" departLane="best" />
-    <trip id="r160" depart="480.00" from="4868927720#1" to="4255616100#3" type="car" departLane="best" />
-    <trip id="r161" depart="483.00" from="4953325810" to="-4526039550#3" type="car" departLane="best" />
-    <trip id="r162" depart="486.00" from="4953325810" to="4878820020" type="car" departLane="best" />
+    <trip id="r130" depart="390.00" from="4953325810" to="4878820020" type="car" departLane="best" />
+    <trip id="r131" depart="393.00" from="-1024410240" to="4720447770" type="car" departLane="best" />
+    <trip id="r132" depart="396.00" from="4953325810" to="4878820020" type="car" departLane="best" />
+    <trip id="r133" depart="399.00" from="4953325810" to="420073140#7" type="car" departLane="best" />
+    <trip id="r134" depart="402.00" from="5477873690#0" to="4720447770" type="car" departLane="best" />
+    <trip id="r135" depart="405.00" from="5477873690#0" to="4953325790" type="car" departLane="best" />
+    <trip id="r136" depart="408.00" from="5477873690#0" to="4526039570#1" type="car" departLane="best" />
+    <trip id="r137" depart="411.00" from="4416386060#0" to="-4255616100#3" type="car" departLane="best" />
+    <trip id="r138" depart="414.00" from="4953325810" to="4878820020" type="car" departLane="best" />
+    <trip id="r139" depart="417.00" from="5552317770" to="1024410190#2" type="car" departLane="best" />
+    <trip id="r140" depart="420.00" from="4953325810" to="4878820020" type="car" departLane="best" />
+    <trip id="r141" depart="423.00" from="4953325810" to="4720447770" type="car" departLane="best" />
+    <trip id="r142" depart="426.00" from="5477873690#0" to="-3718967780#2" type="car" departLane="best" />
+    <trip id="r143" depart="429.00" from="5477873690#0" to="4953325790" type="car" departLane="best" />
+    <trip id="r144" depart="432.00" from="4416386060#0" to="586716250#1" type="car" departLane="best" />
+    <trip id="r145" depart="435.00" from="5477873690#0" to="via_nb" type="car" departLane="best" />
+    <trip id="r146" depart="438.00" from="5477873690#0" to="5612296390#1" type="car" departLane="best" />
+    <trip id="r147" depart="441.00" from="708509520" to="4878820020" type="car" departLane="best" />
+    <trip id="r148" depart="444.00" from="708509520" to="4953325790" type="car" departLane="best" />
+    <trip id="r149" depart="447.00" from="4953325810" to="4720447770" type="car" departLane="best" />
+    <trip id="r150" depart="450.00" from="4953325810" to="4878820020" type="car" departLane="best" />
+    <trip id="r151" depart="453.00" from="5477873690#0" to="4720447770" type="car" departLane="best" />
+    <trip id="r152" depart="456.00" from="383152640#8" to="4720447770" type="car" departLane="best" />
+    <trip id="r153" depart="459.00" from="4953325810" to="4720447770" type="car" departLane="best" />
+    <trip id="r154" depart="462.00" from="4953325810" to="1024410190#2" type="car" departLane="best" />
+    <trip id="r155" depart="465.00" from="5477873690#0" to="-928788610" type="car" departLane="best" />
+    <trip id="r156" depart="468.00" from="4953325810" to="4878820020" type="car" departLane="best" />
+    <trip id="r157" depart="471.00" from="4953325810" to="3921272550#1" type="car" departLane="best" />
+    <trip id="r158" depart="474.00" from="4953325810" to="-3718967780#2" type="car" departLane="best" />
+    <trip id="r159" depart="477.00" from="4868927720#1" to="4255616100#3" type="car" departLane="best" />
+    <trip id="r160" depart="480.00" from="4953325810" to="-4526039550#3" type="car" departLane="best" />
+    <trip id="r161" depart="483.00" from="4953325810" to="4878820020" type="car" departLane="best" />
+    <trip id="r162" depart="486.00" from="4953325810" to="1024410190#2" type="car" departLane="best" />
     <trip id="r163" depart="489.00" from="4953325810" to="1024410190#2" type="car" departLane="best" />
-    <trip id="r164" depart="492.00" from="4953325810" to="1024410190#2" type="car" departLane="best" />
-    <trip id="r165" depart="495.00" from="4953325810" to="4878820020" type="car" departLane="best" />
-    <trip id="r166" depart="498.00" from="-4526039580#4" to="4878820020" type="car" departLane="best" />
-    <trip id="r167" depart="501.00" from="-586716290#2" to="4878820020" type="car" departLane="best" />
-    <trip id="r168" depart="504.00" from="5477873690#0" to="4953325790" type="car" departLane="best" />
-    <trip id="r169" depart="507.00" from="4953325810" to="1024410190#2" type="car" departLane="best" />
-    <trip id="r170" depart="510.00" from="-420073680#3" to="4878820020" type="car" departLane="best" />
-    <trip id="r171" depart="513.00" from="via_sb" to="4720447770" type="car" departLane="best" />
+    <trip id="r164" depart="492.00" from="4953325810" to="4878820020" type="car" departLane="best" />
+    <trip id="r165" depart="495.00" from="-4526039580#4" to="4878820020" type="car" departLane="best" />
+    <trip id="r166" depart="498.00" from="-586716290#2" to="4878820020" type="car" departLane="best" />
+    <trip id="r167" depart="501.00" from="5477873690#0" to="4953325790" type="car" departLane="best" />
+    <trip id="r168" depart="504.00" from="4953325810" to="1024410190#2" type="car" departLane="best" />
+    <trip id="r169" depart="507.00" from="-420073680#3" to="4878820020" type="car" departLane="best" />
+    <trip id="r170" depart="510.00" from="via_sb" to="4720447770" type="car" departLane="best" />
+    <trip id="r171" depart="513.00" from="5477873690#0" to="4953325790" type="car" departLane="best" />
     <trip id="r172" depart="516.00" from="5477873690#0" to="4953325790" type="car" departLane="best" />
-    <trip id="r173" depart="519.00" from="5477873690#0" to="4953325790" type="car" departLane="best" />
-    <trip id="r174" depart="522.00" from="708509520" to="383153390#0" type="car" departLane="best" />
-    <trip id="r175" depart="525.00" from="-4255616100#1" to="1024410190#2" type="car" departLane="best" />
-    <trip id="r176" depart="528.00" from="5477873690#0" to="4255616100#2" type="car" departLane="best" />
-    <trip id="r177" depart="531.00" from="5477873690#0" to="4953325790" type="car" departLane="best" />
-    <trip id="r178" depart="534.00" from="5477873690#0" to="700812840#1" type="car" departLane="best" />
-    <trip id="r179" depart="537.00" from="4416386060#0" to="-4255616100#3" type="car" departLane="best" />
-    <trip id="r180" depart="540.00" from="4953325810" to="4878820020" type="car" departLane="best" />
-    <trip id="r181" depart="543.00" from="708509520" to="4878820020" type="car" departLane="best" />
-    <trip id="r182" depart="546.00" from="4416386060#0" to="4953325790" type="car" departLane="best" />
-    <trip id="r183" depart="549.00" from="4416386060#0" to="928788700#1" type="car" departLane="best" />
-    <trip id="r184" depart="552.00" from="5477873690#0" to="4720447770" type="car" departLane="best" />
-    <trip id="r185" depart="555.00" from="4953325810" to="4878820020" type="car" departLane="best" />
-    <trip id="r186" depart="558.00" from="4953325810" to="4720447770" type="car" departLane="best" />
-    <trip id="r187" depart="561.00" from="5552317770" to="4953325790" type="car" departLane="best" />
-    <trip id="r188" depart="564.00" from="4416386060#0" to="5899587190#0" type="car" departLane="best" />
-    <trip id="r189" depart="567.00" from="5477873690#0" to="4953325790" type="car" departLane="best" />
-    <trip id="r190" depart="570.00" from="5477873690#0" to="700813070" type="car" departLane="best" />
+    <trip id="r173" depart="519.00" from="708509520" to="383153390#0" type="car" departLane="best" />
+    <trip id="r174" depart="522.00" from="-4255616100#1" to="1024410190#2" type="car" departLane="best" />
+    <trip id="r175" depart="525.00" from="5477873690#0" to="4255616100#2" type="car" departLane="best" />
+    <trip id="r176" depart="528.00" from="5477873690#0" to="4953325790" type="car" departLane="best" />
+    <trip id="r177" depart="531.00" from="5477873690#0" to="700812840#1" type="car" departLane="best" />
+    <trip id="r178" depart="534.00" from="4416386060#0" to="-4255616100#3" type="car" departLane="best" />
+    <trip id="r179" depart="537.00" from="4953325810" to="4878820020" type="car" departLane="best" />
+    <trip id="r180" depart="540.00" from="708509520" to="4878820020" type="car" departLane="best" />
+    <trip id="r181" depart="543.00" from="4416386060#0" to="4953325790" type="car" departLane="best" />
+    <trip id="r182" depart="546.00" from="4416386060#0" to="928788700#1" type="car" departLane="best" />
+    <trip id="r183" depart="549.00" from="5477873690#0" to="4720447770" type="car" departLane="best" />
+    <trip id="r184" depart="552.00" from="4953325810" to="4878820020" type="car" departLane="best" />
+    <trip id="r185" depart="555.00" from="4953325810" to="4720447770" type="car" departLane="best" />
+    <trip id="r186" depart="558.00" from="5552317770" to="4953325790" type="car" departLane="best" />
+    <trip id="r187" depart="561.00" from="4416386060#0" to="5899587190#0" type="car" departLane="best" />
+    <trip id="r188" depart="564.00" from="5477873690#0" to="4953325790" type="car" departLane="best" />
+    <trip id="r189" depart="567.00" from="5477873690#0" to="700813070" type="car" departLane="best" />
+    <trip id="r190" depart="570.00" from="4953325810" to="4878820020" type="car" departLane="best" />
     <trip id="r191" depart="573.00" from="4953325810" to="4878820020" type="car" departLane="best" />
-    <trip id="r192" depart="576.00" from="4953325810" to="4878820020" type="car" departLane="best" />
-    <trip id="r193" depart="579.00" from="4953325810" to="-4526039550#0" type="car" departLane="best" />
-    <trip id="r194" depart="582.00" from="4716638650" to="4953325790" type="car" departLane="best" />
-    <trip id="r195" depart="585.00" from="5477873690#0" to="4720447770" type="car" departLane="best" />
-    <trip id="r196" depart="588.00" from="-383152640#5" to="5552317850#0" type="car" departLane="best" />
-    <trip id="r197" depart="591.00" from="3921803040#1" to="4953325790" type="car" departLane="best" />
-    <trip id="r198" depart="594.00" from="420073680#3" to="4255616100#3" type="car" departLane="best" />
-    <trip id="r199" depart="597.00" from="5477873690#0" to="4720447770" type="car" departLane="best" />
-    <trip id="r200" depart="600.00" from="4953325810" to="4878820020" type="car" departLane="best" />
+    <trip id="r192" depart="576.00" from="4953325810" to="-4526039550#0" type="car" departLane="best" />
+    <trip id="r193" depart="579.00" from="4716638650" to="4953325790" type="car" departLane="best" />
+    <trip id="r194" depart="582.00" from="5477873690#0" to="4720447770" type="car" departLane="best" />
+    <trip id="r195" depart="585.00" from="-383152640#5" to="5552317850#0" type="car" departLane="best" />
+    <trip id="r196" depart="588.00" from="3921803040#1" to="4953325790" type="car" departLane="best" />
+    <trip id="r197" depart="591.00" from="420073680#3" to="4255616100#3" type="car" departLane="best" />
+    <trip id="r198" depart="594.00" from="5477873690#0" to="4720447770" type="car" departLane="best" />
+    <trip id="r199" depart="597.00" from="4953325810" to="4878820020" type="car" departLane="best" />
+    <trip id="r200" depart="600.00" from="5477873690#0" to="4720447770" type="car" departLane="best" />
     <trip id="r201" depart="603.00" from="5477873690#0" to="4720447770" type="car" departLane="best" />
-    <trip id="r202" depart="606.00" from="5477873690#0" to="4720447770" type="car" departLane="best" />
-    <trip id="r203" depart="609.00" from="4953325810" to="1024410190#2" type="car" departLane="best" />
-    <trip id="r204" depart="612.00" from="4416386060#0" to="420073680#3" type="car" departLane="best" />
-    <trip id="r205" depart="615.00" from="7754668960" to="4878820020" type="car" departLane="best" />
-    <trip id="r206" depart="618.00" from="4953325810" to="1024410190#2" type="car" departLane="best" />
-    <trip id="r207" depart="621.00" from="4416386060#0" to="4526039670" type="car" departLane="best" />
-    <trip id="r208" depart="624.00" from="4416386060#0" to="-407917410#1" type="car" departLane="best" />
-    <trip id="r209" depart="627.00" from="4953325810" to="4720447770" type="car" departLane="best" />
-    <trip id="r210" depart="630.00" from="708509520" to="4878820020" type="car" departLane="best" />
-    <trip id="r211" depart="633.00" from="700813330" to="4878820020" type="car" departLane="best" />
-    <trip id="r212" depart="636.00" from="708121380" to="4878820020" type="car" departLane="best" />
-    <trip id="r213" depart="639.00" from="4953325810" to="4878820020" type="car" departLane="best" />
-    <trip id="r214" depart="642.00" from="4416386060#0" to="-564336380#3" type="car" departLane="best" />
-    <trip id="r215" depart="645.00" from="708509520" to="4878820020" type="car" departLane="best" />
-    <trip id="r216" depart="648.00" from="381378220#1" to="4878820020" type="car" departLane="best" />
-    <trip id="r217" depart="651.00" from="-700813330" to="1024410190#2" type="car" departLane="best" />
-    <trip id="r218" depart="654.00" from="5477873690#0" to="4720447770" type="car" departLane="best" />
-    <trip id="r219" depart="657.00" from="via_sb" to="1024410190#2" type="car" departLane="best" />
-    <trip id="r220" depart="660.00" from="5477873690#0" to="4526039590#0" type="car" departLane="best" />
-    <trip id="r221" depart="663.00" from="4953325810" to="4878820020" type="car" departLane="best" />
-    <trip id="r222" depart="666.00" from="via_nb" to="4720447770" type="car" departLane="best" />
-    <trip id="r223" depart="669.00" from="5477873690#0" to="5552317850#0" type="car" departLane="best" />
-    <trip id="r224" depart="672.00" from="4691100210" to="420073140#1" type="car" departLane="best" />
-    <trip id="r225" depart="675.00" from="-15379779880#1" to="4878820020" type="car" departLane="best" />
-    <trip id="r226" depart="678.00" from="5477873690#0" to="4720447770" type="car" departLane="best" />
+    <trip id="r202" depart="606.00" from="4953325810" to="1024410190#2" type="car" departLane="best" />
+    <trip id="r203" depart="609.00" from="4416386060#0" to="420073680#3" type="car" departLane="best" />
+    <trip id="r204" depart="612.00" from="7754668960" to="4878820020" type="car" departLane="best" />
+    <trip id="r205" depart="615.00" from="4953325810" to="1024410190#2" type="car" departLane="best" />
+    <trip id="r206" depart="618.00" from="4416386060#0" to="4526039670" type="car" departLane="best" />
+    <trip id="r207" depart="621.00" from="4416386060#0" to="-407917410#1" type="car" departLane="best" />
+    <trip id="r208" depart="624.00" from="4953325810" to="4720447770" type="car" departLane="best" />
+    <trip id="r209" depart="627.00" from="708509520" to="4878820020" type="car" departLane="best" />
+    <trip id="r210" depart="630.00" from="700813330" to="4878820020" type="car" departLane="best" />
+    <trip id="r211" depart="633.00" from="708121380" to="4878820020" type="car" departLane="best" />
+    <trip id="r212" depart="636.00" from="4953325810" to="4878820020" type="car" departLane="best" />
+    <trip id="r213" depart="639.00" from="4416386060#0" to="-564336380#2" type="car" departLane="best" />
+    <trip id="r214" depart="642.00" from="708509520" to="4878820020" type="car" departLane="best" />
+    <trip id="r215" depart="645.00" from="381378220#1" to="4878820020" type="car" departLane="best" />
+    <trip id="r216" depart="648.00" from="-700813330" to="1024410190#2" type="car" departLane="best" />
+    <trip id="r217" depart="651.00" from="5477873690#0" to="4720447770" type="car" departLane="best" />
+    <trip id="r218" depart="654.00" from="via_sb" to="1024410190#2" type="car" departLane="best" />
+    <trip id="r219" depart="657.00" from="5477873690#0" to="4526039590#0" type="car" departLane="best" />
+    <trip id="r220" depart="660.00" from="4953325810" to="4878820020" type="car" departLane="best" />
+    <trip id="r221" depart="663.00" from="via_nb" to="4720447770" type="car" departLane="best" />
+    <trip id="r222" depart="666.00" from="5477873690#0" to="5552317850#0" type="car" departLane="best" />
+    <trip id="r223" depart="669.00" from="4691100210" to="420073140#1" type="car" departLane="best" />
+    <trip id="r224" depart="672.00" from="-15379779880#1" to="4878820020" type="car" departLane="best" />
+    <trip id="r225" depart="675.00" from="5477873690#0" to="4720447770" type="car" departLane="best" />
+    <trip id="r226" depart="678.00" from="4878820110" to="4878820020" type="car" departLane="best" />
     <trip id="r227" depart="681.00" from="5477873690#0" to="4953325790" type="car" departLane="best" />
     <trip id="r228" depart="684.00" from="5477873690#0" to="4953325790" type="car" departLane="best" />
     <trip id="r229" depart="687.00" from="4953325810" to="4878820020" type="car" departLane="best" />
@@ -277,7 +277,7 @@
     <trip id="r274" depart="822.00" from="5477873690#0" to="4953325790" type="car" departLane="best" />
     <trip id="r275" depart="825.00" from="708509520" to="4878820020" type="car" departLane="best" />
     <trip id="r276" depart="828.00" from="4953325810" to="4878820020" type="car" departLane="best" />
-    <trip id="r277" depart="831.00" from="4953325810" to="707253190#4" type="car" departLane="best" />
+    <trip id="r277" depart="831.00" from="4953325810" to="707253190#2" type="car" departLane="best" />
     <trip id="r278" depart="834.00" from="4953325810" to="4878820020" type="car" departLane="best" />
     <trip id="r279" depart="837.00" from="5477873690#0" to="4953325790" type="car" departLane="best" />
     <trip id="r280" depart="840.00" from="5552317850#0" to="4953325790" type="car" departLane="best" />
@@ -288,7 +288,7 @@
     <trip id="r285" depart="855.00" from="708509520" to="via_sb" type="car" departLane="best" />
     <trip id="r286" depart="858.00" from="708121380" to="4878820020" type="car" departLane="best" />
     <trip id="r287" depart="861.00" from="5477873690#0" to="4953325790" type="car" departLane="best" />
-    <trip id="r288" depart="864.00" from="-564336380#2" to="4953325790" type="car" departLane="best" />
+    <trip id="r288" depart="864.00" from="-5612296420" to="4953325790" type="car" departLane="best" />
     <trip id="r289" depart="867.00" from="4953325810" to="4878820020" type="car" departLane="best" />
     <trip id="r290" depart="870.00" from="5477873690#0" to="4953325790" type="car" departLane="best" />
     <trip id="r291" depart="873.00" from="707253190#0" to="4878820020" type="car" departLane="best" />
@@ -301,7 +301,7 @@
     <trip id="r298" depart="894.00" from="7754668960" to="4878820020" type="car" departLane="best" />
     <trip id="r299" depart="897.00" from="4953325810" to="4878820020" type="car" departLane="best" />
     <trip id="r300" depart="900.00" from="5477873690#0" to="4953325790" type="car" departLane="best" />
-    <trip id="r301" depart="903.00" from="-586716280#0" to="4878820020" type="car" departLane="best" />
+    <trip id="r301" depart="903.00" from="-586716270#2" to="4878820020" type="car" departLane="best" />
     <trip id="r302" depart="906.00" from="5477873690#0" to="4741474310" type="car" departLane="best" />
     <trip id="r303" depart="909.00" from="5477873690#0" to="4953325790" type="car" departLane="best" />
     <trip id="r304" depart="912.00" from="5477873690#0" to="4953325790" type="car" departLane="best" />
@@ -352,7 +352,7 @@
     <trip id="r349" depart="1047.00" from="708509520" to="-4878820130" type="car" departLane="best" />
     <trip id="r350" depart="1050.00" from="5477873690#0" to="4953325790" type="car" departLane="best" />
     <trip id="r351" depart="1053.00" from="4953325810" to="4878820020" type="car" departLane="best" />
-    <trip id="r352" depart="1056.00" from="708509520" to="-707253180#0" type="car" departLane="best" />
+    <trip id="r352" depart="1056.00" from="708509520" to="-707253170" type="car" departLane="best" />
     <trip id="r353" depart="1059.00" from="4953325810" to="4878820020" type="car" departLane="best" />
     <trip id="r354" depart="1062.00" from="708509520" to="1024410190#2" type="car" departLane="best" />
     <trip id="r355" depart="1065.00" from="383158340" to="4878820020" type="car" departLane="best" />
@@ -388,7 +388,7 @@
     <trip id="r385" depart="1155.00" from="5477873690#0" to="-4526039610#0" type="car" departLane="best" />
     <trip id="r386" depart="1158.00" from="5477873690#0" to="420073680#0" type="car" departLane="best" />
     <trip id="r387" depart="1161.00" from="4953325810" to="4720447770" type="car" departLane="best" />
-    <trip id="r388" depart="1164.00" from="3921433940" to="-586716230#4" type="car" departLane="best" />
+    <trip id="r388" depart="1164.00" from="3921433940" to="-586716230#3" type="car" departLane="best" />
     <trip id="r389" depart="1167.00" from="5477873690#0" to="4720447770" type="car" departLane="best" />
     <trip id="r390" depart="1170.00" from="4953325810" to="4720447770" type="car" departLane="best" />
     <trip id="r391" depart="1173.00" from="4953325810" to="4720447770" type="car" departLane="best" />
@@ -425,7 +425,7 @@
     <trip id="r422" depart="1266.00" from="5477873690#0" to="4953325790" type="car" departLane="best" />
     <trip id="r423" depart="1269.00" from="708509520" to="4878820020" type="car" departLane="best" />
     <trip id="r424" depart="1272.00" from="4953325810" to="4878820020" type="car" departLane="best" />
-    <trip id="r425" depart="1275.00" from="4416386060#0" to="-707253210#0" type="car" departLane="best" />
+    <trip id="r425" depart="1275.00" from="4416386060#0" to="-707253190#2" type="car" departLane="best" />
     <trip id="r426" depart="1278.00" from="4416386060#0" to="4953325790" type="car" departLane="best" />
     <trip id="r427" depart="1281.00" from="4953325810" to="1024410190#2" type="car" departLane="best" />
     <trip id="r428" depart="1284.00" from="4953325810" to="4878820020" type="car" departLane="best" />
@@ -447,7 +447,7 @@
     <trip id="r444" depart="1332.00" from="383152640#7" to="4953325790" type="car" departLane="best" />
     <trip id="r445" depart="1335.00" from="4416386060#0" to="4953325790" type="car" departLane="best" />
     <trip id="r446" depart="1338.00" from="5477873690#0" to="4953325790" type="car" departLane="best" />
-    <trip id="r447" depart="1341.00" from="-4868927770" to="4720447770" type="car" departLane="best" />
+    <trip id="r447" depart="1341.00" from="-4792535140" to="4720447770" type="car" departLane="best" />
     <trip id="r448" depart="1344.00" from="4953325810" to="1024410190#2" type="car" departLane="best" />
     <trip id="r449" depart="1347.00" from="5477873690#0" to="4953325790" type="car" departLane="best" />
     <trip id="r450" depart="1350.00" from="4953325810" to="4878820020" type="car" departLane="best" />
@@ -475,14 +475,14 @@
     <trip id="r472" depart="1416.00" from="4953325810" to="-3718967780#2" type="car" departLane="best" />
     <trip id="r473" depart="1419.00" from="383158340" to="4720447770" type="car" departLane="best" />
     <trip id="r474" depart="1422.00" from="4416386060#0" to="4720447770" type="car" departLane="best" />
-    <trip id="r475" depart="1425.00" from="4953325810" to="-5612296380#0" type="car" departLane="best" />
+    <trip id="r475" depart="1425.00" from="4953325810" to="-5552317850#1" type="car" departLane="best" />
     <trip id="r476" depart="1428.00" from="4953325810" to="1024410190#2" type="car" departLane="best" />
     <trip id="r477" depart="1431.00" from="708509520" to="4878820020" type="car" departLane="best" />
     <trip id="r478" depart="1434.00" from="-420073140#6" to="4878820020" type="car" departLane="best" />
     <trip id="r479" depart="1437.00" from="4953325810" to="1024410190#2" type="car" departLane="best" />
     <trip id="r480" depart="1440.00" from="4953325810" to="4878820020" type="car" departLane="best" />
     <trip id="r481" depart="1443.00" from="4953325810" to="4878820020" type="car" departLane="best" />
-    <trip id="r482" depart="1446.00" from="7754567510" to="-9669057490" type="car" departLane="best" />
+    <trip id="r482" depart="1446.00" from="7754567510" to="-9669057470" type="car" departLane="best" />
     <trip id="r483" depart="1449.00" from="4953325810" to="4878820020" type="car" departLane="best" />
     <trip id="r484" depart="1452.00" from="via_nb" to="4878820020" type="car" departLane="best" />
     <trip id="r485" depart="1455.00" from="4953325810" to="4878820020" type="car" departLane="best" />
@@ -538,7 +538,7 @@
     <trip id="r535" depart="1605.00" from="708509520" to="4878820020" type="car" departLane="best" />
     <trip id="r536" depart="1608.00" from="4953325810" to="4878820020" type="car" departLane="best" />
     <trip id="r537" depart="1611.00" from="4416386060#0" to="700813330" type="car" departLane="best" />
-    <trip id="r538" depart="1614.00" from="-707253190#1" to="1024410190#2" type="car" departLane="best" />
+    <trip id="r538" depart="1614.00" from="-707253190#0" to="1024410190#2" type="car" departLane="best" />
     <trip id="r539" depart="1617.00" from="4953325810" to="4883933150#0" type="car" departLane="best" />
     <trip id="r540" depart="1620.00" from="4953325810" to="5039133870#0" type="car" departLane="best" />
     <trip id="r541" depart="1623.00" from="708509520" to="4953325790" type="car" departLane="best" />
@@ -554,7 +554,7 @@
     <trip id="r551" depart="1653.00" from="4953325810" to="4878820020" type="car" departLane="best" />
     <trip id="r552" depart="1656.00" from="4953325810" to="586716220#1" type="car" departLane="best" />
     <trip id="r553" depart="1659.00" from="5477873690#0" to="4720447770" type="car" departLane="best" />
-    <trip id="r554" depart="1662.00" from="3718967780#2" to="-707253150#0" type="car" departLane="best" />
+    <trip id="r554" depart="1662.00" from="3718967780#2" to="-7050175700" type="car" departLane="best" />
     <trip id="r555" depart="1665.00" from="4953325810" to="4878820020" type="car" departLane="best" />
     <trip id="r556" depart="1668.00" from="4526039630#1" to="4878820020" type="car" departLane="best" />
     <trip id="r557" depart="1671.00" from="5477873690#0" to="4953325790" type="car" departLane="best" />
@@ -659,7 +659,7 @@
     <trip id="r656" depart="1968.00" from="4686459270#1" to="4878820020" type="car" departLane="best" />
     <trip id="r657" depart="1971.00" from="420073140#7" to="4878820020" type="car" departLane="best" />
     <trip id="r658" depart="1974.00" from="4953325810" to="4878820020" type="car" departLane="best" />
-    <trip id="r659" depart="1977.00" from="-928788620" to="4878820020" type="car" departLane="best" />
+    <trip id="r659" depart="1977.00" from="-928788610" to="4878820020" type="car" departLane="best" />
     <trip id="r660" depart="1980.00" from="5477873690#0" to="4953325790" type="car" departLane="best" />
     <trip id="r661" depart="1983.00" from="-5612296410" to="4720447770" type="car" departLane="best" />
     <trip id="r662" depart="1986.00" from="1024410240" to="via_sb" type="car" departLane="best" />
@@ -729,7 +729,7 @@
     <trip id="r726" depart="2178.00" from="-3718967780#2" to="4878820020" type="car" departLane="best" />
     <trip id="r727" depart="2181.00" from="-3921803040#1" to="4878820020" type="car" departLane="best" />
     <trip id="r728" depart="2184.00" from="4953325810" to="7754668960" type="car" departLane="best" />
-    <trip id="r729" depart="2187.00" from="-420073140#7" to="4953325790" type="car" departLane="best" />
+    <trip id="r729" depart="2187.00" from="-420073140#8" to="4953325790" type="car" departLane="best" />
     <trip id="r730" depart="2190.00" from="5477873690#0" to="4953325790" type="car" departLane="best" />
     <trip id="r731" depart="2193.00" from="708509520" to="1024410190#2" type="car" departLane="best" />
     <trip id="r732" depart="2196.00" from="4255616100#3" to="1024410190#2" type="car" departLane="best" />
@@ -766,7 +766,7 @@
     <trip id="r763" depart="2289.00" from="4416386060#0" to="-3718967780#2" type="car" departLane="best" />
     <trip id="r764" depart="2292.00" from="4953325810" to="4868927730#0" type="car" departLane="best" />
     <trip id="r765" depart="2295.00" from="4953325810" to="1024410190#2" type="car" departLane="best" />
-    <trip id="r766" depart="2298.00" from="-4526039550#3" to="4811517860" type="car" departLane="best" />
+    <trip id="r766" depart="2298.00" from="-4526039550#3" to="4794639570" type="car" departLane="best" />
     <trip id="r767" depart="2301.00" from="420073680#3" to="4878820020" type="car" departLane="best" />
     <trip id="r768" depart="2304.00" from="4953325810" to="4878820020" type="car" departLane="best" />
     <trip id="r769" depart="2307.00" from="4953325810" to="4878820020" type="car" departLane="best" />
@@ -818,8 +818,8 @@
     <trip id="r815" depart="2445.00" from="4953325810" to="4720447770" type="car" departLane="best" />
     <trip id="r816" depart="2448.00" from="5552317710#1" to="4878820020" type="car" departLane="best" />
     <trip id="r817" depart="2451.00" from="928788610" to="4720447770" type="car" departLane="best" />
-    <trip id="r818" depart="2454.00" from="5477873690#0" to="586716270#2" type="car" departLane="best" />
-    <trip id="r819" depart="2457.00" from="4883933150#0" to="4878820020" type="car" departLane="best" />
+    <trip id="r818" depart="2454.00" from="5477873690#0" to="586716270#1" type="car" departLane="best" />
+    <trip id="r819" depart="2457.00" from="4878820130" to="4878820020" type="car" departLane="best" />
     <trip id="r820" depart="2460.00" from="4953325810" to="-4526039550#3" type="car" departLane="best" />
     <trip id="r821" depart="2463.00" from="5477873690#0" to="383152640#3" type="car" departLane="best" />
     <trip id="r822" depart="2466.00" from="5477873690#0" to="3921272550#0" type="car" departLane="best" />
@@ -909,7 +909,7 @@
     <trip id="r906" depart="2718.00" from="5477873690#0" to="564336380#5" type="car" departLane="best" />
     <trip id="r907" depart="2721.00" from="5477873690#0" to="-420073140#5" type="car" departLane="best" />
     <trip id="r908" depart="2724.00" from="15371153830#4" to="4720447770" type="car" departLane="best" />
-    <trip id="r909" depart="2727.00" from="-5039133870#1" to="-707253160" type="car" departLane="best" />
+    <trip id="r909" depart="2727.00" from="-5039133870#1" to="-707253150#1" type="car" departLane="best" />
     <trip id="r910" depart="2730.00" from="4953325810" to="4878820020" type="car" departLane="best" />
     <trip id="r911" depart="2733.00" from="383167710" to="4878820020" type="car" departLane="best" />
     <trip id="r912" depart="2736.00" from="5477873690#0" to="4720447770" type="car" departLane="best" />
@@ -917,7 +917,7 @@
     <trip id="r914" depart="2742.00" from="4526039600#0" to="4953325790" type="car" departLane="best" />
     <trip id="r915" depart="2745.00" from="4953325810" to="4878820020" type="car" departLane="best" />
     <trip id="r916" depart="2748.00" from="5477873690#0" to="4953325790" type="car" departLane="best" />
-    <trip id="r917" depart="2751.00" from="5477873690#0" to="-928788700#2" type="car" departLane="best" />
+    <trip id="r917" depart="2751.00" from="5477873690#0" to="-928788700#1" type="car" departLane="best" />
     <trip id="r918" depart="2754.00" from="5477873690#0" to="4953325790" type="car" departLane="best" />
     <trip id="r919" depart="2757.00" from="5477873690#0" to="-700812890" type="car" departLane="best" />
     <trip id="r920" depart="2760.00" from="407917400#0" to="4878820020" type="car" departLane="best" />
@@ -966,14 +966,14 @@
     <trip id="r963" depart="2889.00" from="4953325810" to="4720447770" type="car" departLane="best" />
     <trip id="r964" depart="2892.00" from="5477873690#0" to="4720447770" type="car" departLane="best" />
     <trip id="r965" depart="2895.00" from="4953325810" to="1024410190#2" type="car" departLane="best" />
-    <trip id="r966" depart="2898.00" from="4526039580#4" to="4953325790" type="car" departLane="best" />
+    <trip id="r966" depart="2898.00" from="4526039580#3" to="4953325790" type="car" departLane="best" />
     <trip id="r967" depart="2901.00" from="4953325810" to="4878820020" type="car" departLane="best" />
     <trip id="r968" depart="2904.00" from="708509520" to="3921803040#1" type="car" departLane="best" />
     <trip id="r969" depart="2907.00" from="4953325810" to="4720447770" type="car" departLane="best" />
     <trip id="r970" depart="2910.00" from="5477873690#0" to="4953325790" type="car" departLane="best" />
     <trip id="r971" depart="2913.00" from="5477873690#0" to="-4716652390" type="car" departLane="best" />
     <trip id="r972" depart="2916.00" from="5477873690#0" to="4720447770" type="car" departLane="best" />
-    <trip id="r973" depart="2919.00" from="420073140#8" to="4720447770" type="car" departLane="best" />
+    <trip id="r973" depart="2919.00" from="420073140#7" to="4720447770" type="car" departLane="best" />
     <trip id="r974" depart="2922.00" from="4953325810" to="4878820020" type="car" departLane="best" />
     <trip id="r975" depart="2925.00" from="5477873690#0" to="4720447770" type="car" departLane="best" />
     <trip id="r976" depart="2928.00" from="via_nb" to="-4526039620#0" type="car" departLane="best" />
@@ -983,7 +983,7 @@
     <trip id="r980" depart="2940.00" from="5477873690#0" to="928788630" type="car" departLane="best" />
     <trip id="r981" depart="2943.00" from="4416386060#0" to="4953325790" type="car" departLane="best" />
     <trip id="r982" depart="2946.00" from="4953325810" to="4878820020" type="car" departLane="best" />
-    <trip id="r983" depart="2949.00" from="-4255616100#3" to="-928788630" type="car" departLane="best" />
+    <trip id="r983" depart="2949.00" from="-4255616100#3" to="-928788620" type="car" departLane="best" />
     <trip id="r984" depart="2952.00" from="708509520" to="4878820020" type="car" departLane="best" />
     <trip id="r985" depart="2955.00" from="4416386060#0" to="4953325790" type="car" departLane="best" />
     <trip id="r986" depart="2958.00" from="5477873690#0" to="4720447770" type="car" departLane="best" />
@@ -1003,7 +1003,7 @@
     <trip id="r1000" depart="3000.00" from="4953325810" to="4878820020" type="car" departLane="best" />
     <trip id="r1001" depart="3003.00" from="4953325810" to="4878820020" type="car" departLane="best" />
     <trip id="r1002" depart="3006.00" from="4416386060#0" to="4720447770" type="car" departLane="best" />
-    <trip id="r1003" depart="3009.00" from="4868927720#1" to="4953325790" type="car" departLane="best" />
+    <trip id="r1003" depart="3009.00" from="4868927720#0" to="4953325790" type="car" departLane="best" />
     <trip id="r1004" depart="3012.00" from="5477873690#0" to="-700813240" type="car" departLane="best" />
     <trip id="r1005" depart="3015.00" from="via_nb" to="4878820020" type="car" departLane="best" />
     <trip id="r1006" depart="3018.00" from="5477873690#0" to="via_sb" type="car" departLane="best" />
@@ -1098,7 +1098,7 @@
     <trip id="r1095" depart="3285.00" from="4953325810" to="4878820020" type="car" departLane="best" />
     <trip id="r1096" depart="3288.00" from="4953325810" to="4878820020" type="car" departLane="best" />
     <trip id="r1097" depart="3291.00" from="4953325810" to="4878820020" type="car" departLane="best" />
-    <trip id="r1098" depart="3294.00" from="5477873690#0" to="-4694178960#1" type="car" departLane="best" />
+    <trip id="r1098" depart="3294.00" from="5477873690#0" to="-4694178960#2" type="car" departLane="best" />
     <trip id="r1099" depart="3297.00" from="4953325810" to="1024410190#2" type="car" departLane="best" />
     <trip id="r1100" depart="3300.00" from="-4878820130" to="4953325790" type="car" departLane="best" />
     <trip id="r1101" depart="3303.00" from="4953325810" to="4716975080#0" type="car" departLane="best" />
@@ -1163,7 +1163,7 @@
     <trip id="r1160" depart="3480.00" from="4416386060#0" to="4953325790" type="car" departLane="best" />
     <trip id="r1161" depart="3483.00" from="408392730#0" to="4878820020" type="car" departLane="best" />
     <trip id="r1162" depart="3486.00" from="708509520" to="4878820020" type="car" departLane="best" />
-    <trip id="r1163" depart="3489.00" from="-4792535140" to="383153390#1" type="car" departLane="best" />
+    <trip id="r1163" depart="3489.00" from="-4792535140" to="383153390#0" type="car" departLane="best" />
     <trip id="r1164" depart="3492.00" from="4953325810" to="-407917410#0" type="car" departLane="best" />
     <trip id="r1165" depart="3495.00" from="5477873690#0" to="4720447770" type="car" departLane="best" />
     <trip id="r1166" depart="3498.00" from="5477873690#0" to="4720447770" type="car" departLane="best" />

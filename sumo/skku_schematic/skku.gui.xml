@@ -1,7 +1,0 @@
-<viewsettings>
-    <scheme name="skku">
-        <background backgroundColor="245,245,240" showGrid="0"/>
-        <pois poiType_show="1" poiType_size="70" poiType_color="20,20,120" poiType_constantSize="1"/>
-    </scheme>
-    <delay value="40"/>
-</viewsettings>

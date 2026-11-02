@@ -1,9 +1,0 @@
-<nodes>
-    <node id="W" x="0"    y="0"/>
-    <node id="A" x="250"  y="0"/>   <!-- 동쪽 방향 분기 / 서쪽 방향 합류 -->
-    <node id="C" x="600"  y="0" type="traffic_light"/>   <!-- 지상 신호 교차로 (SUMO 기본 신호) -->
-    <node id="B" x="950"  y="0"/>   <!-- 동쪽 방향 합류 / 서쪽 방향 분기 -->
-    <node id="E" x="1200" y="0"/>
-    <node id="N" x="600"  y="250"/>
-    <node id="S" x="600"  y="-250"/>
-</nodes>

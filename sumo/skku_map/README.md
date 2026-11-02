@@ -18,22 +18,32 @@
 
 ## 다시 만들기
 ```
-python -X utf8 build.py            # 만들고 1시간 3회(seed 42, 1, 2) 점검
+python -X utf8 build.py            # 만들고 1시간 3회(seed 42, 1, 2) 점검 (2~3분 + 점검 몇 분)
 python -X utf8 build.py --no-check
-python -X utf8 route_check.py      # 카카오 길찾기 결과와 SUMO 경로 비교
+cd verify && python -X utf8 route_check.py   # 카카오 길찾기 결과와 SUMO 경로 비교
 ```
+만드는 도중의 파일(중간 도로망, netconvert 수정 파일, 로그)은 `work/`에 생기고 저장소에는 올리지 않는다.
 
-## 파일
+## 폴더와 파일
 | 파일 | 하는 일 |
 |---|---|
-| `build.py` | 전체 순서: OSM 잘라오기 → netconvert → 수정(신호·유턴·주차장·고속도로·높이) → 교통 |
+| `build.py` | 전체 순서: OSM 잘라오기 → netconvert → 수정 파일(신호·주차장·고가·고속도로·높이) → 회전 규칙·교차로 면 → 사거리 신호 → 화면·교통 |
+| `config.py` | 지도·로드뷰로 확인한 값: 구현 범위, 일방통행, 신호 갈림목, 유턴 지점, 막힌 캠퍼스 문, 공영주차장 입구 |
+| `common.py` | 공통 도우미: 경로(`P` 최종 파일, `W` 중간 파일), netconvert 실행, 꺾은선 계산, 교차로 면 모양(`curb_shape`) |
+| `viaduct.py` | 서부로 고가 구간: 고가 엣지, 고가 옆 지상 도로 띄우기, 공영주차장 띠·드나드는 길 |
+| `highway.py` | 봉담과천로(축소판 고속도로): 의왕TG 요금소, 휴게소, 청계IC, 학의JC |
+| `drawing.py` | 화면: 고가·지하차도 층 도형, 주차장·휴게소·지명, sumo-gui 보기 설정 |
+| `traffic.py` | 교통: 고속도로 흐름, randomTrips 일반 차량, 주차 차량, 버스, `skku.sumocfg` |
 | `osm_clip.py` | 구현 범위 자르기, 카카오로 확인한 일방통행·차로 수(`LANES_VERIFIED`), 분리 도로 붙이기, 작은 골목 빼기 |
-| `parking.py` | 고가 밑 공영주차장 3곳·교내/역 주변 주차장의 주차면과 주차 차량 (빈 칸이 있는 구역에만 배정) |
-| `view_skku.py` | 시뮬레이션 보기: sumo-gui + TraCI, 아래층 차를 반투명하게 |
-| `bus_lines.py`, `bus_kakao.json` | 카카오맵 실제 버스 노선 17개를 도로망에 맞춰 정류장·운행 생성 |
-| `background.py` | 배경(건물·아파트 단지·공원·물·철도)과 지명 글자 (sumo-gui 글꼴에 한글이 없어 영어) |
-| `kakao_verified.txt`, `kakao_routes.txt` | 길찾기로 확인한 일방통행·양방향 근거 |
-| `WORKLOG.md` | 작업 기록, 위성사진 차로 조사 결과 |
+| `parking.py` | 주차 칸(고가 옆 공영주차장, 교내·역 주변)과 주차 차량 (빈 칸이 있는 구역에만 배정) |
+| `bus_lines.py`, `bus_kakao.json` | 카카오맵 실제 버스 노선 17개 → 정류장·운행 |
+| `background.py`, `campus_poly.json` | 배경(건물·단지·공원·물·철도)과 지명 글자 (sumo-gui 글꼴에 한글이 없어 영어) |
+| `view_skku.py`, `run_skku.bat` | 시뮬레이션 보기 (sumo-gui + TraCI, 아래층 차를 반투명하게) |
+| `osm/` | OSM 원본 (OSM 공식 API로 받은 것) |
+| `verify/` | 카카오 길찾기 검증: 구간 목록(`make_checks.py`), 결과·근거(`kakao_routes.txt`, `kakao_verified.txt`), 비교(`route_check.py`) |
+| `img/` | 결과 화면, 높이 표현 방안 비교 화면 |
+| `skku.*.xml`, `*.rou.xml`, `bg.add.xml` 등 | 만든 결과 (시뮬레이션에 바로 쓰는 파일) |
+| `HISTORY.md`, `WORKLOG.md` | 만든 과정과 시행착오, 날짜별 작업 기록 |
 
 ## 확인한 것과 가정한 것
 - 확인(카카오 길찾기·위성사진·로드뷰): 일방통행, 큰길 차로 수(서부로·덕영대로·화산로·일월로·정자천로 등),
