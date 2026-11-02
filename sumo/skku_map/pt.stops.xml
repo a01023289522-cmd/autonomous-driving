@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!-- generated on 2026-11-03T03:38:48.033872+09:00 by Eclipse SUMO netconvert 1.27.1
+<!-- generated on 2026-11-03T03:57:11.886161+09:00 by Eclipse SUMO netconvert 1.27.1
 <netconvertConfiguration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/netconvertConfiguration.xsd">
 
     <input>
@@ -84,7 +84,7 @@
     <busStop id="9419661130" name="성균관대역" lane="12728331460_0" startPos="1.63" endPos="16.63" friendlyPos="true"/>
     <busStop id="9419661131" name="성균관대역(마을)" lane="7755484370_0" startPos="20.30" endPos="35.30" friendlyPos="true"/>
     <busStop id="9419661132" name="성균관대역" lane="7755484380#1_0" startPos="15.85" endPos="30.85" friendlyPos="true"/>
-    <busStop id="9419661134" name="성균관대학교" lane="15371153860_0" startPos="66.23" endPos="81.23" friendlyPos="true"/>
+    <busStop id="9419661134" name="성균관대학교" lane="15371153860_0" startPos="66.20" endPos="81.20" friendlyPos="true"/>
     <busStop id="9419661135" name="성균관대학교" lane="7755484390_0" startPos="129.14" endPos="144.14" friendlyPos="true"/>
     <busStop id="9419661136" name="삼성아파트" lane="15371153850_0" startPos="256.70" endPos="271.70" friendlyPos="true"/>
     <busStop id="9419661137" name="삼성1차아파트" lane="15371153850_0" startPos="379.57" endPos="394.57" friendlyPos="true"/>

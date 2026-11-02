@@ -1,107 +1,99 @@
 <additional>
     <parkingArea id="P1_0" lane="P1_aisle_0" startPos="3.8" endPos="21.2" roadsideCapacity="0" width="0.3" name="공영주차장1" friendlyPos="true">
-        <space x="-74.75" y="-233.46" width="2.4" length="5.0" angle="51.0"/>
-        <space x="-73.19" y="-231.53" width="2.4" length="5.0" angle="50.8"/>
-        <space x="-71.61" y="-229.60" width="2.4" length="5.0" angle="50.8"/>
-        <space x="-70.03" y="-227.67" width="2.4" length="5.0" angle="50.8"/>
-        <space x="-68.45" y="-225.73" width="2.4" length="5.0" angle="50.8"/>
-        <space x="-66.87" y="-223.78" width="2.4" length="5.0" angle="50.8"/>
+        <space x="-74.85" y="-233.58" width="2.4" length="5.0" angle="51.0"/>
+        <space x="-73.28" y="-231.65" width="2.4" length="5.0" angle="50.8"/>
+        <space x="-71.71" y="-229.72" width="2.4" length="5.0" angle="50.8"/>
+        <space x="-70.13" y="-227.78" width="2.4" length="5.0" angle="50.8"/>
+        <space x="-68.55" y="-225.85" width="2.4" length="5.0" angle="50.8"/>
+        <space x="-66.96" y="-223.90" width="2.4" length="5.0" angle="50.8"/>
     </parkingArea>
     <parkingArea id="P1_1" lane="P1_aisle_0" startPos="18.8" endPos="36.2" roadsideCapacity="0" width="0.3" name="공영주차장1" friendlyPos="true">
-        <space x="-65.29" y="-221.85" width="2.4" length="5.0" angle="50.8"/>
-        <space x="-63.71" y="-219.92" width="2.4" length="5.0" angle="50.8"/>
-        <space x="-62.13" y="-217.98" width="2.4" length="5.0" angle="50.8"/>
-        <space x="-60.55" y="-216.04" width="2.4" length="5.0" angle="50.7"/>
-        <space x="-58.97" y="-214.11" width="2.4" length="5.0" angle="50.8"/>
-        <space x="-57.38" y="-212.16" width="2.4" length="5.0" angle="50.8"/>
+        <space x="-65.39" y="-221.97" width="2.4" length="5.0" angle="50.8"/>
+        <space x="-63.81" y="-220.03" width="2.4" length="5.0" angle="50.8"/>
+        <space x="-62.23" y="-218.10" width="2.4" length="5.0" angle="50.8"/>
+        <space x="-60.65" y="-216.16" width="2.4" length="5.0" angle="50.7"/>
+        <space x="-59.07" y="-214.23" width="2.4" length="5.0" angle="50.8"/>
+        <space x="-57.48" y="-212.28" width="2.4" length="5.0" angle="50.8"/>
     </parkingArea>
     <parkingArea id="P1_2" lane="P1_aisle_0" startPos="33.8" endPos="51.2" roadsideCapacity="0" width="0.3" name="공영주차장1" friendlyPos="true">
-        <space x="-55.80" y="-210.22" width="2.4" length="5.0" angle="50.8"/>
-        <space x="-54.23" y="-208.29" width="2.4" length="5.0" angle="50.8"/>
-        <space x="-52.65" y="-206.36" width="2.4" length="5.0" angle="50.8"/>
-        <space x="-51.06" y="-204.41" width="2.4" length="5.0" angle="50.8"/>
-        <space x="-49.48" y="-202.48" width="2.4" length="5.0" angle="50.8"/>
-        <space x="-47.75" y="-200.24" width="2.4" length="5.0" angle="53.6"/>
+        <space x="-55.90" y="-210.34" width="2.4" length="5.0" angle="50.8"/>
+        <space x="-54.33" y="-208.41" width="2.4" length="5.0" angle="50.8"/>
+        <space x="-52.74" y="-206.48" width="2.4" length="5.0" angle="50.8"/>
+        <space x="-51.16" y="-204.53" width="2.4" length="5.0" angle="50.8"/>
+        <space x="-49.58" y="-202.59" width="2.4" length="5.0" angle="50.8"/>
+        <space x="-47.84" y="-200.36" width="2.4" length="5.0" angle="53.6"/>
     </parkingArea>
     <parkingArea id="P1_3" lane="P1_aisle_0" startPos="48.8" endPos="66.2" roadsideCapacity="0" width="0.3" name="공영주차장1" friendlyPos="true">
-        <space x="-46.27" y="-198.22" width="2.4" length="5.0" angle="53.6"/>
-        <space x="-44.66" y="-196.04" width="2.4" length="5.0" angle="55.4"/>
-        <space x="-43.15" y="-193.64" width="2.4" length="5.0" angle="58.3"/>
-        <space x="-41.83" y="-191.51" width="2.4" length="5.0" angle="58.3"/>
-        <space x="-40.52" y="-189.39" width="2.4" length="5.0" angle="58.3"/>
-        <space x="-39.20" y="-187.26" width="2.4" length="5.0" angle="58.3"/>
+        <space x="-46.36" y="-198.35" width="2.4" length="5.0" angle="53.6"/>
+        <space x="-44.78" y="-196.19" width="2.4" length="5.0" angle="55.1"/>
+        <space x="-43.23" y="-193.77" width="2.4" length="5.0" angle="58.3"/>
+        <space x="-41.91" y="-191.64" width="2.4" length="5.0" angle="58.3"/>
+        <space x="-40.60" y="-189.52" width="2.4" length="5.0" angle="58.3"/>
+        <space x="-39.28" y="-187.39" width="2.4" length="5.0" angle="58.3"/>
     </parkingArea>
     <parkingArea id="P1_4" lane="P1_aisle_0" startPos="63.8" endPos="81.2" roadsideCapacity="0" width="0.3" name="공영주차장1" friendlyPos="true">
-        <space x="-37.89" y="-185.12" width="2.4" length="5.0" angle="58.3"/>
-        <space x="-36.58" y="-183.00" width="2.4" length="5.0" angle="58.3"/>
-        <space x="-35.26" y="-180.87" width="2.4" length="5.0" angle="58.3"/>
-        <space x="-33.95" y="-178.75" width="2.4" length="5.0" angle="58.3"/>
-        <space x="-32.63" y="-176.61" width="2.4" length="5.0" angle="58.3"/>
-        <space x="-31.32" y="-174.49" width="2.4" length="5.0" angle="58.3"/>
+        <space x="-37.97" y="-185.25" width="2.4" length="5.0" angle="58.3"/>
+        <space x="-36.66" y="-183.13" width="2.4" length="5.0" angle="58.3"/>
+        <space x="-35.35" y="-181.00" width="2.4" length="5.0" angle="58.3"/>
+        <space x="-34.03" y="-178.88" width="2.4" length="5.0" angle="58.3"/>
+        <space x="-32.71" y="-176.74" width="2.4" length="5.0" angle="58.3"/>
+        <space x="-31.40" y="-174.62" width="2.4" length="5.0" angle="58.3"/>
     </parkingArea>
     <parkingArea id="P2_0" lane="P2_aisle_0" startPos="3.8" endPos="21.2" roadsideCapacity="0" width="0.3" name="공영주차장2" friendlyPos="true">
-        <space x="-149.96" y="-284.49" width="2.4" length="5.0" angle="238.0"/>
-        <space x="-151.33" y="-286.73" width="2.4" length="5.0" angle="239.0"/>
-        <space x="-152.61" y="-288.87" width="2.4" length="5.0" angle="239.0"/>
-        <space x="-154.00" y="-291.23" width="2.4" length="5.0" angle="241.1"/>
-        <space x="-155.22" y="-293.51" width="2.4" length="5.0" angle="241.8"/>
-        <space x="-156.41" y="-295.72" width="2.4" length="5.0" angle="241.9"/>
+        <space x="-155.25" y="-293.55" width="2.4" length="5.0" angle="241.9"/>
+        <space x="-156.42" y="-295.75" width="2.4" length="5.0" angle="241.9"/>
+        <space x="-157.60" y="-297.96" width="2.4" length="5.0" angle="241.9"/>
+        <space x="-158.78" y="-300.15" width="2.4" length="5.0" angle="241.8"/>
+        <space x="-159.96" y="-302.35" width="2.4" length="5.0" angle="241.8"/>
+        <space x="-161.15" y="-304.57" width="2.4" length="5.0" angle="241.9"/>
     </parkingArea>
     <parkingArea id="P2_1" lane="P2_aisle_0" startPos="18.8" endPos="36.2" roadsideCapacity="0" width="0.3" name="공영주차장2" friendlyPos="true">
-        <space x="-157.59" y="-297.93" width="2.4" length="5.0" angle="241.9"/>
-        <space x="-158.76" y="-300.13" width="2.4" length="5.0" angle="241.8"/>
-        <space x="-159.94" y="-302.32" width="2.4" length="5.0" angle="241.7"/>
-        <space x="-161.13" y="-304.53" width="2.4" length="5.0" angle="241.8"/>
-        <space x="-162.31" y="-306.74" width="2.4" length="5.0" angle="241.9"/>
-        <space x="-163.48" y="-308.94" width="2.4" length="5.0" angle="241.8"/>
+        <space x="-162.33" y="-306.78" width="2.4" length="5.0" angle="241.9"/>
+        <space x="-163.50" y="-308.97" width="2.4" length="5.0" angle="241.8"/>
+        <space x="-164.68" y="-311.17" width="2.4" length="5.0" angle="241.8"/>
+        <space x="-165.87" y="-313.38" width="2.4" length="5.0" angle="241.8"/>
+        <space x="-167.05" y="-315.58" width="2.4" length="5.0" angle="241.8"/>
+        <space x="-168.28" y="-317.92" width="2.4" length="5.0" angle="243.0"/>
     </parkingArea>
     <parkingArea id="P2_2" lane="P2_aisle_0" startPos="33.8" endPos="51.2" roadsideCapacity="0" width="0.3" name="공영주차장2" friendlyPos="true">
-        <space x="-164.66" y="-311.14" width="2.4" length="5.0" angle="241.8"/>
-        <space x="-165.85" y="-313.35" width="2.4" length="5.0" angle="241.8"/>
-        <space x="-167.03" y="-315.57" width="2.4" length="5.0" angle="241.9"/>
-        <space x="-168.23" y="-317.81" width="2.4" length="5.0" angle="242.3"/>
-        <space x="-169.42" y="-320.15" width="2.4" length="5.0" angle="243.4"/>
-        <space x="-170.54" y="-322.39" width="2.4" length="5.0" angle="243.4"/>
+        <space x="-169.42" y="-320.18" width="2.4" length="5.0" angle="243.2"/>
+        <space x="-170.55" y="-322.42" width="2.4" length="5.0" angle="243.4"/>
+        <space x="-171.67" y="-324.67" width="2.4" length="5.0" angle="243.4"/>
+        <space x="-172.79" y="-326.90" width="2.4" length="5.0" angle="243.4"/>
+        <space x="-173.91" y="-329.13" width="2.4" length="5.0" angle="243.4"/>
+        <space x="-175.03" y="-331.37" width="2.4" length="5.0" angle="243.4"/>
     </parkingArea>
     <parkingArea id="P2_3" lane="P2_aisle_0" startPos="48.8" endPos="66.2" roadsideCapacity="0" width="0.3" name="공영주차장2" friendlyPos="true">
-        <space x="-171.66" y="-324.63" width="2.4" length="5.0" angle="243.4"/>
-        <space x="-172.78" y="-326.87" width="2.4" length="5.0" angle="243.4"/>
-        <space x="-173.90" y="-329.11" width="2.4" length="5.0" angle="243.5"/>
-        <space x="-175.01" y="-331.35" width="2.4" length="5.0" angle="243.5"/>
-        <space x="-176.12" y="-333.57" width="2.4" length="5.0" angle="243.4"/>
-        <space x="-177.24" y="-335.81" width="2.4" length="5.0" angle="243.4"/>
+        <space x="-176.15" y="-333.61" width="2.4" length="5.0" angle="243.4"/>
+        <space x="-177.26" y="-335.84" width="2.4" length="5.0" angle="243.4"/>
+        <space x="-178.38" y="-338.08" width="2.4" length="5.0" angle="243.4"/>
+        <space x="-179.50" y="-340.31" width="2.4" length="5.0" angle="243.4"/>
+        <space x="-180.62" y="-342.55" width="2.4" length="5.0" angle="243.4"/>
+        <space x="-181.74" y="-344.79" width="2.4" length="5.0" angle="243.5"/>
     </parkingArea>
     <parkingArea id="P2_4" lane="P2_aisle_0" startPos="63.8" endPos="81.2" roadsideCapacity="0" width="0.3" name="공영주차장2" friendlyPos="true">
-        <space x="-178.37" y="-338.05" width="2.4" length="5.0" angle="243.4"/>
-        <space x="-179.48" y="-340.28" width="2.4" length="5.0" angle="243.4"/>
-        <space x="-180.60" y="-342.51" width="2.4" length="5.0" angle="243.4"/>
-        <space x="-181.72" y="-344.75" width="2.4" length="5.0" angle="243.4"/>
-        <space x="-182.86" y="-347.05" width="2.4" length="5.0" angle="243.9"/>
-        <space x="-183.96" y="-349.29" width="2.4" length="5.0" angle="243.9"/>
+        <space x="-182.86" y="-347.03" width="2.4" length="5.0" angle="243.5"/>
+        <space x="-184.04" y="-349.44" width="2.4" length="5.0" angle="245.1"/>
+        <space x="-185.11" y="-351.83" width="2.4" length="5.0" angle="246.0"/>
+        <space x="-186.14" y="-354.15" width="2.4" length="5.0" angle="246.3"/>
+        <space x="-187.15" y="-356.54" width="2.4" length="5.0" angle="247.2"/>
+        <space x="-188.12" y="-358.84" width="2.4" length="5.0" angle="247.2"/>
     </parkingArea>
     <parkingArea id="P2_5" lane="P2_aisle_0" startPos="78.8" endPos="96.2" roadsideCapacity="0" width="0.3" name="공영주차장2" friendlyPos="true">
-        <space x="-185.15" y="-351.79" width="2.4" length="5.0" angle="246.2"/>
-        <space x="-186.16" y="-354.18" width="2.4" length="5.0" angle="247.0"/>
-        <space x="-187.14" y="-356.50" width="2.4" length="5.0" angle="247.1"/>
-        <space x="-188.12" y="-358.81" width="2.4" length="5.0" angle="247.2"/>
-        <space x="-189.09" y="-361.11" width="2.4" length="5.0" angle="247.2"/>
-        <space x="-190.05" y="-363.42" width="2.4" length="5.0" angle="247.2"/>
+        <space x="-189.09" y="-361.15" width="2.4" length="5.0" angle="247.2"/>
+        <space x="-190.06" y="-363.45" width="2.4" length="5.0" angle="247.2"/>
+        <space x="-191.03" y="-365.75" width="2.4" length="5.0" angle="247.2"/>
+        <space x="-192.00" y="-368.06" width="2.4" length="5.0" angle="247.1"/>
+        <space x="-192.97" y="-370.35" width="2.4" length="5.0" angle="247.1"/>
+        <space x="-193.95" y="-372.66" width="2.4" length="5.0" angle="247.1"/>
     </parkingArea>
     <parkingArea id="P2_6" lane="P2_aisle_0" startPos="93.8" endPos="111.2" roadsideCapacity="0" width="0.3" name="공영주차장2" friendlyPos="true">
-        <space x="-191.02" y="-365.72" width="2.4" length="5.0" angle="247.2"/>
-        <space x="-191.99" y="-368.03" width="2.4" length="5.0" angle="247.2"/>
-        <space x="-192.96" y="-370.33" width="2.4" length="5.0" angle="247.1"/>
-        <space x="-193.93" y="-372.62" width="2.4" length="5.0" angle="247.1"/>
-        <space x="-194.90" y="-374.93" width="2.4" length="5.0" angle="247.1"/>
-        <space x="-195.88" y="-377.25" width="2.4" length="5.0" angle="247.2"/>
-    </parkingArea>
-    <parkingArea id="P2_7" lane="P2_aisle_0" startPos="108.8" endPos="126.2" roadsideCapacity="0" width="0.3" name="공영주차장2" friendlyPos="true">
-        <space x="-196.84" y="-379.55" width="2.4" length="5.0" angle="247.2"/>
-        <space x="-197.81" y="-381.85" width="2.4" length="5.0" angle="247.2"/>
-        <space x="-198.78" y="-384.16" width="2.4" length="5.0" angle="247.2"/>
-        <space x="-199.76" y="-386.50" width="2.4" length="5.0" angle="247.5"/>
-        <space x="-200.71" y="-388.81" width="2.4" length="5.0" angle="247.5"/>
-        <space x="-201.77" y="-391.64" width="2.4" length="5.0" angle="252.0"/>
+        <space x="-194.92" y="-374.97" width="2.4" length="5.0" angle="247.2"/>
+        <space x="-195.89" y="-377.28" width="2.4" length="5.0" angle="247.2"/>
+        <space x="-196.86" y="-379.58" width="2.4" length="5.0" angle="247.2"/>
+        <space x="-197.83" y="-381.88" width="2.4" length="5.0" angle="247.2"/>
+        <space x="-198.80" y="-384.18" width="2.4" length="5.0" angle="247.2"/>
+        <space x="-199.79" y="-386.54" width="2.4" length="5.0" angle="247.6"/>
     </parkingArea>
     <parkingArea id="P3_0" lane="P3_aisle_0" startPos="3.8" endPos="21.2" roadsideCapacity="0" width="0.3" name="공영주차장3" friendlyPos="true">
         <space x="-214.93" y="-633.07" width="2.4" length="5.0" angle="86.3"/>

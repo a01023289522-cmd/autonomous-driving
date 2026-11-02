@@ -13,13 +13,17 @@
     <connection from="hw_hS0_hS1" to="hw_hS1_hS1b" fromLane="0" toLane="1"/>
     <connection from="hw_hS0_hS1" to="hw_hS1_hS1b" fromLane="1" toLane="2"/>
     <connection from="hw_hS0_hS1" to="hw_hS1_hS1b" fromLane="2" toLane="3"/>
-    <connection from="hw_hS1_hS1b" to="hw_hS1b_hS2" fromLane="0" toLane="0"/>
-    <connection from="hw_hS1_hS1b" to="hw_hS1b_hS2" fromLane="1" toLane="0"/>
-    <connection from="hw_hS1_hS1b" to="hw_hS1b_hS2" fromLane="2" toLane="1"/>
-    <connection from="hw_hS1_hS1b" to="hw_hS1b_hS2" fromLane="3" toLane="2"/>
-    <connection from="hw_hS1b_hS2" to="hw_hS2_hS3" fromLane="0" toLane="0"/>
-    <connection from="hw_hS1b_hS2" to="hw_hS2_hS3" fromLane="1" toLane="1"/>
-    <connection from="hw_hS1b_hS2" to="hw_hS2_hS3" fromLane="2" toLane="2"/>
+    <connection from="hw_hS1_hS1b" to="hw_hS1b_hS1c" fromLane="0" toLane="0"/>
+    <connection from="hw_hS1_hS1b" to="hw_hS1b_hS1c" fromLane="1" toLane="0"/>
+    <connection from="hw_hS1_hS1b" to="hw_hS1b_hS1c" fromLane="2" toLane="1"/>
+    <connection from="hw_hS1_hS1b" to="hw_hS1b_hS1c" fromLane="3" toLane="2"/>
+    <connection from="hw_hS1b_hS1c" to="hw_hS1c_hS2" fromLane="0" toLane="1"/>
+    <connection from="hw_hS1b_hS1c" to="hw_hS1c_hS2" fromLane="1" toLane="2"/>
+    <connection from="hw_hS1b_hS1c" to="hw_hS1c_hS2" fromLane="2" toLane="3"/>
+    <connection from="hw_hS1b_hS1c" to="hw_hS1c_hS2" fromLane="0" toLane="0"/>
+    <connection from="hw_hS1c_hS2" to="hw_hS2_hS3" fromLane="1" toLane="0"/>
+    <connection from="hw_hS1c_hS2" to="hw_hS2_hS3" fromLane="2" toLane="1"/>
+    <connection from="hw_hS1c_hS2" to="hw_hS2_hS3" fromLane="3" toLane="2"/>
     <connection from="hw_hS2_hS3" to="hw_hS3_hS3b" fromLane="0" toLane="1"/>
     <connection from="hw_hS2_hS3" to="hw_hS3_hS3b" fromLane="1" toLane="2"/>
     <connection from="hw_hS2_hS3" to="hw_hS3_hS3b" fromLane="2" toLane="3"/>
@@ -120,7 +124,7 @@
     <connection from="hw_rest_s_out" to="hw_hS5_hS5b" fromLane="0" toLane="0"/>
     <connection from="hw_rest_n_out" to="hw_hN4_hN4b" fromLane="0" toLane="0"/>
     <connection from="hw_cg_in2" to="hw_hN2_hN2b" fromLane="0" toLane="0"/>
-    <connection from="hw_hS1b_hS2" to="hw_cg_out" fromLane="0" toLane="0"/>
+    <connection from="hw_hS1c_hS2" to="hw_cg_out" fromLane="0" toLane="0"/>
     <connection from="hw_hS3b_hS4" to="hw_rest_s_in" fromLane="0" toLane="0"/>
     <connection from="hw_hN4b_hN3" to="hw_cg_out2" fromLane="0" toLane="0"/>
     <connection from="hw_hU1_hN5" to="hw_rest_n_in" fromLane="0" toLane="0"/>
@@ -135,22 +139,19 @@
     <connection from="3921272550#1" to="hw_bd_hN9" fromLane="0" toLane="0"/>
     <connection from="3921272550#1" to="hw_bd_hN9" fromLane="1" toLane="1"/>
     <connection from="3921272550#1" to="hw_bd_hN9" fromLane="2" toLane="2"/>
-    <delete from="4716974670" to="4716974730"/>
-    <connection from="-4526039540#0" reset="true"/>
-    <connection from="-4526039660" reset="true"/>
-    <connection from="7754668930" reset="true"/>
-    <connection from="-15371153830#0" reset="true"/>
-    <connection from="1025323430" reset="true"/>
-    <connection from="15371153860" reset="true"/>
-    <connection from="4526039660" reset="true"/>
-    <connection from="-6184526960" reset="true"/>
-    <connection from="-4526039530#0" reset="true"/>
-    <connection from="4526039640#3" reset="true"/>
-    <connection from="-420073550" reset="true"/>
-    <connection from="4883933150#0" reset="true"/>
     <connection from="-5039133890" reset="true"/>
     <connection from="4953325740#0" reset="true"/>
     <connection from="4953325820" reset="true"/>
+    <connection from="-420073550" reset="true"/>
+    <connection from="4883933150#0" reset="true"/>
+    <connection from="-6184526960" reset="true"/>
+    <connection from="-4526039530#0" reset="true"/>
+    <connection from="4526039640#3" reset="true"/>
+    <connection from="-15371153830#0" reset="true"/>
+    <connection from="-4526039540#0" reset="true"/>
+    <connection from="1025323430" reset="true"/>
+    <connection from="15371153860" reset="true"/>
+    <connection from="7754668930" reset="true"/>
     <connection from="P1_out" reset="true"/>
     <connection from="P2_out" reset="true"/>
     <connection from="P3_out" reset="true"/>

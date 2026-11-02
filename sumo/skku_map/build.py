@@ -66,7 +66,7 @@ VIA_HALF = 0.5 + 6.4    # 고가 가운데선에서 고가 바깥 가장자리�
 LOT_AISLE = 10.5        # 고가 밑 공영주차장 통로 가운데선: 고가 바깥 가장자리 + 2 m(테두리·그림자 포함) + 통로 반폭 (사용자 지정: 고가와 떨어진 양옆 띠로)
 LOT_EDGE = 18.8         # 주차장 띠가 있는 쪽 지상 도로 안쪽 가장자리: 통로 3.2 m + 직각 주차 칸 5.2 m + 도로와 1.5 m
 #   (도로·고가에 딱 붙이면 주차장이 도로의 한 차로처럼 보였다: 사용자 지적)
-LOT_RAMP = 45.0         # 주차장 띠 앞뒤에서 도로가 서서히 바깥으로 비켜나는 길이 (짧으면 차가 꿈틀거린다)
+LOT_RAMP = 60.0         # 주차장 구간 앞뒤에서 도로가 서서히 바깥으로 비켜나는 길이 (짧으면 차가 꿈틀거린다)
 # 고가 밑 공영주차장 입구 (카카오맵 장소의 '입구' 좌표): P1 율전제3공영, P2 율전공영(다리밑). P3(율전 제2공영)은 로드뷰로 남쪽 끝
 LOT_IN = {"P1": (-85, -237), "P2": (-140, -280)}
 
@@ -197,9 +197,14 @@ def corridor_moves(net, cl, lot_spans):
     옮기지 않는 길과 이어지는 끝은 30 m에 걸쳐 원래 자리로 서서히 돌아간다 (한 번에 꺾으면 차가 꿈틀거렸다)."""
     L = sum(math.dist(a, b) for a, b in zip(cl, cl[1:]))
 
+    lo = VIA_S[0] + 5 + LOT_RAMP                          # 철길 위 다리(고가 옆 1차로가 붙은 곳)가 끝난 뒤부터 비켜난다
+    hi = max(max(a, b) for a, b, _ in lot_spans) + 15
+    assert lo <= min(min(a, b) for a, b, _ in lot_spans), "주차장 띠 시작 전에 도로가 다 비켜나야 한다"
+
     def need(s, side):
-        w = max((1.0 if lo - 8 <= s <= hi + 8 else smoothstep(1 - (min(abs(s - (lo - 8)), abs(s - (hi + 8))) / LOT_RAMP))
-                 for lo, hi, sd in ((min(a, b), max(a, b), sd) for a, b, sd in lot_spans) if sd == side), default=0.0)
+        # 주차장 띠 폭만큼 떨어진 거리를 고가 구간 내내 양쪽 똑같이 유지하고, 비켜나는 곳은 그 앞뒤 두 군데만 길게.
+        #   (주차장마다 도로가 들쭉날쭉 비켜나게 했더니 S자 굴곡이 잦아 차가 계속 꿈틀거렸다: 사용자 지적)
+        w = smoothstep((s - (lo - LOT_RAMP)) / LOT_RAMP) * smoothstep(((hi + LOT_RAMP) - s) / LOT_RAMP)
         return VIA_HALF + GAP + (LOT_EDGE - VIA_HALF - GAP) * w
 
     raw, side_of = {}, {}
@@ -349,6 +354,31 @@ def convex_hull(pts, pad=0.0):
             for x, y in hull]
 
 
+def arm_shape(node, round_n=4):
+    """교차로 면: 들고 나는 엣지 끝의 차로 바깥 가장자리 두 점씩을 교차로 가운데 기준 각도 순으로 잇고,
+    이웃 갈래 사이 모서리는 가운데 쪽으로 살짝 당긴 곡선으로 (길 모양을 따라 퍼지는 면)."""
+    pts = []
+    for e, at_end in [(e, True) for e in node.getIncoming()] + [(e, False) for e in node.getOutgoing()]:
+        if e.getLength() < 0.5:                           # 길이 0에 가까운 토막 엣지는 방향이 엉터리라 뾰족한 모서리를 만든다
+            continue
+        lanes = e.getLanes()
+        for ln, side in ((lanes[0], -1), (lanes[-1], 1)):
+            sh = [p[:2] for p in ln.getShape()]
+            a, b = (sh[-2], sh[-1]) if at_end else (sh[1], sh[0])
+            ux, uy = unit(b[0] - a[0], b[1] - a[1])
+            w = ln.getWidth() / 2 * side * (1 if at_end else -1)
+            pts.append((b[0] - uy * w, b[1] + ux * w))
+    cx, cy = sum(x for x, _ in pts) / len(pts), sum(y for _, y in pts) / len(pts)
+    pts = sorted(set((round(x, 2), round(y, 2)) for x, y in pts), key=lambda p: math.atan2(p[1] - cy, p[0] - cx))
+    out = []
+    for p, q in zip(pts, pts[1:] + pts[:1]):
+        out.append(p)
+        if math.dist(p, q) > 6:                           # 갈래 사이 모서리: 가운데 쪽으로 30% 당긴 곡선
+            m = ((p[0] + q[0]) / 2 * 0.7 + cx * 0.3, (p[1] + q[1]) / 2 * 0.7 + cy * 0.3)
+            out += curve([p, m, q], n=round_n)[1:-1]
+    return out
+
+
 def fmt(pts):
     return " ".join(",".join(f"{c:.2f}" for c in p) for p in pts)
 
@@ -372,9 +402,11 @@ def import_osm():
     box = [n.get("id") for n in root.findall("node") if use.get(n.get("id"), 0) >= 2
            and abs(osm_clip.xy(float(n.get("lat")), float(n.get("lon")))[0]) < 22
            and -30 < osm_clip.xy(float(n.get("lat")), float(n.get("lon")))[1] < 20]
-    # 고가 밑 갈림목 G3은 양쪽 지상도로 교차점을 한 교차로로 묶어 둔다 (G2는 write_patches에서 두 교차점이 신호 하나를 같이 씀)
+    # 고가 밑 갈림목 G2·G3은 양쪽 지상도로 교차점을 넓은 교차로 하나로 묶는다 (실제로 고가 밑을 가로지르는 넓은 교차로, 신호 하나).
+    #   G2를 두 교차점으로 두었더니 고가 밑 한가운데에 신호가 하나 더 있는 것처럼 보였다(사용자 지적). 면 모양은 turn_rules에서
     #   서부로2106번길 (-60, -325): 교차점 넷이 0.2~5 m 엣지로 이어져 교차로 면이 서로 겹쳐 꼬여 보였다 → 하나로
-    joins = [box, ["4637428747", "495943443"], ["4658598415", "843481169", "4658598447", "4658598448"]]
+    joins = [box, ["726912991", "837163934", "1184134292"], ["4637428747", "495943443"],
+             ["4658598415", "843481169", "4658598447", "4658598448"]]
     with open(P("join.nod.xml"), "w", encoding="utf-8") as f:
         f.write("<nodes>\n" + "".join(f'    <join nodes="{" ".join(j)}"/>\n' for j in joins) + "</nodes>\n")
     netconvert(["--osm-files", P("clip.osm.xml"), "-n", P("join.nod.xml"),
@@ -394,6 +426,7 @@ def import_osm():
 # ── 3) 수정 파일 ────────────────────────────────────────────
 TOLL_BOOTHS = 10        # 의왕TG 한 방향 부스 수 (요금소는 실제 크기로, 줄인 것은 직선 구간뿐)
 MERGE_AT = {"hS1", "hS3", "hS5", "hN4", "hN2"}      # 진입로가 바깥 차로(0번)로 합류하는 곳 (가속 차로)
+EXIT_AT = {"hS2"}       # 진출로 앞 감속 차로: 바깥 차로(0번)는 진출로로만 (청계IC 남행 700대/h가 본선에서 차로를 못 바꿔 순간이동했다)
 
 
 def curve(pts, n=8):
@@ -483,6 +516,9 @@ def highway(sb_end, nb_start, north):
             if b in MERGE_AT:
                 C.extend((e1, e2, i, i + n2 - n1) for i in range(n1))
                 continue
+            if b in EXIT_AT:                                # 0번(감속 차로)은 진출로로만, 나머지는 한 칸씩 안쪽으로
+                C.extend((e1, e2, i, i - 1) for i in range(1, n1))
+                continue
             shapes[b] = funnel(base, sgn, dy, yb, n1, n2)
             if abs(n2 - n1) > 1:                            # 요금소: 차로를 고르게 나눠 펼치고 모은다
                 lo, hi = min(n1, n2), max(n1, n2)
@@ -499,7 +535,7 @@ def highway(sb_end, nb_start, north):
             nodes[name] = (base, y)
 
     # 남쪽 방향(사당 → 봉담)
-    sb = [("hS0", 5600, 3, 90), ("hS1", 4400, 4, 90), ("hS1b", 4100, 3, 90), ("hS2", 3600, 3, 90),
+    sb = [("hS0", 5600, 3, 90), ("hS1", 4400, 4, 90), ("hS1b", 4100, 3, 90), ("hS1c", 3850, 4, 90), ("hS2", 3600, 3, 90),
           ("hS3", 3300, 4, 90), ("hS3b", 3100, 3, 90), ("hS4", 2700, 3, 90), ("hS5", 2450, 4, 90), ("hS5b", 2300, 3, 80)]
     steps, _ = plaza(2250, sign=-1)
     sb += [(f"hT{k}", y0, n, v) for k, y0, n, v in steps]
@@ -596,7 +632,7 @@ def write_patches(net):
     s1, s2 = poly_project(CL, LOT_IN["P1"]), poly_project(CL, LOT_IN["P2"])
     #       (주차장, 쪽(+1 서쪽 / -1 동쪽), 통로 시작 s, 통로 끝 s, 입구 쪽 도로 방향·도로 위 s, 출구 쪽 도로 방향·도로 위 s)
     lots = [("P1", -1, s1, S["G1"] + 25, (NB, s1 + 12), (NB, S["G1"] + 13)),
-            ("P2", 1, s2, S["G3"] - 30, (SB, s2 - 12), (SB, S["G3"] - 18)),
+            ("P2", 1, s2 + 10, S["G3"] - 38, (SB, s2), (SB, S["G3"] - 27)),     # 입구·출구는 G2·G3 교차로에서 20 m 넘게 (붙이면 1 m 토막이 생긴다)
             ("P3", -1, S["G3"] + 200, S["G3"] + 30, (SB, S["G3"] + 190), (NB, S["G3"] + 18))]
     # 고가 옆 지상 서부로(양쪽)를 고가에서 띄운다 (주차장 띠가 있는 곳은 더): 화면에서 고가와 다른 층이라는 게 보이도록 (사용자 지정)
     moved = corridor_moves(net, cl, [(a_s, b_s, side) for _, side, a_s, b_s, _, _ in lots])
@@ -678,17 +714,15 @@ def write_patches(net):
         edg.append(f'<delete id="{eid}"/>')
     # 서부로2106번길 꼬인 교차로(import_osm의 join): 비스듬히 가로질러 X자로 겹치던 이름 없는 22 m 연결로는 빼고,
     #   교차로 면은 들고 나는 길 끝을 감싸는 볼록한 모양으로 (netconvert가 만든 면은 뾰족하게 일그러져 연결선이 면 밖으로 나왔다)
-    edg += [f'<delete id="{eid}"/>' for eid in ("4716974720", "-4716974720") if net.hasEdge(eid)]
+    #   그 남쪽에 나란히 붙어 고리 모양이던 서비스 길(4716974730)은 지도·로드뷰에 없는 길이라 뺀다 (사용자 지적)
+    edg += [f'<delete id="{eid}"/>' for eid in ("4716974720", "-4716974720", "4716974730", "-4716974730") if net.hasEdge(eid)]
     for n in net.getNodes():
         if n.getID().startswith("cluster_4658598415"):
-            ends = [ln.getShape()[-1][:2] for e in n.getIncoming() if e.getID().lstrip("-") != "4716974720"
+            ends = [ln.getShape()[-1][:2] for e in n.getIncoming() if e.getID().lstrip("-") not in ("4716974720", "4716974730")
                     for ln in e.getLanes()]
-            ends += [ln.getShape()[0][:2] for e in n.getOutgoing() if e.getID().lstrip("-") != "4716974720"
+            ends += [ln.getShape()[0][:2] for e in n.getOutgoing() if e.getID().lstrip("-") not in ("4716974720", "4716974730")
                      for ln in e.getLanes()]
             nod.append(f'<node id="{n.getID()}" shape="{fmt(convex_hull(ends, pad=1.8))}"/>')
-    #   남쪽 길에서 남동쪽 서비스 길로 거의 되돌아가는 150도 우회전 연결은 교차로 밖까지 크게 휘어 그려져 뺀다
-    if net.hasEdge("4716974670") and net.hasEdge("4716974730"):
-        con.append('<delete from="4716974670" to="4716974730"/>')
     # 구현 범위 경계에서 잘려 15 m도 안 남은 토막(경계 노드 9000000000…에 닿음): 끝에 돌아 나오는 부채꼴만 남아 깨져 보였다
     #   골목(주거·서비스·소로)만: 큰길의 경계 끝은 차가 드나드는 출발·도착점이라 남긴다
     stubs = {e.getID() for e in net.getEdges() if e.getLength() < 15
@@ -842,7 +876,12 @@ def turn_rules(net):
                     con.append(f'<delete from="{i.getID()}" to="{o.getID()}"/>')
     with open(P("rules.con.xml"), "w", encoding="utf-8") as f:
         f.write("<connections>\n" + "".join(f"    {r}\n" for r in con) + "</connections>\n")
-    netconvert(["-s", P("pass2.net.xml"), "-x", P("rules.con.xml"), "-o", P("pass2.net.xml"),
+    # G2 교차로 면: 고가 밑을 가로지르는 넓은 교차로 하나 (로드뷰). 갈래 길 끝의 양쪽 가장자리를 이웃 갈래끼리 둥글게 이어
+    #   길 모양을 따라 퍼지게 (netconvert 면은 띄운 서쪽 도로 쪽으로 쐐기처럼 일그러졌고, 볼록 다각형은 큰 도형 하나를 박아 넣은 것 같았다)
+    g2 = junction_near(net, GAPS["G2"])
+    with open(P("rules.nod.xml"), "w", encoding="utf-8") as f:
+        f.write(f'<nodes>\n    <node id="{g2.getID()}" shape="{fmt(arm_shape(g2))}"/>\n</nodes>\n')
+    netconvert(["-s", P("pass2.net.xml"), "-n", P("rules.nod.xml"), "-x", P("rules.con.xml"), "-o", P("pass2.net.xml"),
                 "--offset.disable-normalization", "true", "--tls.rebuild", "true"], "pass2b.log")   # 주차장 출구까지 신호에 넣어 다시 계산
     return sumolib.net.readNet(P("pass2.net.xml"), withPrograms=True), len(con)
 
