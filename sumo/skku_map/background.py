@@ -116,6 +116,8 @@ def write(osm_files, area_poly, out, margin=60):
                 rows.append(f'    <poly id="bg_rail_{w.get("id")}" type="1호선" color="{RAIL_COLOR}" fill="0" lineWidth="7" '
                             f'layer="-8" shape="{" ".join(f"{x:.1f},{y:.1f}" for x, y in pts)}"/>\n')
             continue
+        if t.get("waterway") == "stream" and t.get("tunnel") == "culvert":
+            continue                                      # 덮인 하천(복개천): 도로 밑이라 그리지 않는다 (도로 옆·밑에 파란 띠로 보였다)
         if t.get("waterway") == "stream":
             pts = [p for p in pts if osm_clip.inside(big, p)]
             if len(pts) > 1:

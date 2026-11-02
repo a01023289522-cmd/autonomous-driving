@@ -1,7 +1,6 @@
 <connections>
     <connection from="15371153850_a" reset="true"/>
     <connection from="15371153850_b" reset="true"/>
-    <connection from="15371153850_c" reset="true"/>
     <connection from="4883933150#1_a" reset="true"/>
     <connection from="4883933150#1_b" reset="true"/>
     <connection from="7754668940#0_a" reset="true"/>
@@ -10,6 +9,7 @@
     <connection from="7754668940#1_b" reset="true"/>
     <connection from="7755484390_a" reset="true"/>
     <connection from="7755484390_b" reset="true"/>
+    <connection from="7755484390_c" reset="true"/>
     <connection from="hw_hS0_hS1" to="hw_hS1_hS1b" fromLane="0" toLane="1"/>
     <connection from="hw_hS0_hS1" to="hw_hS1_hS1b" fromLane="1" toLane="2"/>
     <connection from="hw_hS0_hS1" to="hw_hS1_hS1b" fromLane="2" toLane="3"/>
@@ -135,17 +135,19 @@
     <connection from="3921272550#1" to="hw_bd_hN9" fromLane="0" toLane="0"/>
     <connection from="3921272550#1" to="hw_bd_hN9" fromLane="1" toLane="1"/>
     <connection from="3921272550#1" to="hw_bd_hN9" fromLane="2" toLane="2"/>
-    <connection from="-6184526960" reset="true"/>
-    <connection from="-420073550" reset="true"/>
-    <connection from="4883933150#0" reset="true"/>
-    <connection from="-15371153830#0" reset="true"/>
+    <delete from="4716974670" to="4716974730"/>
     <connection from="-4526039540#0" reset="true"/>
-    <connection from="15371153860" reset="true"/>
+    <connection from="-4526039660" reset="true"/>
     <connection from="7754668930" reset="true"/>
+    <connection from="-15371153830#0" reset="true"/>
+    <connection from="1025323430" reset="true"/>
+    <connection from="15371153860" reset="true"/>
+    <connection from="4526039660" reset="true"/>
+    <connection from="-6184526960" reset="true"/>
     <connection from="-4526039530#0" reset="true"/>
     <connection from="4526039640#3" reset="true"/>
-    <connection from="1025323430" reset="true"/>
-    <connection from="15371153840" reset="true"/>
+    <connection from="-420073550" reset="true"/>
+    <connection from="4883933150#0" reset="true"/>
     <connection from="-5039133890" reset="true"/>
     <connection from="4953325740#0" reset="true"/>
     <connection from="4953325820" reset="true"/>

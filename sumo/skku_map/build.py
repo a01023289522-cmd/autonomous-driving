@@ -62,6 +62,11 @@ VIA_NB = ["4948457660", "6003174910", "6003174890"]
 RAMP_SB, RAMP_NB = ("700812830", "4807018640"), ("4883933160", "4807018641")   # 다리 위 지상 내려가는 길 (엣지, 끝 노드)
 VIA_S = (70, 135)                                           # OSM 중간 노드 위치 (CL 길이): 철길 남쪽 끝, G1 근처
 GAP = 3.0               # 고가 양옆 지상 서부로를 고가에서 일부러 띄우는 거리 (m): 화면에서 다른 층으로 보이게 (사용자 지정 2026-11-02)
+VIA_HALF = 0.5 + 6.4    # 고가 가운데선에서 고가 바깥 가장자리까지 (분리대 반 + 2차로)
+LOT_AISLE = 10.5        # 고가 밑 공영주차장 통로 가운데선: 고가 바깥 가장자리 + 2 m(테두리·그림자 포함) + 통로 반폭 (사용자 지정: 고가와 떨어진 양옆 띠로)
+LOT_EDGE = 18.8         # 주차장 띠가 있는 쪽 지상 도로 안쪽 가장자리: 통로 3.2 m + 직각 주차 칸 5.2 m + 도로와 1.5 m
+#   (도로·고가에 딱 붙이면 주차장이 도로의 한 차로처럼 보였다: 사용자 지적)
+LOT_RAMP = 45.0         # 주차장 띠 앞뒤에서 도로가 서서히 바깥으로 비켜나는 길이 (짧으면 차가 꿈틀거린다)
 # 고가 밑 공영주차장 입구 (카카오맵 장소의 '입구' 좌표): P1 율전제3공영, P2 율전공영(다리밑). P3(율전 제2공영)은 로드뷰로 남쪽 끝
 LOT_IN = {"P1": (-85, -237), "P2": (-140, -280)}
 
@@ -180,29 +185,130 @@ def offset_line(pts, d, s0, s1, step=10.0):
         out.append((x + uy * d, y - ux * d))
     return out
 
-def corridor_moves(net, cl):
-    """고가 양옆을 나란히 달리는 지상 엣지를 고가 가운데선(cl)에서 GAP만큼 바깥으로 옮긴 모양 {엣지: 점들}."""
+def smoothstep(t):
+    t = max(0.0, min(1.0, t))
+    return t * t * (3 - 2 * t)
+
+
+def corridor_moves(net, cl, lot_spans):
+    """고가 양옆을 나란히 달리는 지상 엣지를 바깥으로 옮긴 모양 {엣지: 점들}.
+    차로 안쪽 가장자리가 고가 가운데선에서 VIA_HALF + GAP (주차장 띠가 있는 쪽·구간은 LOT_EDGE) 이상 떨어지게 민다.
+    lot_spans: [(s 시작, s 끝, 쪽)] 쪽 +1 = 서쪽(가운데선 진행 방향 오른쪽), -1 = 동쪽.
+    옮기지 않는 길과 이어지는 끝은 30 m에 걸쳐 원래 자리로 서서히 돌아간다 (한 번에 꺾으면 차가 꿈틀거렸다)."""
     L = sum(math.dist(a, b) for a, b in zip(cl, cl[1:]))
-    out = {}
+
+    def need(s, side):
+        w = max((1.0 if lo - 8 <= s <= hi + 8 else smoothstep(1 - (min(abs(s - (lo - 8)), abs(s - (hi + 8))) / LOT_RAMP))
+                 for lo, hi, sd in ((min(a, b), max(a, b), sd) for a, b, sd in lot_spans) if sd == side), default=0.0)
+        return VIA_HALF + GAP + (LOT_EDGE - VIA_HALF - GAP) * w
+
+    raw, side_of = {}, {}
     for e in net.getEdges():
         if (e.getID() in (RAMP_SB[0], RAMP_NB[0], *VIA_SB, *VIA_NB)
-                or abs(e.getShape()[0][2] if len(e.getShape()[0]) > 2 else 0) > 3):
+                or abs(e.getShape()[0][2] if len(e.getShape()[0]) > 2 else 0) > 3 or not e.allows("passenger")):
             continue
         sh = [p[:2] for p in e.getShape()]
         ss = [poly_project(cl, p) for p in sh]
         near = [math.dist(p, poly_point(cl, s)) for p, s in zip(sh, ss)]
-        if not (max(near) < 22 and min(ss) > 1 and max(ss) < L - 1 and math.dist(sh[0], sh[-1]) > 3):
-            continue
+        inside = [k for k, s in enumerate(ss) if 1 < s < L - 1]
+        if len(inside) < 0.5 * len(ss) or max(near[k] for k in inside) > 22:
+            continue                                      # 고가 남쪽 끝을 넘어가는 엣지도 대상 (넘어간 부분은 아래에서 서서히 0)
         a, b = poly_point(cl, ss[0]), poly_point(cl, ss[-1])
-        if abs(sum(x * y for x, y in zip(unit(sh[-1][0] - sh[0][0], sh[-1][1] - sh[0][1]),
-                                         unit(b[0] - a[0], b[1] - a[1])))) < 0.85:
-            continue                                      # 가로지르는 길은 그대로
-        moved = []
+        if math.dist(sh[0], sh[-1]) > 3 and abs(sum(x * y for x, y in zip(
+                unit(sh[-1][0] - sh[0][0], sh[-1][1] - sh[0][1]), unit(b[0] - a[0], b[1] - a[1])))) < 0.85:
+            continue                                      # 가로지르는 길은 그대로 (아주 짧은 연결 토막은 함께 옮긴다)
+        half = e.getLaneNumber() * 3.2 / 2
+        pts, sides = [], []
         for p, s, d in zip(sh, ss, near):
             q = poly_point(cl, s)
-            moved.append((p[0] + (p[0] - q[0]) / d * GAP, p[1] + (p[1] - q[1]) / d * GAP) if d > 1 else p)
-        out[e.getID()] = moved
+            u = unit(*[y - x for x, y in zip(poly_point(cl, max(0, s - 1)), poly_point(cl, min(L, s + 1)))])
+            side = 1 if (p[0] - q[0]) * u[1] - (p[1] - q[1]) * u[0] > 0 else -1
+            m = max(0.0, need(s, side) - (d - half)) * smoothstep((L - 1 - s) / 40)
+            pts.append((p[0] + u[1] * side * m, p[1] - u[0] * side * m))
+            sides.append(side)
+        raw[e.getID()] = pts
+        side_of[e.getID()] = max(set(sides), key=sides.count)
+    # 같은 쪽의 옮긴 길(또는 같이 옮긴 다리 위 1차로)과 이어지지 않는 끝은 서서히 원래 자리로
+    ramp_side = {RAMP_SB[0]: 1, RAMP_NB[0]: -1}
+    out = {}
+    for eid, pts in raw.items():
+        e = net.getEdge(eid)
+        sd = side_of[eid]
+        joined_in = any(i.getID() in raw and side_of[i.getID()] == sd or ramp_side.get(i.getID()) == sd
+                        for i in e.getFromNode().getIncoming())
+        joined_out = any(o.getID() in raw and side_of[o.getID()] == sd or ramp_side.get(o.getID()) == sd
+                         for o in e.getToNode().getOutgoing())
+        sh = [p[:2] for p in e.getShape()]
+        Ls = sum(math.dist(a, b) for a, b in zip(sh, sh[1:]))
+        T = max(1.0, min(30.0, Ls * 0.8))
+        acc, res = 0.0, []
+        for k, (p, m) in enumerate(zip(sh, pts)):
+            if k:
+                acc += math.dist(sh[k - 1], p)
+            f = (1.0 if joined_in else smoothstep(acc / T)) * (1.0 if joined_out else smoothstep((Ls - acc) / T))
+            res.append((p[0] + (m[0] - p[0]) * f, p[1] + (m[1] - p[1]) * f))
+        # 길이가 짧아 점이 적은 엣지는 서서히 돌아가는 구간에 점을 더 넣어야 곡선이 된다
+        if not (joined_in and joined_out) and len(sh) < 8 and Ls > 8:
+            dense = [poly_point(sh, Ls * k / 8) for k in range(9)]
+            res = []
+            for k, p in enumerate(dense):
+                acc = Ls * k / 8
+                s = poly_project(cl, p)
+                q = poly_point(cl, s)
+                u = unit(*[y - x for x, y in zip(poly_point(cl, max(0, s - 1)), poly_point(cl, min(L, s + 1)))])
+                d = math.dist(p, q)
+                m = max(0.0, need(s, sd) - (d - e.getLaneNumber() * 1.6)) * smoothstep((L - 1 - s) / 40)
+                f = (1.0 if joined_in else smoothstep(acc / T)) * (1.0 if joined_out else smoothstep((Ls - acc) / T))
+                res.append((p[0] + u[1] * sd * m * f, p[1] - u[0] * sd * m * f))
+        out[eid] = res
     return out
+
+
+def offset_fn(ref, f, s0, s1, step=6.0):
+    """꺾은선 ref의 길이 s0~s1 구간을, 각 지점 s에서 진행 방향 오른쪽으로 f(s) m 옮긴 점들 (s1 < s0이면 거꾸로)."""
+    L = sum(math.dist(a, b) for a, b in zip(ref, ref[1:]))
+    s0, s1 = max(0.0, min(L, s0)), max(0.0, min(L, s1))
+    n = max(2, int(abs(s1 - s0) / step))
+    out = []
+    for k in range(n + 1):
+        s = s0 + (s1 - s0) * k / n
+        a, b = poly_point(ref, max(0.0, s - 1)), poly_point(ref, min(L, s + 1))
+        ux, uy = unit(b[0] - a[0], b[1] - a[1])
+        x, y = poly_point(ref, s)
+        out.append((x + uy * f(s), y - ux * f(s)))
+    return out
+
+
+# 분리 도로가 OSM에서 서로 겹치거나 엇갈려 그려진 곳 → 기준 차로 묶음(ref)에서 정해진 거리만큼 나란히 다시 그린다
+#   (엣지, 기준 엣지, 기준 진행 방향 오른쪽으로 떨어진 거리 m (음수 = 왼쪽), 시작에서 몇 m에 걸쳐 그 거리까지 벌어지나)
+#   거리 = 두 차로 묶음 폭의 반씩 + 분리대·여유. 차로 수는 그대로 (지도로 확인한 값)
+#   덕영대로 사거리 동쪽: 동행 본선 3 / 동행 지상 1(남쪽) / 서행 본선 2 · 서행 연결로 2(북쪽)이 한 줄로 겹쳐 엇갈렸다
+#   화산로: 양방향 1+1 남쪽에 붙은 동행 1차로가 같은 선 위에 겹쳐 있었다
+PARALLEL = [("15371153870", "383158340", 3 * 1.6 + 1.6 + 0.5, 0),
+            ("5552317800", "383158340", -(3 * 1.6 + 2 * 1.6 + 1.0), 0),
+            ("5552317770", "383158340", -(3 * 1.6 + 3 * 1.6 + 1.0), 0),
+            ("7754668950#0", "383158340", -(3 * 1.6 + 2 * 1.6 + 1.0 + 2 * 3.2 + 0.5), 40),
+            ("1025323300#2", "-420073680#3", 3.2 + 1.6 + 0.4, 0),
+            ("1025323300#3", "-420073680#3", 3.2 + 1.6 + 0.4, 0),
+            ("1025323300#5", "-420073680#1", 3.2 + 1.6 + 0.4, 0)]
+
+
+def parallel_fixes(net):
+    rows = []
+    for eid, rid, d, spread in PARALLEL:
+        if not (net.hasEdge(eid) and net.hasEdge(rid)):
+            print(f"  (분리 도로 맞춤 건너뜀: {eid} / {rid} 없음)")
+            continue
+        ref = [p[:2] for p in net.getEdge(rid).getShape()]
+        sh = [p[:2] for p in net.getEdge(eid).getShape()]
+        s0, s1 = poly_project(ref, sh[0]), poly_project(ref, sh[-1])
+        if spread:                                        # 갈라지는 곳에서는 바로 옆 차로 묶음 자리에서 시작해 서서히 벌어진다
+            base = d + (2 * 3.2 + 0.5) * (1 if d < 0 else -1)
+            f = lambda s, s0=s0, base=base, d=d: base + (d - base) * smoothstep(abs(s - s0) / spread)
+        else:
+            f = lambda s, d=d: d
+        rows.append(f'<edge id="{eid}" shape="{fmt(offset_fn(ref, f, s0, s1))}"/>')
+    return rows
 
 
 def road_cut(net, moved, p, d):
@@ -221,6 +327,26 @@ def road_cut(net, moved, p, d):
         if best is None or dist < best[0]:
             best = (dist, e.getID(), max(4.0, min(L - 4.0, s)))
     return best[1], best[2]
+
+
+def convex_hull(pts, pad=0.0):
+    """점들을 감싸는 볼록 다각형 (반시계). pad: 가운데에서 바깥으로 그만큼 키움 (차로 반폭 등)."""
+    pts = sorted(set((round(x, 2), round(y, 2)) for x, y in pts))
+    if len(pts) < 3:
+        return pts
+
+    def half(seq):
+        out = []
+        for p in seq:
+            while len(out) >= 2 and ((out[-1][0] - out[-2][0]) * (p[1] - out[-2][1])
+                                     - (out[-1][1] - out[-2][1]) * (p[0] - out[-2][0])) <= 0:
+                out.pop()
+            out.append(p)
+        return out
+    hull = half(pts)[:-1] + half(pts[::-1])[:-1]
+    cx, cy = sum(x for x, _ in hull) / len(hull), sum(y for _, y in hull) / len(hull)
+    return [(x + (x - cx) / (math.dist((x, y), (cx, cy)) or 1) * pad, y + (y - cy) / (math.dist((x, y), (cx, cy)) or 1) * pad)
+            for x, y in hull]
 
 
 def fmt(pts):
@@ -246,8 +372,11 @@ def import_osm():
     box = [n.get("id") for n in root.findall("node") if use.get(n.get("id"), 0) >= 2
            and abs(osm_clip.xy(float(n.get("lat")), float(n.get("lon")))[0]) < 22
            and -30 < osm_clip.xy(float(n.get("lat")), float(n.get("lon")))[1] < 20]
+    # 고가 밑 갈림목 G3은 양쪽 지상도로 교차점을 한 교차로로 묶어 둔다 (G2는 write_patches에서 두 교차점이 신호 하나를 같이 씀)
+    #   서부로2106번길 (-60, -325): 교차점 넷이 0.2~5 m 엣지로 이어져 교차로 면이 서로 겹쳐 꼬여 보였다 → 하나로
+    joins = [box, ["4637428747", "495943443"], ["4658598415", "843481169", "4658598447", "4658598448"]]
     with open(P("join.nod.xml"), "w", encoding="utf-8") as f:
-        f.write(f'<nodes>\n    <join nodes="{" ".join(box)}"/>\n</nodes>\n')
+        f.write("<nodes>\n" + "".join(f'    <join nodes="{" ".join(j)}"/>\n' for j in joins) + "</nodes>\n")
     netconvert(["--osm-files", P("clip.osm.xml"), "-n", P("join.nod.xml"),
                 "--type-files", os.path.join(SUMO_HOME, "data", "typemap", "osmNetconvert.typ.xml") + "," + P("skku.typ.xml"),
                 "-o", P("pass1.net.xml"), "--proj", PROJ, "--offset.disable-normalization", "true",
@@ -445,37 +574,51 @@ def write_patches(net):
     sg = junction_near(net, SAGEORI)
     for p in (*GAPS.values(), (-250, -1080), (24, 273)):
         nod.append(f'<node id="{junction_near(net, p).getID()}" type="traffic_light"/>')
+    # 고가 밑 갈림목에서 양쪽 지상도로 교차점이 따로 잡힌 곳(G2)은 두 교차점이 신호 하나(tl)를 같이 쓴다.
+    #   한 교차로로 합치면 고가 옆 도로를 바깥으로 띄운 만큼 교차로 면이 고가 밑까지 거대한 쐐기 모양으로 퍼졌다
+    for g, p in GAPS.items():
+        pair = [n for n in net.getNodes() if len(n.getIncoming()) + len(n.getOutgoing()) >= 5
+                and math.dist(n.getCoord()[:2], p) < 25]
+        if len(pair) > 1:
+            nod += [f'<node id="{n.getID()}" type="traffic_light" tl="tl_{g}"/>' for n in pair]
     nod.append(f'<node id="{sg.getID()}" shape="{fmt(square_shape(sg))}"/>')
 
     touched = set()                                       # 새 길이 붙는 기존 교차로 → 연결을 다시 계산 (reset)
 
-    # 고가 옆 지상 서부로(양쪽)를 고가에서 GAP만큼 바깥으로 띄운다: 화면에서 고가와 다른 층이라는 게 보이도록 (사용자 지정)
+    # 고가 밑 공영주차장 3곳 (카카오맵 장소 좌표·'입구' 표시 + 사용자 로드뷰 사진 2026-10-29).
+    #   실제로는 고가 밑이지만, 화면에서 고가와 구분되도록 고가 바깥 양옆(지상 도로 쪽) 띠에 통로 + 평행 주차 칸으로 둔다 (사용자 지정 2026-11-03)
+    #   들고 나는 곳은 지상 서부로를 그 자리에서 잘라 붙인다 (신호 교차로로 바로 드나들면 신호 계획에 칸이 없어 막힌다)
+    #   P1 율전제3공영 (G1~G2, 동쪽 띠): G2 북쪽 북행 도로에서 진입(카카오 입구, 로드뷰) → 북쪽으로 → G1 앞 북행 도로로 (출구는 미확인)
+    #   P2 율전공영(다리밑) (G2~G3, 서쪽 띠): G2 남쪽 남행 도로에서 진입(카카오 입구) → 남쪽으로 → G3 앞 남행 도로로 ('출구전용·좌회전 금지')
+    #   P3 율전 제2공영 (G3 남쪽, 동쪽 띠): 남쪽 끝에서 남행 도로 좌회전으로 고가 밑을 건너 진입(로드뷰) → 북쪽으로 → G3 남쪽 북행 도로로 (차단기)
     cl = CL + [(-244, -850)]
-    moved = corridor_moves(net, cl)
-    # 고가 밑 공영주차장 3곳 (카카오맵 장소 좌표·'입구' 표시 + 사용자 로드뷰 사진 2026-10-29). 통로는 고가 밑 가운데,
-    #   들고 나는 곳은 양옆 지상 서부로를 그 자리에서 잘라 붙인다 (신호 교차로로 바로 드나들면 신호 계획에 칸이 없어 막힌다)
-    #   P1 율전제3공영 (G1~G2): G2 북쪽 북행 도로에서 좌회전으로 들어가(카카오 입구, 로드뷰) 북쪽으로 → G1 앞 북행 도로로 우회전 (출구는 미확인)
-    #   P2 율전공영(다리밑) (G2~G3): G2 남쪽 남행 도로에서 좌회전으로 들어가(카카오 입구) 남쪽으로 → G3 지나 남행 도로로 (로드뷰 '출구전용·좌회전 금지')
-    #   P3 율전 제2공영 (G3 남쪽): 남쪽 끝에서 남행 도로 좌회전으로 들어가(로드뷰) 북쪽으로 → G3 남쪽 북행 도로로 우회전 (로드뷰, 차단기)
     S = {k: poly_project(CL, p) for k, p in GAPS.items()}
     s1, s2 = poly_project(CL, LOT_IN["P1"]), poly_project(CL, LOT_IN["P2"])
-    #       (주차장, 통로 시작 s, 통로 끝 s, 입구 쪽 도로 방향·도로 위 s, 출구 쪽 도로 방향·도로 위 s)
-    lots = [("P1", s1, S["G1"] + 25, (NB, s1 + 10), (NB, S["G1"] + 15)),
-            ("P2", s2, S["G3"] - 25, (SB, s2 - 10), (SB, S["G3"] + 25)),
-            ("P3", S["G3"] + 200, S["G3"] + 30, (SB, S["G3"] + 195), (NB, S["G3"] + 22))]
+    #       (주차장, 쪽(+1 서쪽 / -1 동쪽), 통로 시작 s, 통로 끝 s, 입구 쪽 도로 방향·도로 위 s, 출구 쪽 도로 방향·도로 위 s)
+    lots = [("P1", -1, s1, S["G1"] + 25, (NB, s1 + 12), (NB, S["G1"] + 13)),
+            ("P2", 1, s2, S["G3"] - 30, (SB, s2 - 12), (SB, S["G3"] - 18)),
+            ("P3", -1, S["G3"] + 200, S["G3"] + 30, (SB, S["G3"] + 190), (NB, S["G3"] + 18))]
+    # 고가 옆 지상 서부로(양쪽)를 고가에서 띄운다 (주차장 띠가 있는 곳은 더): 화면에서 고가와 다른 층이라는 게 보이도록 (사용자 지정)
+    moved = corridor_moves(net, cl, [(a_s, b_s, side) for _, side, a_s, b_s, _, _ in lots])
     cuts = {}                                             # 도로 엣지 → [(엣지 위 길이, 새 노드)]
     lot_shapes, lot_edges = {}, []
-    for lot, a_s, b_s, (d_in, r_in), (d_out, r_out) in lots:
-        a, b = poly_point(CL, a_s), poly_point(CL, b_s)
+    for lot, side, a_s, b_s, (d_in, r_in), (d_out, r_out) in lots:
+        aisle = offset_line(CL, side * LOT_AISLE, a_s, b_s, step=5.0)
+        a, b = aisle[0], aisle[-1]
         nod += [f'<node id="{lot}i" x="{a[0]:.2f}" y="{a[1]:.2f}"/>', f'<node id="{lot}o" x="{b[0]:.2f}" y="{b[1]:.2f}"/>']
-        aisle = [poly_point(CL, a_s + (b_s - a_s) * k / 10) for k in range(11)]
         lot_shapes[lot] = aisle
+        road = {}
         for tag, d, r in (("e", d_in, r_in), ("x", d_out, r_out)):
             eid, s = road_cut(net, moved, poly_point(CL, r), d)
             cuts.setdefault(eid, []).append((s, f"{lot}{tag}"))
-        lot_edges += [f'<edge id="{lot}_in" from="{lot}e" to="{lot}i" numLanes="1" speed="5.56" allow="taxi"/>',
+            road[tag] = poly_point(moved.get(eid) or [q[:2] for q in net.getEdge(eid).getShape()], s)
+        in_shape = ""
+        if (side > 0) != (d_in == SB):                      # 반대편 도로에서 고가 밑을 건너 들어간다 (P3): U자로 돌아 통로로
+            c1, c2 = offset_line(CL, 3.0, a_s + 7, a_s + 7)[0], offset_line(CL, -5.0, a_s + 7, a_s + 7)[0]
+            in_shape = f' shape="{fmt(curve([road["e"], c1, c2, a], n=8))}"'
+        lot_edges += [f'<edge id="{lot}_in" from="{lot}e" to="{lot}i" numLanes="1" speed="5.56" allow="taxi"{in_shape}/>',
                       f'<edge id="{lot}_aisle" from="{lot}i" to="{lot}o" numLanes="1" speed="4.17" allow="taxi" '
-                      f'shape="{fmt(aisle)}"/>',
+                      f'spreadType="center" shape="{fmt(aisle)}"/>',      # center: 통로가 정한 선 위에 (기본값이면 1.6 m 밀린다)
                       f'<edge id="{lot}_out" from="{lot}o" to="{lot}x" numLanes="1" speed="5.56" priority="1" allow="taxi"/>']
     edg += lot_edges
     deleted = set(cuts)
@@ -507,7 +650,8 @@ def write_patches(net):
             edg.append(f'<edge id="{eid}_{"abcdefg"[k]}" from="{ends[k]}" to="{ends[k + 1]}" {common} shape="{fmt(piece)}"/>')
             con.append(f'<connection from="{eid}_{"abcdefg"[k]}" reset="true"/>')
         touched |= {e.getFromNode().getID(), e.getToNode().getID()}
-    fixed = set(moved) | {f"{eid}_{c}" for eid in cuts for c in "abcdefg"}
+    fixed = (set(moved) | {f"{eid}_{c}" for eid in cuts for c in "abcdefg"}
+             | {f"{lot}_{k}" for lot, *_ in lots for k in ("in", "aisle", "out")})   # 높이 판정에서 빼기 (고가 선 옆이라 고가로 잡혔다)
     # 봉담과천로 → 서부로 북쪽 끝(구현 범위 경계 노드)에 그대로 이어진다
     north = [n for n in net.getNodes() if n.getCoord()[1] > 250 and abs(n.getCoord()[0] - 25) < 40]
     src = [n for n in north if not n.getIncoming() and any(e.getName() == "서부로" for e in n.getOutgoing())][0]
@@ -532,6 +676,25 @@ def write_patches(net):
     # 고속도로가 이어지는 서부로 북쪽 끝 옆 골목들이 구현 범위 경계에서 잘려 끊긴 채 보이던 것 → 경계에 닿는 짧은 막다른 길은 뺀다
     for eid in north_stubs(net):
         edg.append(f'<delete id="{eid}"/>')
+    # 서부로2106번길 꼬인 교차로(import_osm의 join): 비스듬히 가로질러 X자로 겹치던 이름 없는 22 m 연결로는 빼고,
+    #   교차로 면은 들고 나는 길 끝을 감싸는 볼록한 모양으로 (netconvert가 만든 면은 뾰족하게 일그러져 연결선이 면 밖으로 나왔다)
+    edg += [f'<delete id="{eid}"/>' for eid in ("4716974720", "-4716974720") if net.hasEdge(eid)]
+    for n in net.getNodes():
+        if n.getID().startswith("cluster_4658598415"):
+            ends = [ln.getShape()[-1][:2] for e in n.getIncoming() if e.getID().lstrip("-") != "4716974720"
+                    for ln in e.getLanes()]
+            ends += [ln.getShape()[0][:2] for e in n.getOutgoing() if e.getID().lstrip("-") != "4716974720"
+                     for ln in e.getLanes()]
+            nod.append(f'<node id="{n.getID()}" shape="{fmt(convex_hull(ends, pad=1.8))}"/>')
+    #   남쪽 길에서 남동쪽 서비스 길로 거의 되돌아가는 150도 우회전 연결은 교차로 밖까지 크게 휘어 그려져 뺀다
+    if net.hasEdge("4716974670") and net.hasEdge("4716974730"):
+        con.append('<delete from="4716974670" to="4716974730"/>')
+    # 구현 범위 경계에서 잘려 15 m도 안 남은 토막(경계 노드 9000000000…에 닿음): 끝에 돌아 나오는 부채꼴만 남아 깨져 보였다
+    #   골목(주거·서비스·소로)만: 큰길의 경계 끝은 차가 드나드는 출발·도착점이라 남긴다
+    stubs = {e.getID() for e in net.getEdges() if e.getLength() < 15
+             and e.getType() in ("highway.residential", "highway.service", "highway.unclassified", "highway.living_street")
+             and any(n.getID().startswith("9000000000") for n in (e.getFromNode(), e.getToNode()))}
+    edg += [f'<delete id="{eid}"/>' for eid in sorted(stubs - set(north_stubs(net)))]
     for nid in touched:
         for e in net.getNode(nid).getIncoming():
             if e.getID() not in deleted and e.getID() not in VIA_SB + VIA_NB:
@@ -614,6 +777,7 @@ def write_patches(net):
                 arc = curve([sh[0], (sh[0][0] + d[0] * 6, sh[0][1] + d[1] * 6),
                              (sh[-1][0] + d[0] * 6, sh[-1][1] + d[1] * 6), sh[-1]], n=6)
             edg.append(f'<edge id="{e.getID()}" shape="{fmt(arc)}"/>')
+    edg += parallel_fixes(net)
     # 막힌 캠퍼스 출입구: 길은 남기되(사람만 통행) 차는 못 지나가게
     for wid in CLOSED_GATES:
         for e in net.getEdges():
@@ -784,7 +948,7 @@ def toll_booths(net):
 #   → 보기 설정에서 고가(+3 m 넘음)·지하차도(-3 m 밑) 차로는 투명하게 두고, 그 두 층은 도형으로 직접 그린다.
 #     지하차도 면: layer -0.5, 옅은 도로색 (배경 위, 도로망 밑 → 지상 도로·교차로 면에 가려짐)
 #     지하차도 차선: layer 3.2 점선 (지상 도로·교차로 면 위로 비쳐 보이는 '숨은 선')
-#     고가: 그림자 layer 15 + 불투명 면 15.5 + 진한 테두리·차선 15.6~15.8.
+#     고가: 그림자 layer 15 + 진한 테두리 면 15.3 + 불투명 면 15.5 + 차선 15.8.
 #       (layer 3.5에 두었더니 신호 교차로 면이 고가 위에 그려져 G1~G3에서 고가가 끊겨 보였다: 화면 확인 → 15로 올림)
 #   차량은 도형보다 항상 위에 그려진다 → 아래층(지하차도, 고가 밑)의 차는 view_skku.py가 TraCI로 반투명하게 칠한다
 BG_COLOR = (238, 236, 230)
@@ -827,11 +991,14 @@ def layer_shapes(net):
                 for k, d in enumerate(dashes(ln_pts, 1.5, 1.5)):
                     poly(f"under_{e.getID()}_l{i}_{k}", "지하차도 (숨은 선)", UNDER_LINE, 3.2, d, False, 0.25)
         else:
+            # 테두리는 면보다 0.6 m 넓은 진한 면을 밑(15.3)에 깔아 만든다: 고가 엣지 여러 개가 겹치거나 모이는 곳
+            #   (덕영대로 고가 등)에서 선으로 그린 테두리가 면 안쪽으로 비쳐 지저분했다 → 면(15.5)이 안쪽 테두리를 덮는다
             outline = left + right[::-1]
-            poly(f"via_{e.getID()}_sh", "고가 그림자", VIA_SHADOW, 15.0, [(x + 1.6, y - 1.6) for x, y in outline])
+            wide = (side_line(sh[-1], lanes[-1].getWidth() / 2 + 0.6)
+                    + side_line(sh[0], -lanes[0].getWidth() / 2 - 0.6)[::-1])
+            poly(f"via_{e.getID()}_sh", "고가 그림자", VIA_SHADOW, 15.0, [(x + 1.6, y - 1.6) for x, y in wide])
+            poly(f"via_{e.getID()}_bd", "고가 테두리", VIA_EDGE, 15.3, wide)
             poly(f"via_{e.getID()}", "고가", via, 15.5, outline)
-            poly(f"via_{e.getID()}_bl", "고가 테두리", VIA_EDGE, 15.6, left, False, 0.6)
-            poly(f"via_{e.getID()}_br", "고가 테두리", VIA_EDGE, 15.6, right, False, 0.6)
             for i, (s, ln) in enumerate(zip(sh[:-1], lanes[:-1])):
                 for k, d in enumerate(dashes(side_line(s, ln.getWidth() / 2), 3, 5)):
                     poly(f"via_{e.getID()}_l{i}_{k}", "고가 차선", VIA_LINE, 15.8, d, False, 0.15)

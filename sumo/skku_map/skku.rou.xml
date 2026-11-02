@@ -22,8 +22,8 @@
     <flow id="hw_out_5" type="car" begin="0" end="3600" period="exp(0.0033)" from="-4255616100#5" to="hw_hN1_hN0" departLane="best" departSpeed="max"/>
     <flow id="hw_in_6" type="hwcar" begin="0" end="3600" period="exp(0.0042)" from="hw_hS0_hS1" to="5899587190#1" departLane="best" departSpeed="max"/>
     <flow id="hw_out_6" type="car" begin="0" end="3600" period="exp(0.0033)" from="-5899587190#1" to="hw_hN1_hN0" departLane="best" departSpeed="max"/>
-    <flow id="hw_in_7" type="hwcar" begin="0" end="3600" period="exp(0.0042)" from="hw_hS0_hS1" to="4526039560" departLane="best" departSpeed="max"/>
-    <flow id="hw_out_7" type="car" begin="0" end="3600" period="exp(0.0033)" from="-4526039560" to="hw_hN1_hN0" departLane="best" departSpeed="max"/>
+    <flow id="hw_in_7" type="hwcar" begin="0" end="3600" period="exp(0.0042)" from="hw_hS0_hS1" to="-5039133830" departLane="best" departSpeed="max"/>
+    <flow id="hw_out_7" type="car" begin="0" end="3600" period="exp(0.0033)" from="5039133830" to="hw_hN1_hN0" departLane="best" departSpeed="max"/>
     <flow id="hw_in_8" type="hwcar" begin="0" end="3600" period="exp(0.0042)" from="hw_hS0_hS1" to="5552317740" departLane="best" departSpeed="max"/>
     <flow id="hw_out_8" type="car" begin="0" end="3600" period="exp(0.0033)" from="-5552317740" to="hw_hN1_hN0" departLane="best" departSpeed="max"/>
     <flow id="hw_in_9" type="hwcar" begin="0" end="3600" period="exp(0.0042)" from="hw_hS0_hS1" to="-7754668980" departLane="best" departSpeed="max"/>
