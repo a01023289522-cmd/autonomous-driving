@@ -38,30 +38,32 @@
     <busStop id="bs_41" name="LG아파트" lane="1024410150#1_0" startPos="110.7" endPos="125.7" friendlyPos="true"/>
     <busStop id="bs_42" name="진흥.화서역푸르지오더에듀포레" lane="4255616100#5_0" startPos="23.2" endPos="38.2" friendlyPos="true"/>
     <busStop id="bs_43" name="삼성아파트" lane="4953325800_0" startPos="155.2" endPos="170.2" friendlyPos="true"/>
-    <busStop id="bs_44" name="성균관대학교" lane="15371153860_0" startPos="57.4" endPos="72.4" friendlyPos="true"/>
-    <busStop id="bs_45" name="성균관대역" lane="12728331450#1_0" startPos="1.7" endPos="14.7" friendlyPos="true"/>
+    <busStop id="bs_44" name="성균관대학교" lane="via_nb_0" startPos="470.9" endPos="485.9" friendlyPos="true"/>
+    <busStop id="bs_45" name="성균관대역" lane="via_nb_0" startPos="806.9" endPos="821.9" friendlyPos="true"/>
     <busStop id="bs_46" name="율전성당.성균관대역" lane="3921272550#0_0" startPos="52.8" endPos="67.8" friendlyPos="true"/>
-    <busStop id="bs_47" name="삼성1차아파트" lane="4953325800_0" startPos="156.4" endPos="171.4" friendlyPos="true"/>
-    <busStop id="bs_48" name="삼성아파트" lane="4741474310_0" startPos="43.7" endPos="58.7" friendlyPos="true"/>
-    <busStop id="bs_49" name="율전성당.성균관대역" lane="5552317710#1_0" startPos="35.8" endPos="50.8" friendlyPos="true"/>
+    <busStop id="bs_47" name="삼성아파트" lane="via_nb_0" startPos="124.6" endPos="139.6" friendlyPos="true"/>
+    <busStop id="bs_48" name="삼성1차아파트" lane="4953325800_0" startPos="156.4" endPos="171.4" friendlyPos="true"/>
+    <busStop id="bs_49" name="삼성아파트" lane="4741474310_0" startPos="43.7" endPos="58.7" friendlyPos="true"/>
     <busStop id="bs_5" name="율전초등학교" lane="5039133870#8_0" startPos="28.9" endPos="41.9" friendlyPos="true"/>
-    <busStop id="bs_50" name="성균관대역" lane="P1_aisle_0" startPos="91.2" endPos="106.2" friendlyPos="true"/>
-    <busStop id="bs_51" name="성균관대학교" lane="7755484390_b_0" startPos="84.4" endPos="99.4" friendlyPos="true"/>
-    <busStop id="bs_52" name="삼성아파트" lane="15371153850_b_0" startPos="223.8" endPos="238.8" friendlyPos="true"/>
-    <busStop id="bs_53" name="삼성1차아파트" lane="4741474310_0" startPos="42.3" endPos="57.3" friendlyPos="true"/>
-    <busStop id="bs_54" name="율전초교" lane="5899587190#0_0" startPos="16.2" endPos="31.2" friendlyPos="true"/>
-    <busStop id="bs_55" name="율전초교" lane="-5899587190#0_0" startPos="70.1" endPos="85.1" friendlyPos="true"/>
-    <busStop id="bs_56" name="천천육교.베스트타운" lane="7754668960_0" startPos="329.4" endPos="344.4" friendlyPos="true"/>
-    <busStop id="bs_57" name="SK.한라아파트.롯데마트(마을)" lane="-5552317850#0_0" startPos="92.2" endPos="107.2" friendlyPos="true"/>
-    <busStop id="bs_58" name="청솔한라아파트.롯데마트" lane="-5552317850#0_0" startPos="69.2" endPos="84.2" friendlyPos="true"/>
-    <busStop id="bs_59" name="천천육교.베스트타운" lane="4868927720#1_0" startPos="61.0" endPos="76.0" friendlyPos="true"/>
+    <busStop id="bs_50" name="율전성당.성균관대역" lane="5552317710#1_0" startPos="35.8" endPos="50.8" friendlyPos="true"/>
+    <busStop id="bs_51" name="성균관대역" lane="7755484380#1_0" startPos="8.7" endPos="23.7" friendlyPos="true"/>
+    <busStop id="bs_52" name="성균관대학교" lane="7755484390_b_0" startPos="107.8" endPos="122.8" friendlyPos="true"/>
+    <busStop id="bs_53" name="삼성아파트" lane="15371153850_c_0" startPos="55.8" endPos="70.8" friendlyPos="true"/>
+    <busStop id="bs_54" name="삼성1차아파트" lane="4741474310_0" startPos="42.3" endPos="57.3" friendlyPos="true"/>
+    <busStop id="bs_55" name="율전초교" lane="5899587190#0_0" startPos="16.2" endPos="31.2" friendlyPos="true"/>
+    <busStop id="bs_56" name="율전초교" lane="-5899587190#0_0" startPos="70.1" endPos="85.1" friendlyPos="true"/>
+    <busStop id="bs_57" name="성균관대학교" lane="15371153860_0" startPos="56.3" endPos="71.3" friendlyPos="true"/>
+    <busStop id="bs_58" name="성균관대역" lane="12728331450#1_0" startPos="0.0" endPos="8.2" friendlyPos="true"/>
+    <busStop id="bs_59" name="천천육교.베스트타운" lane="7754668960_0" startPos="329.4" endPos="344.4" friendlyPos="true"/>
     <busStop id="bs_6" name="성균관대역(마을)" lane="7755484370_0" startPos="3.0" endPos="18.0" friendlyPos="true"/>
-    <busStop id="bs_60" name="SK.한라아파트.롯데마트(마을)" lane="5552317850#0_0" startPos="5.5" endPos="20.5" friendlyPos="true"/>
-    <busStop id="bs_61" name="청솔한라아파트.롯데마트" lane="5552317850#0_0" startPos="28.5" endPos="43.5" friendlyPos="true"/>
-    <busStop id="bs_62" name="비단마을입구" lane="4868927720#1_0" startPos="116.5" endPos="131.5" friendlyPos="true"/>
-    <busStop id="bs_63" name="주상아파트" lane="-5552317690#2_0" startPos="3.0" endPos="18.0" friendlyPos="true"/>
-    <busStop id="bs_64" name="율천동주민센터" lane="707253210#3_0" startPos="17.4" endPos="30.4" friendlyPos="true"/>
-    <busStop id="bs_65" name="주상아파트" lane="5552317690#1_0" startPos="17.8" endPos="30.8" friendlyPos="true"/>
+    <busStop id="bs_60" name="SK.한라아파트.롯데마트(마을)" lane="-5552317850#0_0" startPos="92.2" endPos="107.2" friendlyPos="true"/>
+    <busStop id="bs_61" name="청솔한라아파트.롯데마트" lane="-5552317850#0_0" startPos="69.2" endPos="84.2" friendlyPos="true"/>
+    <busStop id="bs_62" name="천천육교.베스트타운" lane="4868927720#1_0" startPos="61.0" endPos="76.0" friendlyPos="true"/>
+    <busStop id="bs_63" name="SK.한라아파트.롯데마트(마을)" lane="5552317850#0_0" startPos="5.5" endPos="20.5" friendlyPos="true"/>
+    <busStop id="bs_64" name="청솔한라아파트.롯데마트" lane="5552317850#0_0" startPos="28.5" endPos="43.5" friendlyPos="true"/>
+    <busStop id="bs_65" name="비단마을입구" lane="4868927720#1_0" startPos="116.5" endPos="131.5" friendlyPos="true"/>
+    <busStop id="bs_66" name="주상아파트" lane="-5552317690#2_0" startPos="3.0" endPos="18.0" friendlyPos="true"/>
+    <busStop id="bs_67" name="주상아파트" lane="5552317690#1_0" startPos="17.8" endPos="30.8" friendlyPos="true"/>
     <busStop id="bs_7" name="이마트에브리데이" lane="-5039133870#1_0" startPos="16.9" endPos="31.9" friendlyPos="true"/>
     <busStop id="bs_8" name="화서역푸르지오더에듀포레" lane="1024410230_0" startPos="52.2" endPos="67.2" friendlyPos="true"/>
     <busStop id="bs_9" name="GS아파트.화서역푸르지오더에듀포레" lane="7754717130#0_0" startPos="75.3" endPos="90.3" friendlyPos="true"/>

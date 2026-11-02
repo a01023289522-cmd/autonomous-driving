@@ -1,19 +1,38 @@
 <edges>
-    <delete id="7755484390"/>
-    <edge id="7755484390_a" from="cluster_726912991_837163934" to="P1x" name="서부로" numLanes="3" speed="13.89" priority="10" allow="army authority bus cable_car cityrail coach container custom1 custom2 delivery emergency evehicle hov lightrail moped motorcycle passenger private public_army public_authority public_emergency public_transport rail_slow scooter subway taxi trailer transport truck vip wheelchair" spreadType="center" shape="-137.39,-272.84 -148.32,-291.98 -149.68,-294.61"/>
-    <edge id="7755484390_b" from="P1x" to="cluster_4637428747_495943443" name="서부로" numLanes="3" speed="13.89" priority="10" allow="army authority bus cable_car cityrail coach container custom1 custom2 delivery emergency evehicle hov lightrail moped motorcycle passenger private public_army public_authority public_emergency public_transport rail_slow scooter subway taxi trailer transport truck vip wheelchair" spreadType="center" shape="-149.68,-294.61 -163.19,-320.66 -179.94,-355.68 -194.35,-394.20 -205.81,-423.63"/>
-    <edge id="P1_in" from="726912998" to="P1i" numLanes="1" speed="5.56"/>
-    <edge id="P1_aisle" from="P1i" to="P1o" numLanes="1" speed="4.17" shape="-40.14,-155.85 -45.93,-165.22 -51.71,-174.58 -57.50,-183.95 -63.95,-192.84 -70.91,-201.37 -77.87,-209.90 -84.83,-218.43 -91.69,-227.03 -97.85,-236.15 -104.01,-245.28"/>
-    <edge id="P1_out" from="P1o" to="P1x" numLanes="1" speed="5.56" priority="1"/>
+    <edge id="P1_in" from="P1e" to="P1i" numLanes="1" speed="5.56" allow="taxi"/>
+    <edge id="P1_aisle" from="P1i" to="P1o" numLanes="1" speed="4.17" allow="taxi" shape="-94.22,-230.77 -88.79,-223.29 -82.94,-216.11 -77.08,-208.94 -71.23,-201.77 -65.38,-194.59 -59.60,-187.36 -54.74,-179.48 -49.87,-171.61 -45.01,-163.73 -40.14,-155.85"/>
+    <edge id="P1_out" from="P1o" to="P1x" numLanes="1" speed="5.56" priority="1" allow="taxi"/>
+    <edge id="P2_in" from="P2e" to="P2i" numLanes="1" speed="5.56" allow="taxi"/>
+    <edge id="P2_aisle" from="P2i" to="P2o" numLanes="1" speed="4.17" allow="taxi" shape="-130.47,-285.96 -138.08,-298.14 -144.86,-310.81 -151.65,-323.47 -158.14,-336.28 -164.57,-349.13 -170.73,-362.10 -176.30,-375.34 -181.88,-388.59 -186.95,-402.01 -191.38,-415.68"/>
+    <edge id="P2_out" from="P2o" to="P2x" numLanes="1" speed="5.56" priority="1" allow="taxi"/>
+    <edge id="P3_in" from="P3e" to="P3i" numLanes="1" speed="5.56" allow="taxi"/>
+    <edge id="P3_aisle" from="P3i" to="P3o" numLanes="1" speed="4.17" allow="taxi" shape="-232.47,-636.30 -231.38,-619.33 -230.28,-602.37 -228.19,-585.51 -225.74,-568.68 -223.30,-551.86 -220.79,-535.05 -217.05,-518.47 -213.31,-501.88 -209.57,-485.30 -205.84,-468.71"/>
+    <edge id="P3_out" from="P3o" to="P3x" numLanes="1" speed="5.56" priority="1" allow="taxi"/>
+    <edge id="12728331450#0" shape="-0.64,-109.29 4.96,-91.85"/>
     <delete id="15371153850"/>
-    <edge id="15371153850_a" from="cluster_4637428747_495943443" to="P2x" name="서부로" numLanes="3" speed="13.89" priority="10" allow="army authority bus cable_car cityrail coach container custom1 custom2 delivery emergency evehicle hov lightrail moped motorcycle passenger private public_army public_authority public_emergency public_transport rail_slow scooter subway taxi trailer transport truck vip wheelchair" spreadType="center" shape="-210.77,-438.84 -216.81,-463.10"/>
-    <edge id="15371153850_b" from="P2x" to="4871043589" name="서부로" numLanes="3" speed="13.89" priority="10" allow="army authority bus cable_car cityrail coach container custom1 custom2 delivery emergency evehicle hov lightrail moped motorcycle passenger private public_army public_authority public_emergency public_transport rail_slow scooter subway taxi trailer transport truck vip wheelchair" spreadType="center" shape="-216.81,-463.10 -232.32,-535.89 -241.21,-597.15 -245.64,-663.00 -248.85,-825.18 -247.85,-833.68"/>
-    <edge id="P2_in" from="cluster_726912991_837163934" to="P2i" numLanes="1" speed="5.56"/>
-    <edge id="P2_aisle" from="P2i" to="P2o" numLanes="1" speed="4.17" shape="-131.25,-287.20 -138.70,-299.31 -145.42,-311.84 -152.13,-324.38 -158.54,-337.07 -164.89,-349.79 -170.96,-362.65 -176.47,-375.75 -181.99,-388.86 -187.00,-402.15 -191.38,-415.68"/>
-    <edge id="P2_out" from="P2o" to="P2x" numLanes="1" speed="5.56" priority="1"/>
-    <edge id="P3_in" from="cluster_4637428747_495943443" to="P3i" numLanes="1" speed="5.56"/>
-    <edge id="P3_aisle" from="P3i" to="P3o" numLanes="1" speed="4.17" shape="-204.71,-463.84 -208.58,-480.91 -212.43,-497.98 -216.28,-515.05 -220.13,-532.12 -222.94,-549.39 -225.46,-566.70 -227.97,-584.02 -230.22,-601.37 -231.34,-618.83 -232.47,-636.30"/>
-    <edge id="P3_out" from="P3o" to="5708665068" numLanes="1" speed="5.56" priority="1"/>
+    <edge id="15371153850_a" from="cluster_4637428747_495943443" to="P2x" numLanes="3" speed="13.89" priority="10" allow="army authority bus cable_car cityrail coach container custom1 custom2 delivery emergency evehicle hov lightrail moped motorcycle passenger private public_army public_authority public_emergency public_transport rail_slow scooter subway taxi trailer transport truck vip wheelchair" name="서부로" spreadType="center" shape="-213.68,-438.11 -219.20,-460.22"/>
+    <edge id="15371153850_b" from="P2x" to="P3e" numLanes="3" speed="13.89" priority="10" allow="army authority bus cable_car cityrail coach container custom1 custom2 delivery emergency evehicle hov lightrail moped motorcycle passenger private public_army public_authority public_emergency public_transport rail_slow scooter subway taxi trailer transport truck vip wheelchair" name="서부로" spreadType="center" shape="-219.20,-460.22 -219.64,-461.97 -235.29,-535.46 -244.20,-596.92 -246.45,-630.34"/>
+    <edge id="15371153850_c" from="P3e" to="4871043589" numLanes="3" speed="13.89" priority="10" allow="army authority bus cable_car cityrail coach container custom1 custom2 delivery emergency evehicle hov lightrail moped motorcycle passenger private public_army public_authority public_emergency public_transport rail_slow scooter subway taxi trailer transport truck vip wheelchair" name="서부로" spreadType="center" shape="-246.45,-630.34 -248.64,-662.85 -251.85,-825.01 -250.85,-833.51 -250.85,-833.51"/>
+    <edge id="15371153860" shape="-180.59,-430.93 -172.11,-401.28 -154.99,-364.46 -139.51,-331.43 -124.74,-305.47 -112.81,-287.00"/>
+    <edge id="4883933150#0" shape="-234.53,-836.93 -233.26,-824.26 -218.93,-660.14 -216.06,-601.81 -207.50,-538.97 -192.62,-475.50"/>
+    <delete id="4883933150#1"/>
+    <edge id="4883933150#1_a" from="4866100626" to="P3x" numLanes="2" speed="13.89" priority="10" allow="army authority bus cable_car cityrail coach container custom1 custom2 delivery emergency evehicle hov lightrail moped motorcycle passenger private public_army public_authority public_emergency public_transport rail_slow scooter subway taxi trailer transport truck vip wheelchair" name="서부로" spreadType="center" shape="-189.04,-461.46 -187.98,-457.61"/>
+    <edge id="4883933150#1_b" from="P3x" to="cluster_4637428747_495943443" numLanes="2" speed="13.89" priority="10" allow="army authority bus cable_car cityrail coach container custom1 custom2 delivery emergency evehicle hov lightrail moped motorcycle passenger private public_army public_authority public_emergency public_transport rail_slow scooter subway taxi trailer transport truck vip wheelchair" name="서부로" spreadType="center" shape="-187.98,-457.61 -184.62,-445.38 -184.62,-445.38"/>
+    <edge id="4883933170#0" shape="-18.11,-65.97 -28.03,-83.33"/>
+    <edge id="4883933170#1" shape="-31.24,-93.43 -38.26,-113.66"/>
+    <edge id="4953325820" shape="-248.19,-800.38 -249.67,-833.55"/>
+    <delete id="7754668940#0"/>
+    <edge id="7754668940#0_a" from="1184134292" to="P1e" numLanes="3" speed="13.89" priority="10" allow="army authority bus cable_car cityrail coach container custom1 custom2 delivery emergency evehicle hov lightrail moped motorcycle passenger private public_army public_authority public_emergency public_transport rail_slow scooter subway taxi trailer transport truck vip wheelchair" name="서부로" spreadType="center" shape="-95.61,-259.70 -87.22,-250.20"/>
+    <edge id="7754668940#0_b" from="P1e" to="843481143" numLanes="3" speed="13.89" priority="10" allow="army authority bus cable_car cityrail coach container custom1 custom2 delivery emergency evehicle hov lightrail moped motorcycle passenger private public_army public_authority public_emergency public_transport rail_slow scooter subway taxi trailer transport truck vip wheelchair" name="서부로" spreadType="center" shape="-87.22,-250.20 -77.53,-239.25 -45.55,-199.58 -45.55,-199.58"/>
+    <delete id="7754668940#1"/>
+    <edge id="7754668940#1_a" from="843481143" to="P1x" numLanes="3" speed="13.89" priority="10" allow="army authority bus cable_car cityrail coach container custom1 custom2 delivery emergency evehicle hov lightrail moped motorcycle passenger private public_army public_authority public_emergency public_transport rail_slow scooter subway taxi trailer transport truck vip wheelchair" name="서부로" spreadType="center" shape="-37.53,-187.53 -19.24,-156.63"/>
+    <edge id="7754668940#1_b" from="P1x" to="837164100" numLanes="3" speed="13.89" priority="10" allow="army authority bus cable_car cityrail coach container custom1 custom2 delivery emergency evehicle hov lightrail moped motorcycle passenger private public_army public_authority public_emergency public_transport rail_slow scooter subway taxi trailer transport truck vip wheelchair" name="서부로" spreadType="center" shape="-19.24,-156.63 -16.84,-152.56 -2.88,-119.15 -2.88,-119.15"/>
+    <edge id="7755484370" shape="-41.22,-122.04 -47.99,-135.64 -48.43,-136.34 -59.05,-153.19"/>
+    <edge id="7755484380#0" shape="-64.03,-160.48 -79.69,-182.62 -99.53,-206.62"/>
+    <edge id="7755484380#1" shape="-104.26,-212.83 -120.71,-240.87"/>
+    <delete id="7755484390"/>
+    <edge id="7755484390_a" from="cluster_726912991_837163934" to="P2e" numLanes="3" speed="13.89" priority="10" allow="army authority bus cable_car cityrail coach container custom1 custom2 delivery emergency evehicle hov lightrail moped motorcycle passenger private public_army public_authority public_emergency public_transport rail_slow scooter subway taxi trailer transport truck vip wheelchair" name="서부로" spreadType="center" shape="-139.93,-271.25 -141.92,-274.72"/>
+    <edge id="7755484390_b" from="P2e" to="cluster_4637428747_495943443" numLanes="3" speed="13.89" priority="10" allow="army authority bus cable_car cityrail coach container custom1 custom2 delivery emergency evehicle hov lightrail moped motorcycle passenger private public_army public_authority public_emergency public_transport rail_slow scooter subway taxi trailer transport truck vip wheelchair" name="서부로" spreadType="center" shape="-141.92,-274.72 -150.91,-290.47 -165.85,-319.27 -182.70,-354.52 -197.20,-393.27 -208.66,-422.70 -208.66,-422.70"/>
     <edge id="hw_hS0_hS1" from="hS0" to="hS1" numLanes="3" speed="25.00" priority="13" shape="-19.36,5600.00 -19.36,4400.00" spreadType="center"/>
     <edge id="hw_hS1_hS1b" from="hS1" to="hS1b" numLanes="4" speed="25.00" priority="13" shape="-20.96,4400.00 -20.96,4100.00" spreadType="center"/>
     <edge id="hw_hS1b_hS2" from="hS1b" to="hS2" numLanes="3" speed="25.00" priority="13" shape="-19.36,4100.00 -19.36,3600.00" spreadType="center"/>
@@ -52,26 +71,26 @@
     <edge id="hw_rest_n_in" from="hN5" to="hRn1" numLanes="1" speed="11.11" priority="13" shape="-6.63,2450.00 2.26,2457.34 11.30,2464.38 20.48,2471.09 29.82,2477.50 39.30,2483.59 48.93,2489.38 58.71,2494.84 68.64,2500.00"/>
     <edge id="hw_rest_n" from="hRn1" to="hRn2" numLanes="1" speed="5.56" priority="13" shape="68.64,2500.00 68.64,2650.00"/>
     <edge id="hw_rest_n_out" from="hRn2" to="hN4" numLanes="1" speed="11.11" priority="13" shape="68.64,2650.00 58.71,2657.34 48.93,2664.38 39.30,2671.09 29.82,2677.50 20.48,2683.59 11.30,2689.38 2.26,2694.84 -6.63,2700.00"/>
-    <delete id="-407917400#5"/>
+    <delete id="4713915810"/>
+    <delete id="407917400#5"/>
+    <delete id="-4709208770"/>
+    <delete id="4686459300#0"/>
+    <delete id="-4713915790"/>
+    <delete id="4709208770"/>
+    <delete id="-4713915810"/>
     <delete id="4713915790"/>
     <delete id="-5552317690#3"/>
-    <delete id="564336380#0"/>
-    <delete id="4691108600"/>
-    <delete id="407917400#5"/>
-    <delete id="4709208770"/>
-    <delete id="-4691108600"/>
+    <delete id="5552317690#3"/>
     <delete id="-564336380#0"/>
-    <delete id="-4686459300#0"/>
-    <delete id="4713915810"/>
+    <delete id="564336380#0"/>
     <delete id="564336380#1"/>
+    <delete id="-407917400#5"/>
+    <delete id="-4686459310#0"/>
     <delete id="4686459310#0"/>
     <delete id="-564336380#1"/>
-    <delete id="-4686459310#0"/>
-    <delete id="5552317690#3"/>
-    <delete id="4686459300#0"/>
-    <delete id="-4709208770"/>
-    <delete id="-4713915790"/>
-    <delete id="-4713915810"/>
+    <delete id="-4691108600"/>
+    <delete id="4691108600"/>
+    <delete id="-4686459300#0"/>
     <delete id="6003174920"/>
     <delete id="6003174900"/>
     <delete id="4883925510"/>
@@ -80,8 +99,8 @@
     <delete id="6003174890"/>
     <edge id="via_sb" from="cluster_4650845824_4655421093_4662858740_4662858741_#2more" to="5708665068" numLanes="2" speed="13.89" priority="11" type="highway.secondary" name="서부로" spreadType="center" shape="-3.70,0.00,6.00 -3.70,-10.01,6.00 -3.70,-20.02,6.00 -4.36,-29.47,6.00 -5.74,-39.38,6.00 -7.13,-49.30,6.00 -8.51,-59.21,6.00 -10.03,-68.38,6.00 -13.25,-77.86,6.00 -16.46,-87.34,6.00 -19.68,-96.82,6.00 -22.89,-106.30,6.00 -26.10,-115.78,6.00 -29.28,-125.17,6.00 -33.42,-133.89,6.00 -37.76,-142.90,6.00 -42.07,-151.84,6.00 -47.13,-160.13,6.00 -52.39,-168.64,6.00 -57.65,-177.16,6.00 -62.84,-185.56,6.00 -68.91,-193.07,6.00 -75.24,-200.83,6.00 -81.57,-208.58,6.00 -87.89,-216.34,6.00 -94.34,-224.34,6.00 -99.98,-232.69,6.00 -105.58,-240.99,6.00 -111.18,-249.29,6.00 -116.78,-257.58,6.00 -122.38,-266.03,6.00 -127.69,-274.52,6.00 -132.99,-283.01,6.00 -138.30,-291.50,6.00 -143.46,-300.36,6.00 -148.19,-309.18,6.00 -152.91,-318.00,6.00 -157.62,-326.96,6.00 -162.09,-335.91,6.00 -166.57,-344.86,6.00 -171.04,-353.82,6.00 -175.20,-363.18,6.00 -179.08,-372.41,6.00 -182.97,-381.63,6.00 -186.85,-390.86,6.00 -190.37,-400.56,6.00 -193.46,-410.08,6.00 -196.54,-419.60,6.00 -199.63,-429.12,6.00 -202.32,-439.02,6.00 -204.75,-448.73,6.00 -207.18,-458.44,6.00 -209.53,-468.26,6.00 -211.73,-478.03,6.00 -213.93,-487.79,6.00 -216.13,-497.56,6.00 -218.33,-507.32,6.00 -220.53,-517.09,6.00 -222.73,-526.85,6.00 -224.87,-536.92,6.00 -226.31,-546.83,6.00 -227.75,-556.73,6.00 -229.19,-566.64,6.00 -230.62,-576.54,6.00 -232.06,-586.45,6.00 -233.50,-596.36,6.00 -234.26,-606.63,6.00 -234.91,-616.62,6.00 -235.55,-626.61,6.00 -236.20,-636.60,6.00 -236.84,-646.59,6.00 -237.49,-656.57,6.00 -238.04,-666.62,6.00 -238.55,-676.61,6.00 -239.06,-686.61,6.00 -239.58,-696.61,6.00 -240.09,-706.61,6.00 -240.60,-716.60,6.00 -241.11,-726.60,6.00 -241.62,-736.60,6.00 -242.13,-746.59,6.00 -242.64,-756.59,6.00 -243.15,-766.59,6.00 -243.66,-776.58,6.00 -244.17,-786.58,6.00 -244.68,-796.57,6.00"/>
     <edge id="via_nb" from="4871043588" to="cluster_4650845824_4655421093_4662858740_4662858741_#2more" numLanes="2" speed="13.89" priority="11" type="highway.secondary" name="서부로" spreadType="center" shape="-239.79,-841.12,6.00 -239.22,-831.08,6.00 -238.65,-821.04,6.00 -238.09,-810.99,6.00 -237.52,-800.95,6.00 -236.98,-790.89,6.00 -236.47,-780.85,6.00 -235.96,-770.80,6.00 -235.44,-760.76,6.00 -234.93,-750.72,6.00 -234.42,-740.67,6.00 -233.90,-730.63,6.00 -233.39,-720.59,6.00 -232.88,-710.54,6.00 -232.36,-700.50,6.00 -231.85,-690.45,6.00 -231.34,-680.41,6.00 -230.82,-670.37,6.00 -230.31,-660.35,6.00 -229.67,-650.34,6.00 -229.02,-640.30,6.00 -228.37,-630.27,6.00 -227.73,-620.23,6.00 -227.08,-610.19,6.00 -226.43,-600.16,6.00 -225.17,-590.48,6.00 -223.73,-580.53,6.00 -222.28,-570.58,6.00 -220.84,-560.63,6.00 -219.39,-550.67,6.00 -217.95,-540.72,6.00 -216.11,-531.13,6.00 -213.90,-521.32,6.00 -211.69,-511.51,6.00 -209.48,-501.70,6.00 -207.27,-491.89,6.00 -205.06,-482.08,6.00 -202.85,-472.27,6.00 -200.58,-462.56,6.00 -198.14,-452.80,6.00 -195.70,-443.05,6.00 -193.27,-433.50,6.00 -190.18,-423.98,6.00 -187.08,-414.41,6.00 -183.98,-404.85,6.00 -180.83,-395.63,6.00 -176.93,-386.36,6.00 -173.03,-377.10,6.00 -169.12,-367.83,6.00 -165.26,-358.80,6.00 -160.77,-349.81,6.00 -156.27,-340.81,6.00 -151.77,-331.82,6.00 -147.19,-322.99,6.00 -142.44,-314.12,6.00 -137.69,-305.26,6.00 -132.84,-296.73,6.00 -127.51,-288.20,6.00 -122.18,-279.68,6.00 -116.85,-271.15,6.00 -111.41,-262.85,6.00 -105.78,-254.51,6.00 -100.16,-246.18,6.00 -94.53,-237.84,6.00 -88.90,-229.51,6.00 -82.87,-221.89,6.00 -76.52,-214.10,6.00 -70.16,-206.31,6.00 -63.80,-198.51,6.00 -57.37,-190.62,6.00 -51.83,-181.81,6.00 -46.54,-173.25,6.00 -41.26,-164.69,6.00 -35.90,-156.01,6.00 -31.40,-146.75,6.00 -27.04,-137.69,6.00 -22.59,-128.43,6.00 -19.27,-118.69,6.00 -16.05,-109.16,6.00 -12.82,-99.64,6.00 -9.59,-90.11,6.00 -6.36,-80.59,6.00 -3.13,-71.06,6.00 -1.22,-60.51,6.00 0.17,-50.55,6.00 1.56,-40.59,6.00 2.95,-30.63,6.00 3.70,-20.11,6.00 3.70,-10.06,6.00 3.70,0.00,6.00"/>
-    <edge id="700812830" shape="-8.50,0.00,0.00 -8.50,-10.00,0.00 -8.50,-20.00,0.00 -9.11,-28.78,0.00 -10.49,-38.68,0.00 -11.87,-48.59,0.00 -13.26,-58.49,0.00 -14.56,-66.77,0.00"/>
-    <edge id="4883933160" shape="1.54,-72.23,0.00 3.58,-60.84,0.00 4.96,-50.93,0.00 6.35,-41.03,0.00 7.73,-31.13,0.00 8.50,-20.00,0.00 8.50,-10.00,0.00 8.50,0.00,0.00"/>
+    <edge id="700812830" shape="-11.50,0.00,0.00 -11.50,-10.00,0.00 -11.50,-20.00,0.00 -12.08,-28.36,0.00 -13.46,-38.27,0.00 -14.84,-48.17,0.00 -16.23,-58.07,0.00 -17.40,-65.81,0.00"/>
+    <edge id="4883933160" shape="4.38,-73.19,0.00 6.55,-61.25,0.00 7.93,-51.35,0.00 9.32,-41.45,0.00 10.70,-31.54,0.00 11.50,-20.00,0.00 11.50,-10.00,0.00 11.50,0.00,0.00"/>
     <edge id="-700813160" shape="-274.42,17.15,-6.00 -279.38,-28.99,-6.00 -281.52,-52.74,-6.00"/>
     <edge id="-700813240" shape="-77.01,-95.28,-6.00 -38.88,-101.54,-6.00 -25.01,-103.20,-6.00 32.64,-110.08,-6.00"/>
     <edge id="1024410240" shape="1124.91,-1039.49,-6.00 983.47,-1108.09,-6.00"/>

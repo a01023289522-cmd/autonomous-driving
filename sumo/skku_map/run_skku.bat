@@ -29,7 +29,8 @@ if "%MODE%"=="3" (
 if "%MODE%"=="2" (
     start "" "%GUI%" -n skku.net.xml -a skku.add.xml,bus.stops.xml,bg.add.xml -g skku.gui.xml
 ) else (
-    start "" "%GUI%" -c skku.sumocfg --start
+    rem view_skku.py: sumo-gui + TraCI (lower-layer cars drawn translucent). Falls back to plain sumo-gui without Python
+    python -X utf8 view_skku.py || start "" "%GUI%" -c skku.sumocfg --start
 )
 exit /b 0
 

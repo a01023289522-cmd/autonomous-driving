@@ -113,10 +113,12 @@ def build(net, osm_files, area, campus_poly):
     return rows, groups
 
 
-def vehicles(groups, ends, per_hour, seed=7):
+def vehicles(groups, ends, per_hour, seed=7, caps=None):
     """주차하러 오는 차: 경계 큰길에서 와서 무작위 구역에 세웠다가 다른 경계로 나간다.
-    고가 밑 공영주차장은 잠깐(5~20분), 교내·역 주변 주차장은 길게(20~60분)."""
+    고가 밑 공영주차장은 잠깐(5~20분), 교내·역 주변 주차장은 길게(20~60분).
+    caps(구역 → 칸 수)를 주면 빈 칸이 남은 구역에만 배정한다 (꽉 찬 구역에 온 차는 막다른 통로에서 기다리다 순간이동했다)."""
     rnd = random.Random(seed)
+    busy = {}                                   # 구역 → [(차지 시작, 끝)]
     srcs = [v[0] for v in ends.values()]
     snks = [v[1] for v in ends.values()]
     out = []
@@ -126,7 +128,13 @@ def vehicles(groups, ends, per_hour, seed=7):
         dur = (300, 1200) if lot.startswith("P") else (1200, 3600)
         for k in range(n):
             t = rnd.uniform(0, 3600)
-            out.append((t, f'    <trip id="park_{lot}_{k}" type="parker" depart="{t:.1f}" from="{rnd.choice(srcs)}" '
-                           f'to="{rnd.choice(snks)}" departLane="best">'
-                           f'<stop parkingArea="{rnd.choice(ids)}" duration="{rnd.randint(*dur)}"/></trip>\n'))
+            src, snk, d = rnd.choice(srcs), rnd.choice(snks), rnd.randint(*dur)
+            # 도착 시각은 모르니 출발부터 (출발 + 10분 + 주차 시간)까지 한 칸을 차지한다고 넉넉히 본다
+            free = [a for a in ids if caps is None
+                    or sum(1 for b, e in busy.get(a, []) if b < t + 600 + d and t < e) < caps.get(a, 1)]
+            area = rnd.choice(free or ids)
+            busy.setdefault(area, []).append((t, t + 600 + d))
+            out.append((t, f'    <trip id="park_{lot}_{k}" type="parker" depart="{t:.1f}" from="{src}" '
+                           f'to="{snk}" departLane="best">'
+                           f'<stop parkingArea="{area}" duration="{d}"/></trip>\n'))
     return [r for _, r in sorted(out)]

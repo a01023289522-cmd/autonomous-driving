@@ -1,12 +1,12 @@
-Parsing sumo-net from 'C:\Users\a0102\Artificial-Intelligence-and-Control-for-Autonomous-Driving\demos\skku_map\pass2.net.xml' ... done (52ms).
+Parsing sumo-net from 'C:\Users\a0102\Artificial-Intelligence-and-Control-for-Autonomous-Driving\demos\skku_map\pass2.net.xml' ... done (62ms).
 Parsing connections from 'C:\Users\a0102\Artificial-Intelligence-and-Control-for-Autonomous-Driving\demos\skku_map\rules.con.xml' ...
 Warning: Target edge '700812830' is not connected with '4883933160'; the connection cannot be reset.
 Warning: Target edge '700812830' is not connected with 'via_nb'; the connection cannot be reset.
  done.
  Import done:
-   441 nodes loaded.
+   445 nodes loaded.
    7 types loaded.
-   1042 edges loaded.
+   1046 edges loaded.
 Removing self-loops ... done (0ms).
 Removing empty nodes ... done (1ms).
    0 nodes removed.
@@ -20,20 +20,20 @@ Assigning nodes to traffic lights ... done (0ms).
 Warning: Found angle of 167.44 degrees at edge '-4868927770', segment 8.
 Warning: Found sharp turn with radius 7.28 at the start of edge '4868927770'.
 Warning: Found sharp turn with radius 8.07 at the start of edge '5685982260'.
-Sorting nodes' edges ... done (1ms).
-Computing node shapes ... done (11ms).
-Computing edge shapes ... done (5ms).
+Sorting nodes' edges ... done (0ms).
+Computing node shapes ... done (12ms).
+Computing edge shapes ... done (4ms).
 Computing node types ... done (0ms).
-Computing priorities ... done (0ms).
+Computing priorities ... done (1ms).
 Computing approached edges ... done (0ms).
 Guessing and setting roundabouts ... done (0ms).
 Computing approaching lanes ... done (0ms).
 Dividing of lanes on approached lanes ... done (1ms).
 Processing turnarounds ... done (0ms).
-Rechecking of lane endings ... done (1ms).
+Rechecking of lane endings ... done (0ms).
 Computing traffic light control information ... done (0ms).
-Computing node logics ... done (4ms).
-Computing traffic light logics ... done (1ms).
+Computing node logics ... done (5ms).
+Computing traffic light logics ... done (0ms).
  6 traffic light(s) computed.
 Building inner edges ...
 Warning: Intersecting left turns at junction '1076972694' from lane '928788720#1_0' and lane '-928788720#2_0' (increase junction radius to avoid this).
@@ -42,18 +42,18 @@ Warning: Speed of straight connection 'hw_jc_in_0->hw_hS1_hS1b_0' reduced by 5.3
  done (13ms).
 Checking edge grade ...
 Warning: Connection '-407916760#0_0->-700813160_0' has a grade of 373.06%.
-Warning: Connection '-4953325740#0_0->via_nb_1' has a grade of 96.88%.
+Warning: Connection '-4953325740#0_0->via_nb_1' has a grade of 91.44%.
 Warning: Connection '-5899587190#0_1->5899587200_0' has a grade of 30.58%.
 Warning: Connection '-700813160_0->5899587190#0_0' has a grade of 66.78%.
 Warning: Connection '-700813240_0->-420073680#3_0' has a grade of 373.26%.
 Warning: Connection '5685982310_0->708121380_0' has a vertical jump of 6.00m.
- done (1ms).
+ done (0ms).
 -----------------------------------------------------
 Summary:
  Node type statistics:
   Unregulated junctions       : 0
   Dead-end junctions          : 19
-  Priority junctions          : 256
+  Priority junctions          : 260
   Right-before-left junctions : 153
   Traffic light junctions      : 6
   Zipper-merge junctions      : 7
@@ -62,5 +62,5 @@ Summary:
   Applied offset     : 0.00,0.00
   Converted boundary : -569.24,-1438.77,1193.68,5600.00
 -----------------------------------------------------
-Writing network ... done (64ms).
+Writing network ... done (63ms).
 Warning: 30 total messages of type: Connection '%' has a grade of %%.

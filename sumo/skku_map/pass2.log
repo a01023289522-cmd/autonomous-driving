@@ -1,36 +1,36 @@
-Parsing sumo-net from 'C:\Users\a0102\Artificial-Intelligence-and-Control-for-Autonomous-Driving\demos\skku_map\pass1.net.xml' ... done (53ms).
+Parsing sumo-net from 'C:\Users\a0102\Artificial-Intelligence-and-Control-for-Autonomous-Driving\demos\skku_map\pass1.net.xml' ... done (52ms).
 Parsing nodes from 'C:\Users\a0102\Artificial-Intelligence-and-Control-for-Autonomous-Driving\demos\skku_map\patch.nod.xml' ... done.
 Parsing edges from 'C:\Users\a0102\Artificial-Intelligence-and-Control-for-Autonomous-Driving\demos\skku_map\patch.edg.xml' ...
-Duplicate edge id occurred ('700812830'); assuming overwriting is wished.
+Duplicate edge id occurred ('12728331450#0'); assuming overwriting is wished.
  done.
 Warning: Deprecated vehicle class(es) 'cityrail lightrail public_army public_authority public_emergency public_transport rail_slow transport' in input edge files.
 Parsing connections from 'C:\Users\a0102\Artificial-Intelligence-and-Control-for-Autonomous-Driving\demos\skku_map\patch.con.xml' ... done.
  Import done:
-   455 nodes loaded.
+   459 nodes loaded.
    7 types loaded.
-   1042 edges loaded.
+   1046 edges loaded.
 Removing self-loops ... done (0ms).
-Removing empty nodes ... done (1ms).
+Removing empty nodes ... done (2ms).
    14 nodes removed.
 Computing turning directions ...
 Warning: Ambiguity in turnarounds computation at junction '4658598448'.
 Warning: Ambiguity in turnarounds computation at junction '4658598453'.
 Warning: Ambiguity in turnarounds computation at junction '4658644938'.
 Warning: Ambiguity in turnarounds computation at junction '843481138'.
- done (0ms).
+ done (1ms).
 Assigning nodes to traffic lights ... done (0ms).
 Warning: Found angle of 167.44 degrees at edge '-4868927770', segment 8.
 Warning: Found sharp turn with radius 7.28 at the start of edge '4868927770'.
 Warning: Found sharp turn with radius 8.07 at the start of edge '5685982260'.
 Sorting nodes' edges ... done (0ms).
 Computing node shapes ... done (11ms).
-Computing edge shapes ... done (4ms).
+Computing edge shapes ... done (5ms).
 Computing node types ... done (0ms).
 Computing priorities ... done (0ms).
 Computing approached edges ... done (0ms).
 Guessing and setting roundabouts ... done (0ms).
-Computing approaching lanes ... done (1ms).
-Dividing of lanes on approached lanes ... done (1ms).
+Computing approaching lanes ... done (0ms).
+Dividing of lanes on approached lanes ... done (2ms).
 Processing turnarounds ... done (0ms).
 Rechecking of lane endings ... done (0ms).
 Computing traffic light control information ... done (0ms).
@@ -41,21 +41,21 @@ Building inner edges ...
 Warning: Intersecting left turns at junction '1076972694' from lane '928788720#1_0' and lane '-928788720#2_0' (increase junction radius to avoid this).
 Warning: Intersecting left turns at junction 'cluster_4658598415_843481169' from lane '4716974670_0' and lane '4526039640#1_0' (increase junction radius to avoid this).
 Warning: Speed of straight connection 'hw_jc_in_0->hw_hS1_hS1b_0' reduced by 5.35 due to turning radius of 43.60 (length=10.28, angle=28.76).
- done (13ms).
+ done (14ms).
 Checking edge grade ...
 Warning: Connection '-407916760#0_0->-700813160_0' has a grade of 373.06%.
-Warning: Connection '-4953325740#0_0->via_nb_1' has a grade of 96.88%.
+Warning: Connection '-4953325740#0_0->via_nb_1' has a grade of 91.44%.
 Warning: Connection '-5899587190#0_1->5899587200_0' has a grade of 30.58%.
 Warning: Connection '-700813160_0->5899587190#0_0' has a grade of 66.78%.
 Warning: Connection '-700813240_0->-420073680#3_0' has a grade of 373.26%.
 Warning: Connection '5685982310_0->708121380_0' has a vertical jump of 6.00m.
- done (1ms).
+ done (0ms).
 -----------------------------------------------------
 Summary:
  Node type statistics:
   Unregulated junctions       : 0
   Dead-end junctions          : 19
-  Priority junctions          : 256
+  Priority junctions          : 260
   Right-before-left junctions : 153
   Traffic light junctions      : 6
   Zipper-merge junctions      : 7
@@ -64,5 +64,5 @@ Summary:
   Applied offset     : 0.00,0.00
   Converted boundary : -569.24,-1438.77,1193.68,5600.00
 -----------------------------------------------------
-Writing network ... done (62ms).
+Writing network ... done (64ms).
 Warning: 31 total messages of type: Connection '%' has a grade of %%.

@@ -92,11 +92,11 @@
         <edge id="-4525977220#0" value="0.55"/>
         <edge id="-4525977220#1" value="0.48"/>
         <edge id="-4525977220#2" value="0.87"/>
-        <edge id="-4526039530#0" value="0.23"/>
+        <edge id="-4526039530#0" value="0.20"/>
         <edge id="-4526039530#1" value="0.35"/>
         <edge id="-4526039530#2" value="0.33"/>
         <edge id="-4526039530#3" value="0.35"/>
-        <edge id="-4526039540#0" value="0.36"/>
+        <edge id="-4526039540#0" value="0.33"/>
         <edge id="-4526039540#1" value="0.92"/>
         <edge id="-4526039540#2" value="0.17"/>
         <edge id="-4526039550#0" value="1.00"/>
@@ -260,7 +260,7 @@
         <edge id="-5039133870#7" value="0.86"/>
         <edge id="-5039133870#8" value="0.84"/>
         <edge id="-5039133870#9" value="0.88"/>
-        <edge id="-5039133890" value="0.49"/>
+        <edge id="-5039133890" value="0.48"/>
         <edge id="-5552317690#0" value="0.52"/>
         <edge id="-5552317690#1" value="0.31"/>
         <edge id="-5552317690#2" value="0.19"/>
@@ -312,7 +312,7 @@
         <edge id="-6003175250#1" value="0.21"/>
         <edge id="-6184526910" value="0.50"/>
         <edge id="-6184526950" value="0.32"/>
-        <edge id="-6184526960" value="0.09"/>
+        <edge id="-6184526960" value="0.06"/>
         <edge id="-700812860" value="0.09"/>
         <edge id="-700812890" value="0.34"/>
         <edge id="-700812900#0" value="0.15"/>
@@ -425,7 +425,7 @@
         <edge id="1024410230" value="4.26"/>
         <edge id="1024410240" value="3.14"/>
         <edge id="1024410280" value="1.87"/>
-        <edge id="1025323300#0" value="0.21"/>
+        <edge id="1025323300#0" value="0.17"/>
         <edge id="1025323300#1" value="0.00"/>
         <edge id="1025323300#2" value="0.94"/>
         <edge id="1025323300#3" value="0.55"/>
@@ -436,10 +436,10 @@
         <edge id="1025323460" value="1.84"/>
         <edge id="10541571300#0" value="1.52"/>
         <edge id="10541571300#1" value="0.14"/>
-        <edge id="12728331450#0" value="0.55"/>
-        <edge id="12728331450#1" value="0.44"/>
-        <edge id="12728331460" value="0.17"/>
-        <edge id="12728331470" value="0.28"/>
+        <edge id="12728331450#0" value="0.28"/>
+        <edge id="12728331450#1" value="0.25"/>
+        <edge id="12728331460" value="0.13"/>
+        <edge id="12728331470" value="0.24"/>
         <edge id="14743714860" value="0.05"/>
         <edge id="15371099030#0" value="0.21"/>
         <edge id="15371099030#1" value="0.00"/>
@@ -460,7 +460,7 @@
         <edge id="15371153830#3" value="0.15"/>
         <edge id="15371153830#4" value="1.81"/>
         <edge id="15371153840" value="0.00"/>
-        <edge id="15371153860" value="3.21"/>
+        <edge id="15371153860" value="3.16"/>
         <edge id="15371153870" value="3.40"/>
         <edge id="15376738010#0" value="0.16"/>
         <edge id="15376738010#1" value="0.21"/>
@@ -555,11 +555,11 @@
         <edge id="4525977220#0" value="0.55"/>
         <edge id="4525977220#1" value="0.48"/>
         <edge id="4525977220#2" value="0.87"/>
-        <edge id="4526039530#0" value="0.23"/>
+        <edge id="4526039530#0" value="0.20"/>
         <edge id="4526039530#1" value="0.35"/>
         <edge id="4526039530#2" value="0.33"/>
         <edge id="4526039530#3" value="0.34"/>
-        <edge id="4526039540#0" value="0.36"/>
+        <edge id="4526039540#0" value="0.33"/>
         <edge id="4526039540#1" value="0.92"/>
         <edge id="4526039540#2" value="0.17"/>
         <edge id="4526039550#0" value="0.98"/>
@@ -587,7 +587,7 @@
         <edge id="4526039640#0" value="0.18"/>
         <edge id="4526039640#1" value="0.05"/>
         <edge id="4526039640#2" value="0.41"/>
-        <edge id="4526039640#3" value="1.23"/>
+        <edge id="4526039640#3" value="1.20"/>
         <edge id="4526039670" value="0.31"/>
         <edge id="4686028250#0" value="0.13"/>
         <edge id="4686028250#1" value="0.31"/>
@@ -735,18 +735,17 @@
         <edge id="4878820110" value="0.25"/>
         <edge id="4878820120" value="0.18"/>
         <edge id="4878820130" value="1.42"/>
-        <edge id="4883933150#0" value="7.35"/>
-        <edge id="4883933150#1" value="0.38"/>
-        <edge id="4883933160" value="0.35"/>
-        <edge id="4883933170#0" value="0.43"/>
-        <edge id="4883933170#1" value="0.64"/>
+        <edge id="4883933150#0" value="7.29"/>
+        <edge id="4883933160" value="0.42"/>
+        <edge id="4883933170#0" value="0.60"/>
+        <edge id="4883933170#1" value="0.49"/>
         <edge id="4948484630" value="0.26"/>
         <edge id="4953325740#0" value="0.00"/>
-        <edge id="4953325740#1" value="0.50"/>
+        <edge id="4953325740#1" value="0.49"/>
         <edge id="4953325790" value="800.00"/>
         <edge id="4953325800" value="6.77"/>
         <edge id="4953325810" value="4.39"/>
-        <edge id="4953325820" value="1.07"/>
+        <edge id="4953325820" value="0.94"/>
         <edge id="5039133830" value="0.00"/>
         <edge id="5039133870#0" value="2.63"/>
         <edge id="5039133870#1" value="1.01"/>
@@ -821,8 +820,8 @@
         <edge id="5899587190#0" value="2.21"/>
         <edge id="5899587190#1" value="0.91"/>
         <edge id="5899587200" value="0.70"/>
-        <edge id="6003174850" value="0.48"/>
-        <edge id="6003174860" value="0.54"/>
+        <edge id="6003174850" value="0.43"/>
+        <edge id="6003174860" value="0.48"/>
         <edge id="6003174930" value="1.94"/>
         <edge id="6003174940" value="1.29"/>
         <edge id="6003174950" value="3.71"/>
@@ -833,11 +832,11 @@
         <edge id="6003175250#1" value="0.21"/>
         <edge id="6184526910" value="0.50"/>
         <edge id="6184526950" value="0.32"/>
-        <edge id="6184526960" value="0.09"/>
-        <edge id="700812830" value="0.33"/>
+        <edge id="6184526960" value="0.06"/>
+        <edge id="700812830" value="0.31"/>
         <edge id="700812840#0" value="0.42"/>
         <edge id="700812840#1" value="0.89"/>
-        <edge id="700812840#2" value="0.30"/>
+        <edge id="700812840#2" value="0.26"/>
         <edge id="700812860" value="0.09"/>
         <edge id="700812890" value="0.36"/>
         <edge id="700812900#0" value="0.15"/>
@@ -881,8 +880,6 @@
         <edge id="708509520" value="0.47"/>
         <edge id="7754567510" value="1.95"/>
         <edge id="7754668930" value="0.00"/>
-        <edge id="7754668940#0" value="1.57"/>
-        <edge id="7754668940#1" value="1.52"/>
         <edge id="7754668950#0" value="2.51"/>
         <edge id="7754668950#1" value="0.27"/>
         <edge id="7754668960" value="21.07"/>
@@ -892,9 +889,9 @@
         <edge id="7754717140#0" value="1.02"/>
         <edge id="7754717140#1" value="0.00"/>
         <edge id="7755484360" value="1.12"/>
-        <edge id="7755484370" value="0.39"/>
-        <edge id="7755484380#0" value="1.21"/>
-        <edge id="7755484380#1" value="0.60"/>
+        <edge id="7755484370" value="0.72"/>
+        <edge id="7755484380#0" value="1.09"/>
+        <edge id="7755484380#1" value="0.59"/>
         <edge id="8137434160" value="1.49"/>
         <edge id="9182995900#0" value="0.20"/>
         <edge id="9182995900#1" value="0.02"/>
@@ -985,7 +982,7 @@
         <edge id="9677309660#3" value="0.01"/>
         <edge id="9677309660#4" value="0.00"/>
         <edge id="9718133180" value="0.04"/>
-        <edge id="via_nb" value="25.89"/>
-        <edge id="via_sb" value="24.68"/>
+        <edge id="via_nb" value="25.88"/>
+        <edge id="via_sb" value="24.66"/>
     </interval>
 </edgedata>

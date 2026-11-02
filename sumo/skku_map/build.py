@@ -61,6 +61,9 @@ VIA_SB = ["6003174920", "6003174900", "4883925510"]
 VIA_NB = ["4948457660", "6003174910", "6003174890"]
 RAMP_SB, RAMP_NB = ("700812830", "4807018640"), ("4883933160", "4807018641")   # 다리 위 지상 내려가는 길 (엣지, 끝 노드)
 VIA_S = (70, 135)                                           # OSM 중간 노드 위치 (CL 길이): 철길 남쪽 끝, G1 근처
+GAP = 3.0               # 고가 양옆 지상 서부로를 고가에서 일부러 띄우는 거리 (m): 화면에서 다른 층으로 보이게 (사용자 지정 2026-11-02)
+# 고가 밑 공영주차장 입구 (카카오맵 장소의 '입구' 좌표): P1 율전제3공영, P2 율전공영(다리밑). P3(율전 제2공영)은 로드뷰로 남쪽 끝
+LOT_IN = {"P1": (-85, -237), "P2": (-140, -280)}
 
 
 # ── 작은 도우미 ──────────────────────────────────────────────
@@ -176,6 +179,49 @@ def offset_line(pts, d, s0, s1, step=10.0):
         x, y = poly_point(pts, s)
         out.append((x + uy * d, y - ux * d))
     return out
+
+def corridor_moves(net, cl):
+    """고가 양옆을 나란히 달리는 지상 엣지를 고가 가운데선(cl)에서 GAP만큼 바깥으로 옮긴 모양 {엣지: 점들}."""
+    L = sum(math.dist(a, b) for a, b in zip(cl, cl[1:]))
+    out = {}
+    for e in net.getEdges():
+        if (e.getID() in (RAMP_SB[0], RAMP_NB[0], *VIA_SB, *VIA_NB)
+                or abs(e.getShape()[0][2] if len(e.getShape()[0]) > 2 else 0) > 3):
+            continue
+        sh = [p[:2] for p in e.getShape()]
+        ss = [poly_project(cl, p) for p in sh]
+        near = [math.dist(p, poly_point(cl, s)) for p, s in zip(sh, ss)]
+        if not (max(near) < 22 and min(ss) > 1 and max(ss) < L - 1 and math.dist(sh[0], sh[-1]) > 3):
+            continue
+        a, b = poly_point(cl, ss[0]), poly_point(cl, ss[-1])
+        if abs(sum(x * y for x, y in zip(unit(sh[-1][0] - sh[0][0], sh[-1][1] - sh[0][1]),
+                                         unit(b[0] - a[0], b[1] - a[1])))) < 0.85:
+            continue                                      # 가로지르는 길은 그대로
+        moved = []
+        for p, s, d in zip(sh, ss, near):
+            q = poly_point(cl, s)
+            moved.append((p[0] + (p[0] - q[0]) / d * GAP, p[1] + (p[1] - q[1]) / d * GAP) if d > 1 else p)
+        out[e.getID()] = moved
+    return out
+
+
+def road_cut(net, moved, p, d):
+    """점 p에서 가장 가까운, d 방향으로 달리는 지상 서부로 엣지와 그 위의 길이 (양 끝 4 m는 피함)."""
+    best = None
+    for e in net.getEdges():
+        if e.getName() != "서부로" or e.getID() in (RAMP_SB[0], RAMP_NB[0], *VIA_SB, *VIA_NB) or abs(lane_z(e.getLanes()[0])) > 3:
+            continue
+        sh = moved.get(e.getID()) or [q[:2] for q in e.getShape()]
+        L = sum(math.dist(a, b) for a, b in zip(sh, sh[1:]))
+        s = poly_project(sh, p)
+        a, b = poly_point(sh, max(0.0, s - 2)), poly_point(sh, min(L, s + 2))
+        if L < 10 or sum(x * y for x, y in zip(unit(b[0] - a[0], b[1] - a[1]), d)) < 0.7:
+            continue
+        dist = math.dist(p, poly_point(sh, s))
+        if best is None or dist < best[0]:
+            best = (dist, e.getID(), max(4.0, min(L - 4.0, s)))
+    return best[1], best[2]
+
 
 def fmt(pts):
     return " ".join(",".join(f"{c:.2f}" for c in p) for p in pts)
@@ -403,51 +449,65 @@ def write_patches(net):
 
     touched = set()                                       # 새 길이 붙는 기존 교차로 → 연결을 다시 계산 (reset)
 
-    # 고가 밑 공영주차장 3곳: 갈림목에서 들어가 고가 밑 폭 전체를 쓰고 다음 갈림목(P3은 남쪽 방향 지상도로)으로 나옴
+    # 고가 옆 지상 서부로(양쪽)를 고가에서 GAP만큼 바깥으로 띄운다: 화면에서 고가와 다른 층이라는 게 보이도록 (사용자 지정)
+    cl = CL + [(-244, -850)]
+    moved = corridor_moves(net, cl)
+    # 고가 밑 공영주차장 3곳 (카카오맵 장소 좌표·'입구' 표시 + 사용자 로드뷰 사진 2026-10-29). 통로는 고가 밑 가운데,
+    #   들고 나는 곳은 양옆 지상 서부로를 그 자리에서 잘라 붙인다 (신호 교차로로 바로 드나들면 신호 계획에 칸이 없어 막힌다)
+    #   P1 율전제3공영 (G1~G2): G2 북쪽 북행 도로에서 좌회전으로 들어가(카카오 입구, 로드뷰) 북쪽으로 → G1 앞 북행 도로로 우회전 (출구는 미확인)
+    #   P2 율전공영(다리밑) (G2~G3): G2 남쪽 남행 도로에서 좌회전으로 들어가(카카오 입구) 남쪽으로 → G3 지나 남행 도로로 (로드뷰 '출구전용·좌회전 금지')
+    #   P3 율전 제2공영 (G3 남쪽): 남쪽 끝에서 남행 도로 좌회전으로 들어가(로드뷰) 북쪽으로 → G3 남쪽 북행 도로로 우회전 (로드뷰, 차단기)
     S = {k: poly_project(CL, p) for k, p in GAPS.items()}
-    # P3 출구: 서부로 남쪽 방향 지상도로 위의 교차점 (고가 아래 G3에서 약 230m 남쪽)
-    sb_nodes = [e.getToNode() for e in net.getEdges() if e.getName() == "서부로"
-                and sum(a * b for a, b in zip(heading(e, True), SB)) > 0.8 and e.getToNode().getCoord()[1] < -500]
-    p3_exit = min(sb_nodes, key=lambda n: math.dist(n.getCoord()[:2], poly_point(CL, S["G3"] + 230)))
-    lots = [("P1", "G1", S["G1"] + 25, S["G2"] - 25, junction_near(net, GAPS["G2"])),
-            ("P2", "G2", S["G2"] + 25, S["G3"] - 25, junction_near(net, GAPS["G3"])),
-            ("P3", "G3", S["G3"] + 25, S["G3"] + 200, p3_exit)]
-    lot_shapes = {}
-    tl_nodes = {junction_near(net, p).getID() for p in GAPS.values()}
-    deleted = set()
-    for lot, ga, s0, s1, out in lots:
-        a, b = poly_point(CL, s0), poly_point(CL, s1)
+    s1, s2 = poly_project(CL, LOT_IN["P1"]), poly_project(CL, LOT_IN["P2"])
+    #       (주차장, 통로 시작 s, 통로 끝 s, 입구 쪽 도로 방향·도로 위 s, 출구 쪽 도로 방향·도로 위 s)
+    lots = [("P1", s1, S["G1"] + 25, (NB, s1 + 10), (NB, S["G1"] + 15)),
+            ("P2", s2, S["G3"] - 25, (SB, s2 - 10), (SB, S["G3"] + 25)),
+            ("P3", S["G3"] + 200, S["G3"] + 30, (SB, S["G3"] + 195), (NB, S["G3"] + 22))]
+    cuts = {}                                             # 도로 엣지 → [(엣지 위 길이, 새 노드)]
+    lot_shapes, lot_edges = {}, []
+    for lot, a_s, b_s, (d_in, r_in), (d_out, r_out) in lots:
+        a, b = poly_point(CL, a_s), poly_point(CL, b_s)
         nod += [f'<node id="{lot}i" x="{a[0]:.2f}" y="{a[1]:.2f}"/>', f'<node id="{lot}o" x="{b[0]:.2f}" y="{b[1]:.2f}"/>']
-        aisle = [poly_point(CL, s0 + (s1 - s0) * k / 10) for k in range(11)]
+        aisle = [poly_point(CL, a_s + (b_s - a_s) * k / 10) for k in range(11)]
         lot_shapes[lot] = aisle
-        touched |= {junction_near(net, GAPS[ga]).getID(), out.getID()}
-        exit_node = out.getID()
-        if exit_node in tl_nodes:
-            # 신호 교차로로 바로 나가면 신호 계획에 출구 칸이 없어('o') 틈만 기다린다 → 교차로를 지난 남쪽 방향 지상 서부로를
-            # 25 m 지점에서 둘로 나눠 그 점으로 합류 (실제 주차장 출구처럼 도로 옆으로 나와 합류)
-            sb = max((e for e in out.getOutgoing() if e.getName() == "서부로"),
-                     key=lambda e: sum(x * y for x, y in zip(heading(e, False), SB)))
-            sh = [p[:2] for p in sb.getShape()]
-            cut = min(25.0, sum(math.dist(p, q) for p, q in zip(sh, sh[1:])) / 2)
-            m = poly_point(sh, cut)
-            head = [p for p in sh if poly_project(sh, p) < cut - 0.5] + [m]
-            tail = [m] + [p for p in sh if poly_project(sh, p) > cut + 0.5]
-            perm = " ".join(sorted(sb.getLanes()[0].getPermissions()))
-            common = (f'numLanes="{sb.getLaneNumber()}" speed="{sb.getSpeed():.2f}" priority="{sb.getPriority()}" allow="{perm}" '
-                      'spreadType="center"')       # OSM 일방 도로와 같게 (빠뜨리면 차로가 한 칸 옆으로 밀린다)
-            nod.append(f'<node id="{lot}x" x="{m[0]:.2f}" y="{m[1]:.2f}" type="priority"/>')
-            edg += [f'<delete id="{sb.getID()}"/>',
-                    f'<edge id="{sb.getID()}_a" from="{out.getID()}" to="{lot}x" name="서부로" {common} shape="{fmt(head)}"/>',
-                    f'<edge id="{sb.getID()}_b" from="{lot}x" to="{sb.getToNode().getID()}" name="서부로" {common} '
-                    f'shape="{fmt(tail)}"/>']
-            touched.add(sb.getToNode().getID())
-            deleted.add(sb.getID())
-            con += [f'<connection from="{sb.getID()}_a" reset="true"/>', f'<connection from="{sb.getID()}_b" reset="true"/>']
-            exit_node = f"{lot}x"
-        edg += [f'<edge id="{lot}_in" from="{junction_near(net, GAPS[ga]).getID()}" to="{lot}i" numLanes="1" speed="5.56"/>',
-                f'<edge id="{lot}_aisle" from="{lot}i" to="{lot}o" numLanes="1" speed="4.17" shape="{fmt(aisle)}"/>',
-                f'<edge id="{lot}_out" from="{lot}o" to="{exit_node}" numLanes="1" speed="5.56" priority="1"/>']
-
+        for tag, d, r in (("e", d_in, r_in), ("x", d_out, r_out)):
+            eid, s = road_cut(net, moved, poly_point(CL, r), d)
+            cuts.setdefault(eid, []).append((s, f"{lot}{tag}"))
+        lot_edges += [f'<edge id="{lot}_in" from="{lot}e" to="{lot}i" numLanes="1" speed="5.56" allow="taxi"/>',
+                      f'<edge id="{lot}_aisle" from="{lot}i" to="{lot}o" numLanes="1" speed="4.17" allow="taxi" '
+                      f'shape="{fmt(aisle)}"/>',
+                      f'<edge id="{lot}_out" from="{lot}o" to="{lot}x" numLanes="1" speed="5.56" priority="1" allow="taxi"/>']
+    edg += lot_edges
+    deleted = set(cuts)
+    for eid in sorted(set(moved) | set(cuts)):
+        e = net.getEdge(eid)
+        sh = moved.get(eid) or [p[:2] for p in e.getShape()]
+        if eid not in cuts:
+            edg.append(f'<edge id="{eid}" shape="{fmt(sh)}"/>')
+            continue
+        # 엣지를 자른 점마다 노드를 두고 조각 엣지로 다시 만든다 (차로·속도·허용 차종은 그대로)
+        perm = " ".join(sorted(e.getLanes()[0].getPermissions()))
+        common = (f'numLanes="{e.getLaneNumber()}" speed="{e.getSpeed():.2f}" priority="{e.getPriority()}" allow="{perm}" '
+                  f'name="{e.getName()}" spreadType="center"')     # OSM 일방 도로와 같게 (빠뜨리면 차로가 한 칸 옆으로 밀린다)
+        marks = sorted(cuts[eid])
+        ends = [e.getFromNode().getID()] + [n for _, n in marks] + [e.getToNode().getID()]
+        pos = [0.0] + [s for s, _ in marks] + [None]
+        for (s, n) in marks:
+            # 교차로 면은 도로 방향에 맞춘 폭 2 m 직사각형 (그대로 두면 비스듬히 붙는 주차장 길 때문에 면이 비뚤어져 정지선이 계단처럼 보였다)
+            m = poly_point(sh, s)
+            ux, uy = unit(*[q - p for p, q in zip(poly_point(sh, s - 1), poly_point(sh, s + 1))])
+            w = e.getLaneNumber() * 3.2 / 2 + 0.2
+            box = [(m[0] + ux * a - uy * b, m[1] + uy * a + ux * b) for a, b in ((-1, -w), (1, -w), (1, w), (-1, w))]
+            nod.append(f'<node id="{n}" x="{m[0]:.2f}" y="{m[1]:.2f}" type="priority" shape="{fmt(box)}"/>')
+        edg.append(f'<delete id="{eid}"/>')
+        for k in range(len(ends) - 1):
+            lo, hi = pos[k], pos[k + 1] if pos[k + 1] is not None else 1e9
+            piece = ([poly_point(sh, lo)] + [p for p in sh if lo + 0.5 < poly_project(sh, p) < hi - 0.5]
+                     + [poly_point(sh, min(hi, sum(math.dist(p, q) for p, q in zip(sh, sh[1:]))))])
+            edg.append(f'<edge id="{eid}_{"abcdefg"[k]}" from="{ends[k]}" to="{ends[k + 1]}" {common} shape="{fmt(piece)}"/>')
+            con.append(f'<connection from="{eid}_{"abcdefg"[k]}" reset="true"/>')
+        touched |= {e.getFromNode().getID(), e.getToNode().getID()}
+    fixed = set(moved) | {f"{eid}_{c}" for eid in cuts for c in "abcdefg"}
     # 봉담과천로 → 서부로 북쪽 끝(구현 범위 경계 노드)에 그대로 이어진다
     north = [n for n in net.getNodes() if n.getCoord()[1] > 250 and abs(n.getCoord()[0] - 25) < 40]
     src = [n for n in north if not n.getIncoming() and any(e.getName() == "서부로" for e in n.getOutgoing())][0]
@@ -479,7 +539,6 @@ def write_patches(net):
     con += [f'<connection from="{e}" reset="true"/>' for e in sorted(new_in)]
     # 서부로 고가: 가운데선에서 분리대 1 m + 2차로(남쪽 방향은 서쪽, 북쪽 방향은 동쪽), 높이 6 m로 끊김 없이.
     #   철길 위(s 0~70)에서는 바깥에 지상으로 내려가는 1차로가 맞닿아 붙는다 (높이 0으로 두어 고가와 색으로 구분)
-    fixed = set()
     cl = CL + [(-244, -850)]
     L = sum(math.dist(a, b) for a, b in zip(cl, cl[1:]))
     half = 0.5 + 3.2                                        # 분리대 반 + 차로 하나 = 2차로 엣지 가운데선
@@ -508,7 +567,7 @@ def write_patches(net):
                 net.getEdge(VIA_NB[0]).getFromNode().getID()):    # 새 엣지가 붙는 교차로: 연결 다시 계산
         con += [f'<connection from="{e.getID()}" reset="true"/>' for e in net.getNode(nid).getIncoming()
                 if e.getID() not in VIA_SB + VIA_NB]
-    ramp_off = 0.5 + 6.4 + 1.6                            # 고가 2차로 바깥에 붙은 1차로 가운데선
+    ramp_off = 0.5 + 6.4 + 1.6 + GAP                      # 고가 2차로 바깥 1차로 가운데선 (다른 지상도로처럼 GAP만큼 띄움)
     for (eid, nid), d, s0, s1 in ((RAMP_SB, ramp_off, 0, VIA_S[0]), (RAMP_NB, -ramp_off, VIA_S[0], 0)):
         sh = offset_line(cl, d, s0, s1)
         end = sh[-1] if s1 else sh[0]
@@ -604,11 +663,12 @@ def turn_rules(net):
                 if ((i.getID(), o.getID()) not in allowed and not o.getID().endswith("_in")
                         and (hairpin(i, o) or any(c.getDirection() == "t" for c in i.getConnections(o)))):
                     con.append(f'<delete from="{i.getID()}" to="{o.getID()}"/>')
-    # 공영주차장 출구: 좌회전(북쪽 방향) 금지 (로드뷰: "좌회전 금지 · 주차장 출구전용" 표지)
-    for lot in ("P1", "P2", "P3"):
-        for o in net.getEdge(f"{lot}_out").getOutgoing():
-            if sum(a * b for a, b in zip(heading(o, False), NB)) > 0.5:
-                con.append(f'<delete from="{lot}_out" to="{o.getID()}"/>')
+    # 공영주차장2 출구: 좌회전(북쪽 방향) 금지 (로드뷰: "좌회전 금지 · 주차장 출구전용" 표지). 지금은 남행 도로에 합류만 해서
+    #   갈 곳이 하나뿐이지만, 출구가 교차로로 바뀌어도 지켜지게 둔다
+    outs = net.getEdge("P2_out").getOutgoing()
+    for o in outs:
+        if len(outs) > 1 and sum(a * b for a, b in zip(heading(o, False), NB)) > 0.5:
+            con.append(f'<delete from="P2_out" to="{o.getID()}"/>')
     # 사거리: 남쪽에서 올라오는 차는 좌회전·유턴 불가 (로드뷰 직진 화살표, 네이버·카카오 길찾기: 하률로 교차로에서 유턴)
     sg = junction_near(net, SAGEORI)
     for i in sg.getIncoming():
@@ -718,18 +778,22 @@ def toll_booths(net):
     return rows
 
 
-# 층 표현 (사용자 지정: 겹치는 곳에서는 높이(z)가 낮은 도로가 뒤쪽에 보이게)
+# 층 표현 (사용자 지정: 겹치는 곳에서는 높이(z)가 낮은 도로가 뒤쪽에, 낮은 층의 도로와 차는 옅게. 방안 A~D 화면 비교 후 'B 지도식' 선택)
 #   sumo-gui는 도로망(차로·교차로 면)을 모두 같은 층(layer 0)에 그려 높이로 앞뒤를 가릴 수 없다
 #   (userdoc/Simulation/Shapes.html "The network itself is drawn as layer 0").
 #   → 보기 설정에서 고가(+3 m 넘음)·지하차도(-3 m 밑) 차로는 투명하게 두고, 그 두 층은 도형으로 직접 그린다.
-#     지하차도 면: layer -0.5 (배경 위, 도로망 밑 → 지상 도로·교차로 면에 가려짐)
-#     지하차도 차선: layer 3.2 점선 (지상 도로·교차로 면 위로 비쳐 보이는 '숨은 선'. 교차로 면은 layer 1과 3 사이에 그려진다: 화면 확인)
-#     고가 면: layer 3.5 반투명 (밑의 지상 도로가 비쳐 뒤쪽으로 보임), 고가 차선: layer 3.8
-#   차량은 layer 6 도형보다도 위에 그려진다(화면 확인) → 고가 밑 차도 고가 면 위에 보인다 (sumo-gui 한계)
+#     지하차도 면: layer -0.5, 옅은 도로색 (배경 위, 도로망 밑 → 지상 도로·교차로 면에 가려짐)
+#     지하차도 차선: layer 3.2 점선 (지상 도로·교차로 면 위로 비쳐 보이는 '숨은 선')
+#     고가: 그림자 layer 15 + 불투명 면 15.5 + 진한 테두리·차선 15.6~15.8.
+#       (layer 3.5에 두었더니 신호 교차로 면이 고가 위에 그려져 G1~G3에서 고가가 끊겨 보였다: 화면 확인 → 15로 올림)
+#   차량은 도형보다 항상 위에 그려진다 → 아래층(지하차도, 고가 밑)의 차는 view_skku.py가 TraCI로 반투명하게 칠한다
 BG_COLOR = (238, 236, 230)
-UNDER_COLOR = (40, 120, 140, 150)        # 지하차도: 이 색을 바탕 위에 반투명으로 칠한 색 (불투명으로 변환해 씀)
-UNDER_LINE = "30,95,115,230"
-VIA_COLOR = (70, 80, 165, 215)           # 고가 면 (반투명)
+ROAD_COLOR = (62, 62, 66)
+UNDER_COLOR = ROAD_COLOR + (120,)          # 지하차도 면: 도로색을 바탕 위에 옅게 (불투명으로 변환해 씀)
+UNDER_LINE = "95,95,100,230"
+VIA_COLOR = (92, 100, 178)                # 고가 면 (불투명)
+VIA_EDGE = "30,32,70"                     # 고가 테두리
+VIA_SHADOW = "0,0,0,70"
 VIA_LINE = "255,255,255,210"
 
 
@@ -747,37 +811,38 @@ def layer_shapes(net):
     poly = lambda pid, kind, color, layer, pts, fill=True, lw=0.0: rows.append(
         f'    <poly id="{pid}" type="{kind}" color="{color}" fill="{int(fill)}" layer="{layer}"'
         + ("" if fill else f' lineWidth="{lw}"') + f' shape="{fmt(pts)}"/>\n')
+    via = ",".join(map(str, VIA_COLOR))
     for e in net.getEdges():
         lanes = e.getLanes()
         z = lane_z(lanes[0])
         if -3 <= z <= 3:
             continue
-        under = z < -3
         sh = [[p[:2] for p in ln.getShape()] for ln in lanes]
         right = side_line(sh[0], -lanes[0].getWidth() / 2)
         left = side_line(sh[-1], lanes[-1].getWidth() / 2)
-        if under:
+        if z < -3:
             poly(f"under_{e.getID()}", "지하차도", blend(UNDER_COLOR), -0.5, left + right[::-1])
             lines = [left, right] + [side_line(s, ln.getWidth() / 2) for s, ln in zip(sh[:-1], lanes[:-1])]
             for i, ln_pts in enumerate(lines):
                 for k, d in enumerate(dashes(ln_pts, 1.5, 1.5)):
                     poly(f"under_{e.getID()}_l{i}_{k}", "지하차도 (숨은 선)", UNDER_LINE, 3.2, d, False, 0.25)
         else:
-            poly(f"via_{e.getID()}", "고가", ",".join(map(str, VIA_COLOR)), 3.5, left + right[::-1])
-            poly(f"via_{e.getID()}_bl", "고가 가장자리", VIA_LINE, 3.8, left, False, 0.2)
-            poly(f"via_{e.getID()}_br", "고가 가장자리", VIA_LINE, 3.8, right, False, 0.2)
+            outline = left + right[::-1]
+            poly(f"via_{e.getID()}_sh", "고가 그림자", VIA_SHADOW, 15.0, [(x + 1.6, y - 1.6) for x, y in outline])
+            poly(f"via_{e.getID()}", "고가", via, 15.5, outline)
+            poly(f"via_{e.getID()}_bl", "고가 테두리", VIA_EDGE, 15.6, left, False, 0.6)
+            poly(f"via_{e.getID()}_br", "고가 테두리", VIA_EDGE, 15.6, right, False, 0.6)
             for i, (s, ln) in enumerate(zip(sh[:-1], lanes[:-1])):
                 for k, d in enumerate(dashes(side_line(s, ln.getWidth() / 2), 3, 5)):
-                    poly(f"via_{e.getID()}_l{i}_{k}", "고가 차선", VIA_LINE, 3.8, d, False, 0.15)
-    # 같은 층 엣지끼리만 만나는 노드의 교차로 면 (보기 설정에서 교차로 면은 지상 색이라 그 위를 같은 층 색으로 덮는다.
-    #   고가는 불투명: 반투명이면 밑의 진회색 면이 비쳐 고가 위에 줄이 생긴다)
+                    poly(f"via_{e.getID()}_l{i}_{k}", "고가 차선", VIA_LINE, 15.8, d, False, 0.15)
+    # 같은 층 엣지끼리만 만나는 노드의 교차로 면 (보기 설정에서 교차로 면은 지상 색이라 그 위를 같은 층 색으로 덮는다)
     for n in net.getNodes():
         es = n.getIncoming() + n.getOutgoing()
         if len(n.getShape()) < 3 or not es:
             continue
         zs = [lane_z(e.getLanes()[0]) for e in es]
         if all(z > 3 for z in zs):
-            poly(f"via_j_{n.getID()}", "고가", blend(VIA_COLOR), 3.4, [p[:2] for p in n.getShape()])
+            poly(f"via_j_{n.getID()}", "고가", via, 15.4, [p[:2] for p in n.getShape()])
         elif all(z < -3 for z in zs):
             poly(f"under_j_{n.getID()}", "지하차도", blend(UNDER_COLOR), -0.5, [p[:2] for p in n.getShape()])
     return rows
@@ -870,6 +935,13 @@ def write_trip_weights(net, prefix):
                     + "    </interval>\n</edgedata>\n")
 
 
+def parking_caps():
+    """skku.add.xml의 주차 구역별 칸 수 (<space> 개수)."""
+    import xml.etree.ElementTree as ET
+    return {pa.get("id"): len(pa.findall("space")) or int(pa.get("roadsideCapacity", 1))
+            for pa in ET.parse(P("skku.add.xml")).getroot().findall("parkingArea")}
+
+
 def write_routes(net, groups):
     import xml.etree.ElementTree as ET
     ends = {k: fringe(net, p) for k, p in ENDS.items()}
@@ -899,18 +971,21 @@ def write_routes(net, groups):
     # 주차하러 오는 차 (parking.py): 고가 밑 공영주차장 3곳 각 20대/h, 교내·역 주변 주차장은 구역 10개당 6대/h
     import parking
     with open(P("parking.rou.xml"), "w", encoding="utf-8") as f:
-        f.write("<routes>\n" + "".join(parking.vehicles(groups, ends, {"P1": 20, "P2": 20, "P3": 20, "L": 6}))
+        f.write("<routes>\n" + "".join(parking.vehicles(groups, ends, {"P1": 20, "P2": 20, "P3": 20, "L": 6}, caps=parking_caps()))
                 + "</routes>\n")
     # 버스: 카카오맵 실제 노선 17개(성대역 주변 정류장을 지나는 노선)의 경로·정류장·배차 간격 (bus_lines.py)
     import bus_lines
     n_stop, n_run = bus_lines.build(P("skku.net.xml"), P("bus.rou.xml"), P("bus.stops.xml"), report=lambda m: None)
     print(f"버스: 정류장 {n_stop}곳, 노선 운행 {n_run}개")
+    # 주차하러 오는 차(parker)만 고가 밑 공영주차장 통로(allow="taxi")를 쓰게 vClass를 taxi로 둔다 (모양은 승용차).
+    #   통로를 모두에게 열어 두었더니 버스 노선 5개가 주차장 1 통로를 지름길로 지나갔다
+    #   (vClass: userdoc/Definition_of_Vehicles,_Vehicle_Types,_and_Routes.html)
     with open(P("vtypes.add.xml"), "w", encoding="utf-8") as f:
         f.write('<additional>\n'
                 '    <vType id="car" sigma="0.5" impatience="0.5" color="255,220,0" guiShape="passenger"/>\n'
                 '    <vType id="hwcar" carFollowModel="IDM" accel="1.0" decel="2.0" tau="1.2" impatience="0.5" '
                 'color="100,200,255" guiShape="passenger/sedan"/>\n'
-                '    <vType id="parker" sigma="0.5" impatience="1.0" color="255,120,0" guiShape="passenger/hatchback"/>\n'
+                '    <vType id="parker" vClass="taxi" sigma="0.5" impatience="1.0" color="255,120,0" guiShape="passenger/hatchback"/>\n'
                 '    <vType id="bus" vClass="bus" color="0,160,80" guiShape="bus"/>\n</additional>\n')
     with open(P("skku.rou.xml"), "w", encoding="utf-8") as f:
         f.write("<routes>\n")
