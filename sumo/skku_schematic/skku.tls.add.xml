@@ -1,0 +1,8 @@
+<additional>
+    <!-- 성대역 사거리: 차량 전부 동시 녹색 → 황색 → 보행자 동시신호 (차량 전부 정지) -->
+    <tlLogic id="SG" type="static" programID="scramble" offset="0">
+        <phase duration="70" state="ggggGGGGggggGGGGGgg"/>
+        <phase duration="3" state="yyyyyyyyyyyyyyyyyyy"/>
+        <phase duration="45" state="rrrrrrrrrrrrrrrrrrr"/>
+    </tlLogic>
+</additional>

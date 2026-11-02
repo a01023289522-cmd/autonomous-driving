@@ -1,0 +1,10 @@
+<additional>
+    <!-- 성대역 사거리: 방향별 신호 + 적색 우회전(s) + 보행자 동시신호(차량 전부 r) -->
+    <tlLogic id="cluster_4655421093_4662858740_4860929588_5141018509" type="static" programID="sageori" offset="0">
+        <phase duration="40" state="GGgGGGGGGGg"/>
+        <phase duration="4" state="yyyyyyyyyyy"/>
+        <phase duration="35" state="srrsrsrssrr"/>
+        <phase duration="4" state="srrsrsrssrr"/>
+        <phase duration="20" state="rrrrrrrrrrr"/>
+    </tlLogic>
+</additional>

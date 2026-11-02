@@ -1,0 +1,14 @@
+<!-- OSM 기본 도로 종류 설정(osmNetconvert.typ.xml)에 덮어쓰는 한국 도심 값.
+     속도: 안전속도 5030 (큰길 50km/h, 골목 30km/h). OSM에 maxspeed가 있으면 그 값이 우선.
+     service(교내 도로·주차장 통로·단지 도로)는 승용차도 다닐 수 있게 (기본 설정은 배송차·보행자만).
+     보행자·자전거는 이번 모델에서 다루지 않아 차도는 차량 전용. -->
+<types>
+    <type id="highway.secondary"      numLanes="1" speed="13.89" priority="11" oneway="false" disallow="pedestrian bicycle rail rail_urban rail_electric rail_fast tram drone aircraft ship"/>
+    <type id="highway.secondary_link" numLanes="1" speed="11.11" priority="10" oneway="true"  disallow="pedestrian bicycle rail rail_urban rail_electric rail_fast tram drone aircraft ship"/>
+    <type id="highway.tertiary"       numLanes="1" speed="13.89" priority="10" oneway="false" disallow="pedestrian bicycle rail rail_urban rail_electric rail_fast tram drone aircraft ship"/>
+    <type id="highway.tertiary_link"  numLanes="1" speed="11.11" priority="9"  oneway="true"  disallow="pedestrian bicycle rail rail_urban rail_electric rail_fast tram drone aircraft ship"/>
+    <type id="highway.unclassified"   numLanes="1" speed="8.33"  priority="4"  oneway="false" disallow="pedestrian bicycle rail rail_urban rail_electric rail_fast tram drone aircraft ship"/>
+    <type id="highway.residential"    numLanes="1" speed="8.33"  priority="3"  oneway="false" disallow="pedestrian bicycle rail rail_urban rail_electric rail_fast tram drone aircraft ship"/>
+    <type id="highway.living_street"  numLanes="1" speed="5.56"  priority="2"  oneway="false" disallow="pedestrian bicycle rail rail_urban rail_electric rail_fast tram drone aircraft ship"/>
+    <type id="highway.service"        numLanes="1" speed="5.56"  priority="1"  oneway="false" disallow="pedestrian bicycle rail rail_urban rail_electric rail_fast tram drone aircraft ship"/>
+</types>

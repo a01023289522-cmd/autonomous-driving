@@ -1,0 +1,57 @@
+Parsing nodes from 'C:\Users\a0102\Artificial-Intelligence-and-Control-for-Autonomous-Driving\demos\skku_schematic\skku.nod.xml' ... done.
+Parsing edges from 'C:\Users\a0102\Artificial-Intelligence-and-Control-for-Autonomous-Driving\demos\skku_schematic\skku.edg.xml' ... done.
+Parsing connections from 'C:\Users\a0102\Artificial-Intelligence-and-Control-for-Autonomous-Driving\demos\skku_schematic\skku.con.xml' ...
+Warning: Target edge 'DE_SG' is not connected with 'SG_DE'; the connection cannot be reset.
+Warning: Target edge 'DE_DW' is not connected with 'DW_DE'; the connection cannot be reset.
+Warning: Target edge 'D0_SG' is not connected with 'SG_D0'; the connection cannot be reset.
+Warning: Target edge 'SG_D0' is not connected with 'D0_SG'; the connection cannot be reset.
+Warning: Target edge 'D0_G1' is not connected with 'G1_D0'; the connection cannot be reset.
+ done.
+Parsing traffic lights from 'C:\Users\a0102\Artificial-Intelligence-and-Control-for-Autonomous-Driving\demos\skku_schematic\skku.tls.add.xml' ... done.
+ Import done:
+   214 nodes loaded.
+   557 edges loaded.
+Removing self-loops ... done (0ms).
+Removing empty nodes ... done (1ms).
+   0 nodes removed.
+Computing turning directions ...
+Warning: Ambiguity in turnarounds computation at junction 'JU'.
+Warning: Ambiguity in turnarounds computation at junction 'x16'.
+ done (0ms).
+Assigning nodes to traffic lights ... done (0ms).
+Sorting nodes' edges ... done (1ms).
+Computing node shapes ... done (6ms).
+Computing edge shapes ... done (2ms).
+Computing node types ... done (0ms).
+Computing priorities ... done (0ms).
+Computing approached edges ... done (0ms).
+Guessing and setting roundabouts ...
+ Guessed 1 roundabout(s).
+ done (0ms).
+Computing approaching lanes ... done (2ms).
+Dividing of lanes on approached lanes ... done (1ms).
+Processing turnarounds ... done (0ms).
+Rechecking of lane endings ... done (0ms).
+Computing traffic light control information ... done (0ms).
+Computing node logics ... done (3ms).
+Computing traffic light logics ... done (0ms).
+ 6 traffic light(s) computed.
+Building inner edges ... done (8ms).
+Checking edge grade ...
+Warning: Edge 'DW_DE' has a grade of 10.30%.
+ done (0ms).
+-----------------------------------------------------
+Summary:
+ Node type statistics:
+  Unregulated junctions       : 0
+  Dead-end junctions          : 1
+  Priority junctions          : 121
+  Right-before-left junctions : 86
+  Traffic light junctions      : 6
+ Network boundaries:
+  Original boundary  : -800.00,-1480.00,1370.00,5320.00
+  Applied offset     : 0.00,0.00
+  Converted boundary : -800.00,-1480.00,1370.00,5320.00
+-----------------------------------------------------
+Writing network ... done (31ms).
+Warning: 13 total messages of type: Target edge '%' is not connected with '%'; the connection cannot be reset.

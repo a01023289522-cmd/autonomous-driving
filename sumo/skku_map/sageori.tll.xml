@@ -1,0 +1,7 @@
+<tlLogics>
+    <tlLogic id="cluster_4650845824_4655421093_4662858740_4662858741_#2more" type="static" programID="0" offset="0">
+        <phase duration="70" state="GGgGgggggGGgGggggg"/>
+        <phase duration="3" state="yyyyyyyyyyyyyyyyyy"/>
+        <phase duration="45" state="rrrrrrrrrrrrrrrrrr"/>
+    </tlLogic>
+</tlLogics>

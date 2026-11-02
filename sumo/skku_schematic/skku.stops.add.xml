@@ -1,0 +1,360 @@
+<additional>
+    <busStop id="bs_N_s" lane="NN_SG_0" startPos="87.4" endPos="112.4" name="율전성당.성균관대역" friendlyPos="true"/>
+    <busStop id="bs_N_n" lane="SG_NN#1_0" startPos="42.5" endPos="67.5" name="성균관대역.고용노동부" friendlyPos="true"/>
+    <busStop id="bs_G1G2" lane="G1_G2#1_0" startPos="36.0" endPos="61.0" name="성균관대역(마을)" friendlyPos="true"/>
+    <busStop id="bs_G2G3" lane="G2_G3_0" startPos="59.2" endPos="84.2" name="성균관대학교" friendlyPos="true"/>
+    <busStop id="bs_G4LD" lane="G4_LD_0" startPos="54.1" endPos="79.1" name="삼성아파트" friendlyPos="true"/>
+    <busStop id="bs_G3G2" lane="G3_G2_0" startPos="56.1" endPos="81.1" name="성균관대학교" friendlyPos="true"/>
+    <busStop id="bs_G2G1" lane="G2_G1#0_0" startPos="28.0" endPos="53.0" name="율천동주민센터" friendlyPos="true"/>
+    <busStop id="bs_LDG4" lane="LD_G4_0" startPos="54.2" endPos="79.2" name="삼성1차아파트" friendlyPos="true"/>
+    <busStop id="bs_E1YG" lane="E1_YG_0" startPos="96.6" endPos="121.6" name="비단마을입구" friendlyPos="true"/>
+    <busStop id="bs_YGE1" lane="YG_E1_0" startPos="97.3" endPos="122.3" name="비단마을입구" friendlyPos="true"/>
+    <busStop id="bs_YGE2" lane="YG_E2_0" startPos="147.4" endPos="172.4" name="경기체육고" friendlyPos="true"/>
+    <busStop id="bs_E2YG" lane="E2_YG#0_0" startPos="96.6" endPos="121.6" name="천천먹거리촌" friendlyPos="true"/>
+    <busStop id="bs_E2EF" lane="E2_EF_0" startPos="140.8" endPos="165.8" name="삼호진덕아파트" friendlyPos="true"/>
+    <busStop id="bs_EFE2" lane="EF_E2_0" startPos="140.8" endPos="165.8" name="일성아파트" friendlyPos="true"/>
+    <busStop id="bs_H1H2" lane="H1_H2_0" startPos="81.7" endPos="106.7" name="화산로" friendlyPos="true"/>
+    <busStop id="bs_H2H1" lane="H2_H1_0" startPos="82.1" endPos="107.1" name="화산로" friendlyPos="true"/>
+    <busStop id="bs_IWJM" lane="IW_JM_0" startPos="123.0" endPos="148.0" name="성균관대학교 정문" friendlyPos="true"/>
+    <busStop id="bs_JMIW" lane="JM_IW_0" startPos="123.0" endPos="148.0" name="성균관대학교 정문" friendlyPos="true"/>
+    <busStop id="bs_JS1" lane="JSs_JSm_0" startPos="44.0" endPos="69.0" name="정자천로13번길 1" friendlyPos="true"/>
+    <busStop id="bs_JS1r" lane="JSm_JSs_0" startPos="44.7" endPos="69.7" name="정자천로13번길 1" friendlyPos="true"/>
+    <busStop id="bs_JS2" lane="JS1_JE_0" startPos="43.5" endPos="68.5" name="정자천로13번길 2" friendlyPos="true"/>
+    <busStop id="bs_JS2r" lane="JE_JS1_0" startPos="43.3" endPos="68.3" name="정자천로13번길 2" friendlyPos="true"/>
+    <busStop id="bs_JS3" lane="JE_JN_0" startPos="53.3" endPos="78.3" name="정자천로13번길 3" friendlyPos="true"/>
+    <busStop id="bs_JS3r" lane="JN_JE_0" startPos="53.2" endPos="78.2" name="정자천로13번길 3" friendlyPos="true"/>
+    <parkingArea id="P1" lane="P1_aisle_0" startPos="1" endPos="-1" roadsideCapacity="0" name="공영주차장1" friendlyPos="true">
+        <space x="-45.63" y="-156.93" width="2.5" length="5" angle="301.7"/>
+        <space x="-38.65" y="-161.24" width="2.5" length="5" angle="121.7"/>
+        <space x="-46.99" y="-159.14" width="2.5" length="5" angle="301.7"/>
+        <space x="-40.02" y="-163.45" width="2.5" length="5" angle="121.7"/>
+        <space x="-48.36" y="-161.35" width="2.5" length="5" angle="301.7"/>
+        <space x="-41.38" y="-165.66" width="2.5" length="5" angle="121.7"/>
+        <space x="-49.73" y="-163.56" width="2.5" length="5" angle="301.7"/>
+        <space x="-42.75" y="-167.87" width="2.5" length="5" angle="121.7"/>
+        <space x="-51.09" y="-165.78" width="2.5" length="5" angle="301.7"/>
+        <space x="-44.12" y="-170.09" width="2.5" length="5" angle="121.7"/>
+        <space x="-52.46" y="-167.99" width="2.5" length="5" angle="301.7"/>
+        <space x="-45.48" y="-172.30" width="2.5" length="5" angle="121.7"/>
+        <space x="-53.83" y="-170.20" width="2.5" length="5" angle="301.7"/>
+        <space x="-46.85" y="-174.51" width="2.5" length="5" angle="121.7"/>
+        <space x="-55.19" y="-172.41" width="2.5" length="5" angle="301.7"/>
+        <space x="-48.22" y="-176.72" width="2.5" length="5" angle="121.7"/>
+        <space x="-56.56" y="-174.63" width="2.5" length="5" angle="301.7"/>
+        <space x="-49.58" y="-178.93" width="2.5" length="5" angle="121.7"/>
+        <space x="-57.92" y="-176.84" width="2.5" length="5" angle="301.7"/>
+        <space x="-50.95" y="-181.15" width="2.5" length="5" angle="121.7"/>
+        <space x="-59.29" y="-179.05" width="2.5" length="5" angle="301.7"/>
+        <space x="-52.31" y="-183.36" width="2.5" length="5" angle="121.7"/>
+        <space x="-60.66" y="-181.26" width="2.5" length="5" angle="301.7"/>
+        <space x="-53.68" y="-185.57" width="2.5" length="5" angle="121.7"/>
+        <space x="-62.02" y="-183.47" width="2.5" length="5" angle="301.7"/>
+        <space x="-55.05" y="-187.78" width="2.5" length="5" angle="121.7"/>
+        <space x="-63.27" y="-185.50" width="2.5" length="5" angle="304.7"/>
+        <space x="-56.53" y="-190.18" width="2.5" length="5" angle="124.7"/>
+        <space x="-64.70" y="-187.28" width="2.5" length="5" angle="309.2"/>
+        <space x="-58.35" y="-192.46" width="2.5" length="5" angle="129.2"/>
+        <space x="-66.35" y="-189.29" width="2.5" length="5" angle="309.2"/>
+        <space x="-59.99" y="-194.48" width="2.5" length="5" angle="129.2"/>
+        <space x="-67.99" y="-191.31" width="2.5" length="5" angle="309.2"/>
+        <space x="-61.63" y="-196.49" width="2.5" length="5" angle="129.2"/>
+        <space x="-69.63" y="-193.32" width="2.5" length="5" angle="309.2"/>
+        <space x="-63.28" y="-198.50" width="2.5" length="5" angle="129.2"/>
+        <space x="-71.28" y="-195.34" width="2.5" length="5" angle="309.2"/>
+        <space x="-64.92" y="-200.52" width="2.5" length="5" angle="129.2"/>
+        <space x="-72.92" y="-197.35" width="2.5" length="5" angle="309.2"/>
+        <space x="-66.57" y="-202.53" width="2.5" length="5" angle="129.2"/>
+        <space x="-74.56" y="-199.37" width="2.5" length="5" angle="309.2"/>
+        <space x="-68.21" y="-204.55" width="2.5" length="5" angle="129.2"/>
+        <space x="-76.21" y="-201.38" width="2.5" length="5" angle="309.2"/>
+        <space x="-69.85" y="-206.56" width="2.5" length="5" angle="129.2"/>
+        <space x="-77.85" y="-203.39" width="2.5" length="5" angle="309.2"/>
+        <space x="-71.50" y="-208.58" width="2.5" length="5" angle="129.2"/>
+        <space x="-79.49" y="-205.41" width="2.5" length="5" angle="309.2"/>
+        <space x="-73.14" y="-210.59" width="2.5" length="5" angle="129.2"/>
+        <space x="-81.14" y="-207.42" width="2.5" length="5" angle="309.2"/>
+        <space x="-74.78" y="-212.61" width="2.5" length="5" angle="129.2"/>
+        <space x="-82.78" y="-209.44" width="2.5" length="5" angle="309.2"/>
+        <space x="-76.43" y="-214.62" width="2.5" length="5" angle="129.2"/>
+        <space x="-84.42" y="-211.45" width="2.5" length="5" angle="309.2"/>
+        <space x="-78.07" y="-216.64" width="2.5" length="5" angle="129.2"/>
+        <space x="-86.07" y="-213.47" width="2.5" length="5" angle="309.2"/>
+        <space x="-79.71" y="-218.65" width="2.5" length="5" angle="129.2"/>
+        <space x="-87.71" y="-215.48" width="2.5" length="5" angle="309.2"/>
+        <space x="-81.36" y="-220.67" width="2.5" length="5" angle="129.2"/>
+        <space x="-89.35" y="-217.50" width="2.5" length="5" angle="309.2"/>
+        <space x="-83.00" y="-222.68" width="2.5" length="5" angle="129.2"/>
+        <space x="-91.00" y="-219.51" width="2.5" length="5" angle="309.2"/>
+        <space x="-84.64" y="-224.70" width="2.5" length="5" angle="129.2"/>
+        <space x="-92.64" y="-221.53" width="2.5" length="5" angle="309.2"/>
+        <space x="-86.29" y="-226.71" width="2.5" length="5" angle="129.2"/>
+        <space x="-94.41" y="-223.72" width="2.5" length="5" angle="306.2"/>
+        <space x="-87.79" y="-228.56" width="2.5" length="5" angle="126.2"/>
+        <space x="-95.95" y="-226.00" width="2.5" length="5" angle="304.0"/>
+        <space x="-89.15" y="-230.59" width="2.5" length="5" angle="124.0"/>
+        <space x="-97.40" y="-228.16" width="2.5" length="5" angle="304.0"/>
+        <space x="-90.61" y="-232.75" width="2.5" length="5" angle="124.0"/>
+        <space x="-98.86" y="-230.31" width="2.5" length="5" angle="304.0"/>
+        <space x="-92.06" y="-234.90" width="2.5" length="5" angle="124.0"/>
+        <space x="-100.31" y="-232.47" width="2.5" length="5" angle="304.0"/>
+        <space x="-93.52" y="-237.06" width="2.5" length="5" angle="124.0"/>
+        <space x="-101.77" y="-234.62" width="2.5" length="5" angle="304.0"/>
+        <space x="-94.97" y="-239.21" width="2.5" length="5" angle="124.0"/>
+        <space x="-103.22" y="-236.78" width="2.5" length="5" angle="304.0"/>
+        <space x="-96.43" y="-241.37" width="2.5" length="5" angle="124.0"/>
+        <space x="-104.68" y="-238.93" width="2.5" length="5" angle="304.0"/>
+        <space x="-97.88" y="-243.52" width="2.5" length="5" angle="124.0"/>
+    </parkingArea>
+    <parkingArea id="P2" lane="P2_aisle_0" startPos="1" endPos="-1" roadsideCapacity="0" name="공영주차장2" friendlyPos="true">
+        <space x="-136.74" y="-288.25" width="2.5" length="5" angle="302.0"/>
+        <space x="-129.79" y="-292.60" width="2.5" length="5" angle="122.0"/>
+        <space x="-138.12" y="-290.45" width="2.5" length="5" angle="302.0"/>
+        <space x="-131.17" y="-294.80" width="2.5" length="5" angle="122.0"/>
+        <space x="-139.50" y="-292.66" width="2.5" length="5" angle="302.0"/>
+        <space x="-132.54" y="-297.00" width="2.5" length="5" angle="122.0"/>
+        <space x="-140.87" y="-294.86" width="2.5" length="5" angle="302.0"/>
+        <space x="-133.92" y="-299.21" width="2.5" length="5" angle="122.0"/>
+        <space x="-142.31" y="-297.35" width="2.5" length="5" angle="298.2"/>
+        <space x="-135.08" y="-301.23" width="2.5" length="5" angle="118.2"/>
+        <space x="-143.53" y="-299.65" width="2.5" length="5" angle="298.2"/>
+        <space x="-136.31" y="-303.52" width="2.5" length="5" angle="118.2"/>
+        <space x="-144.76" y="-301.94" width="2.5" length="5" angle="298.2"/>
+        <space x="-137.53" y="-305.81" width="2.5" length="5" angle="118.2"/>
+        <space x="-145.99" y="-304.23" width="2.5" length="5" angle="298.2"/>
+        <space x="-138.76" y="-308.10" width="2.5" length="5" angle="118.2"/>
+        <space x="-147.22" y="-306.52" width="2.5" length="5" angle="298.2"/>
+        <space x="-139.99" y="-310.39" width="2.5" length="5" angle="118.2"/>
+        <space x="-148.44" y="-308.81" width="2.5" length="5" angle="298.2"/>
+        <space x="-141.22" y="-312.69" width="2.5" length="5" angle="118.2"/>
+        <space x="-149.67" y="-311.11" width="2.5" length="5" angle="298.2"/>
+        <space x="-142.44" y="-314.98" width="2.5" length="5" angle="118.2"/>
+        <space x="-150.90" y="-313.40" width="2.5" length="5" angle="298.2"/>
+        <space x="-143.67" y="-317.27" width="2.5" length="5" angle="118.2"/>
+        <space x="-152.13" y="-315.69" width="2.5" length="5" angle="298.2"/>
+        <space x="-144.90" y="-319.56" width="2.5" length="5" angle="118.2"/>
+        <space x="-153.36" y="-317.98" width="2.5" length="5" angle="298.2"/>
+        <space x="-146.13" y="-321.85" width="2.5" length="5" angle="118.2"/>
+        <space x="-154.58" y="-320.27" width="2.5" length="5" angle="298.2"/>
+        <space x="-147.36" y="-324.15" width="2.5" length="5" angle="118.2"/>
+        <space x="-155.81" y="-322.56" width="2.5" length="5" angle="298.2"/>
+        <space x="-148.58" y="-326.44" width="2.5" length="5" angle="118.2"/>
+        <space x="-157.07" y="-324.97" width="2.5" length="5" angle="296.6"/>
+        <space x="-149.74" y="-328.64" width="2.5" length="5" angle="116.6"/>
+        <space x="-158.23" y="-327.30" width="2.5" length="5" angle="296.6"/>
+        <space x="-150.90" y="-330.96" width="2.5" length="5" angle="116.6"/>
+        <space x="-159.39" y="-329.62" width="2.5" length="5" angle="296.6"/>
+        <space x="-152.06" y="-333.29" width="2.5" length="5" angle="116.6"/>
+        <space x="-160.56" y="-331.95" width="2.5" length="5" angle="296.6"/>
+        <space x="-153.22" y="-335.61" width="2.5" length="5" angle="116.6"/>
+        <space x="-161.72" y="-334.27" width="2.5" length="5" angle="296.6"/>
+        <space x="-154.39" y="-337.94" width="2.5" length="5" angle="116.6"/>
+        <space x="-162.88" y="-336.60" width="2.5" length="5" angle="296.6"/>
+        <space x="-155.55" y="-340.27" width="2.5" length="5" angle="116.6"/>
+        <space x="-164.05" y="-338.92" width="2.5" length="5" angle="296.6"/>
+        <space x="-156.71" y="-342.59" width="2.5" length="5" angle="116.6"/>
+        <space x="-165.21" y="-341.25" width="2.5" length="5" angle="296.6"/>
+        <space x="-157.87" y="-344.92" width="2.5" length="5" angle="116.6"/>
+        <space x="-166.37" y="-343.57" width="2.5" length="5" angle="296.6"/>
+        <space x="-159.04" y="-347.24" width="2.5" length="5" angle="116.6"/>
+        <space x="-167.53" y="-345.90" width="2.5" length="5" angle="296.6"/>
+        <space x="-160.20" y="-349.57" width="2.5" length="5" angle="116.6"/>
+        <space x="-168.70" y="-348.23" width="2.5" length="5" angle="296.6"/>
+        <space x="-161.36" y="-351.89" width="2.5" length="5" angle="116.6"/>
+        <space x="-169.86" y="-350.55" width="2.5" length="5" angle="296.6"/>
+        <space x="-162.53" y="-354.22" width="2.5" length="5" angle="116.6"/>
+        <space x="-171.02" y="-352.88" width="2.5" length="5" angle="296.6"/>
+        <space x="-163.69" y="-356.54" width="2.5" length="5" angle="116.6"/>
+        <space x="-172.19" y="-355.20" width="2.5" length="5" angle="296.6"/>
+        <space x="-164.85" y="-358.87" width="2.5" length="5" angle="116.6"/>
+        <space x="-173.37" y="-357.81" width="2.5" length="5" angle="292.8"/>
+        <space x="-165.81" y="-360.99" width="2.5" length="5" angle="112.8"/>
+        <space x="-174.38" y="-360.21" width="2.5" length="5" angle="292.8"/>
+        <space x="-166.82" y="-363.39" width="2.5" length="5" angle="112.8"/>
+        <space x="-175.39" y="-362.60" width="2.5" length="5" angle="292.8"/>
+        <space x="-167.83" y="-365.79" width="2.5" length="5" angle="112.8"/>
+        <space x="-176.40" y="-365.00" width="2.5" length="5" angle="292.8"/>
+        <space x="-168.84" y="-368.18" width="2.5" length="5" angle="112.8"/>
+        <space x="-177.41" y="-367.40" width="2.5" length="5" angle="292.8"/>
+        <space x="-169.85" y="-370.58" width="2.5" length="5" angle="112.8"/>
+        <space x="-178.41" y="-369.79" width="2.5" length="5" angle="292.8"/>
+        <space x="-170.86" y="-372.98" width="2.5" length="5" angle="112.8"/>
+        <space x="-179.42" y="-372.19" width="2.5" length="5" angle="292.8"/>
+        <space x="-171.87" y="-375.37" width="2.5" length="5" angle="112.8"/>
+        <space x="-180.43" y="-374.59" width="2.5" length="5" angle="292.8"/>
+        <space x="-172.87" y="-377.77" width="2.5" length="5" angle="112.8"/>
+        <space x="-181.44" y="-376.98" width="2.5" length="5" angle="292.8"/>
+        <space x="-173.88" y="-380.16" width="2.5" length="5" angle="112.8"/>
+        <space x="-182.45" y="-379.38" width="2.5" length="5" angle="292.8"/>
+        <space x="-174.89" y="-382.56" width="2.5" length="5" angle="112.8"/>
+        <space x="-183.46" y="-381.77" width="2.5" length="5" angle="292.8"/>
+        <space x="-175.90" y="-384.96" width="2.5" length="5" angle="112.8"/>
+        <space x="-184.47" y="-384.17" width="2.5" length="5" angle="292.8"/>
+        <space x="-176.91" y="-387.35" width="2.5" length="5" angle="112.8"/>
+        <space x="-185.48" y="-386.57" width="2.5" length="5" angle="292.8"/>
+        <space x="-177.92" y="-389.75" width="2.5" length="5" angle="112.8"/>
+        <space x="-186.49" y="-388.96" width="2.5" length="5" angle="292.8"/>
+        <space x="-178.93" y="-392.15" width="2.5" length="5" angle="112.8"/>
+        <space x="-187.49" y="-391.36" width="2.5" length="5" angle="292.8"/>
+        <space x="-179.94" y="-394.54" width="2.5" length="5" angle="112.8"/>
+        <space x="-188.52" y="-393.80" width="2.5" length="5" angle="292.1"/>
+        <space x="-180.93" y="-396.89" width="2.5" length="5" angle="112.1"/>
+        <space x="-189.48" y="-396.53" width="2.5" length="5" angle="288.0"/>
+        <space x="-181.68" y="-399.06" width="2.5" length="5" angle="108.0"/>
+        <space x="-190.29" y="-399.01" width="2.5" length="5" angle="288.0"/>
+        <space x="-182.49" y="-401.54" width="2.5" length="5" angle="108.0"/>
+        <space x="-191.09" y="-401.48" width="2.5" length="5" angle="288.0"/>
+        <space x="-183.29" y="-404.01" width="2.5" length="5" angle="108.0"/>
+        <space x="-191.89" y="-403.95" width="2.5" length="5" angle="288.0"/>
+        <space x="-184.09" y="-406.48" width="2.5" length="5" angle="108.0"/>
+        <space x="-192.69" y="-406.43" width="2.5" length="5" angle="288.0"/>
+        <space x="-184.89" y="-408.96" width="2.5" length="5" angle="108.0"/>
+        <space x="-193.49" y="-408.90" width="2.5" length="5" angle="288.0"/>
+        <space x="-185.69" y="-411.43" width="2.5" length="5" angle="108.0"/>
+        <space x="-194.30" y="-411.37" width="2.5" length="5" angle="288.0"/>
+        <space x="-186.50" y="-413.90" width="2.5" length="5" angle="108.0"/>
+    </parkingArea>
+    <parkingArea id="P3" lane="P3_aisle_0" startPos="1" endPos="-1" roadsideCapacity="0" name="공영주차장3" friendlyPos="true">
+        <space x="-209.57" y="-466.64" width="2.5" length="5" angle="282.7"/>
+        <space x="-201.57" y="-468.44" width="2.5" length="5" angle="102.7"/>
+        <space x="-210.14" y="-469.18" width="2.5" length="5" angle="282.7"/>
+        <space x="-202.14" y="-470.98" width="2.5" length="5" angle="102.7"/>
+        <space x="-210.72" y="-471.71" width="2.5" length="5" angle="282.7"/>
+        <space x="-202.72" y="-473.52" width="2.5" length="5" angle="102.7"/>
+        <space x="-211.29" y="-474.25" width="2.5" length="5" angle="282.7"/>
+        <space x="-203.29" y="-476.05" width="2.5" length="5" angle="102.7"/>
+        <space x="-211.86" y="-476.79" width="2.5" length="5" angle="282.7"/>
+        <space x="-203.86" y="-478.59" width="2.5" length="5" angle="102.7"/>
+        <space x="-212.43" y="-479.32" width="2.5" length="5" angle="282.7"/>
+        <space x="-204.43" y="-481.13" width="2.5" length="5" angle="102.7"/>
+        <space x="-213.00" y="-481.86" width="2.5" length="5" angle="282.7"/>
+        <space x="-205.00" y="-483.66" width="2.5" length="5" angle="102.7"/>
+        <space x="-213.57" y="-484.40" width="2.5" length="5" angle="282.7"/>
+        <space x="-205.57" y="-486.20" width="2.5" length="5" angle="102.7"/>
+        <space x="-214.15" y="-486.93" width="2.5" length="5" angle="282.7"/>
+        <space x="-206.15" y="-488.73" width="2.5" length="5" angle="102.7"/>
+        <space x="-214.72" y="-489.47" width="2.5" length="5" angle="282.7"/>
+        <space x="-206.72" y="-491.27" width="2.5" length="5" angle="102.7"/>
+        <space x="-215.29" y="-492.00" width="2.5" length="5" angle="282.7"/>
+        <space x="-207.29" y="-493.81" width="2.5" length="5" angle="102.7"/>
+        <space x="-215.86" y="-494.54" width="2.5" length="5" angle="282.7"/>
+        <space x="-207.86" y="-496.34" width="2.5" length="5" angle="102.7"/>
+        <space x="-216.43" y="-497.08" width="2.5" length="5" angle="282.7"/>
+        <space x="-208.43" y="-498.88" width="2.5" length="5" angle="102.7"/>
+        <space x="-217.00" y="-499.61" width="2.5" length="5" angle="282.7"/>
+        <space x="-209.00" y="-501.42" width="2.5" length="5" angle="102.7"/>
+        <space x="-217.57" y="-502.15" width="2.5" length="5" angle="282.7"/>
+        <space x="-209.58" y="-503.95" width="2.5" length="5" angle="102.7"/>
+        <space x="-218.15" y="-504.69" width="2.5" length="5" angle="282.7"/>
+        <space x="-210.15" y="-506.49" width="2.5" length="5" angle="102.7"/>
+        <space x="-218.72" y="-507.22" width="2.5" length="5" angle="282.7"/>
+        <space x="-210.72" y="-509.03" width="2.5" length="5" angle="102.7"/>
+        <space x="-219.29" y="-509.76" width="2.5" length="5" angle="282.7"/>
+        <space x="-211.29" y="-511.56" width="2.5" length="5" angle="102.7"/>
+        <space x="-219.86" y="-512.30" width="2.5" length="5" angle="282.7"/>
+        <space x="-211.86" y="-514.10" width="2.5" length="5" angle="102.7"/>
+        <space x="-220.43" y="-514.83" width="2.5" length="5" angle="282.7"/>
+        <space x="-212.43" y="-516.64" width="2.5" length="5" angle="102.7"/>
+        <space x="-221.00" y="-517.37" width="2.5" length="5" angle="282.7"/>
+        <space x="-213.00" y="-519.17" width="2.5" length="5" angle="102.7"/>
+        <space x="-221.58" y="-519.91" width="2.5" length="5" angle="282.7"/>
+        <space x="-213.58" y="-521.71" width="2.5" length="5" angle="102.7"/>
+        <space x="-222.15" y="-522.44" width="2.5" length="5" angle="282.7"/>
+        <space x="-214.15" y="-524.24" width="2.5" length="5" angle="102.7"/>
+        <space x="-222.72" y="-524.98" width="2.5" length="5" angle="282.7"/>
+        <space x="-214.72" y="-526.78" width="2.5" length="5" angle="102.7"/>
+        <space x="-223.29" y="-527.51" width="2.5" length="5" angle="282.7"/>
+        <space x="-215.29" y="-529.32" width="2.5" length="5" angle="102.7"/>
+        <space x="-223.86" y="-530.05" width="2.5" length="5" angle="282.7"/>
+        <space x="-215.86" y="-531.85" width="2.5" length="5" angle="102.7"/>
+        <space x="-224.43" y="-532.59" width="2.5" length="5" angle="282.7"/>
+        <space x="-216.43" y="-534.39" width="2.5" length="5" angle="102.7"/>
+        <space x="-225.04" y="-535.28" width="2.5" length="5" angle="280.4"/>
+        <space x="-216.97" y="-536.77" width="2.5" length="5" angle="100.4"/>
+        <space x="-225.43" y="-538.01" width="2.5" length="5" angle="278.3"/>
+        <space x="-217.32" y="-539.19" width="2.5" length="5" angle="98.3"/>
+        <space x="-225.81" y="-540.58" width="2.5" length="5" angle="278.3"/>
+        <space x="-217.69" y="-541.76" width="2.5" length="5" angle="98.3"/>
+        <space x="-226.18" y="-543.16" width="2.5" length="5" angle="278.3"/>
+        <space x="-218.07" y="-544.33" width="2.5" length="5" angle="98.3"/>
+        <space x="-226.56" y="-545.73" width="2.5" length="5" angle="278.3"/>
+        <space x="-218.44" y="-546.91" width="2.5" length="5" angle="98.3"/>
+        <space x="-226.93" y="-548.30" width="2.5" length="5" angle="278.3"/>
+        <space x="-218.81" y="-549.48" width="2.5" length="5" angle="98.3"/>
+        <space x="-227.30" y="-550.87" width="2.5" length="5" angle="278.3"/>
+        <space x="-219.19" y="-552.05" width="2.5" length="5" angle="98.3"/>
+        <space x="-227.68" y="-553.45" width="2.5" length="5" angle="278.3"/>
+        <space x="-219.56" y="-554.63" width="2.5" length="5" angle="98.3"/>
+        <space x="-228.05" y="-556.02" width="2.5" length="5" angle="278.3"/>
+        <space x="-219.93" y="-557.20" width="2.5" length="5" angle="98.3"/>
+        <space x="-228.42" y="-558.59" width="2.5" length="5" angle="278.3"/>
+        <space x="-220.31" y="-559.77" width="2.5" length="5" angle="98.3"/>
+        <space x="-228.80" y="-561.17" width="2.5" length="5" angle="278.3"/>
+        <space x="-220.68" y="-562.34" width="2.5" length="5" angle="98.3"/>
+        <space x="-229.17" y="-563.74" width="2.5" length="5" angle="278.3"/>
+        <space x="-221.05" y="-564.92" width="2.5" length="5" angle="98.3"/>
+        <space x="-229.54" y="-566.31" width="2.5" length="5" angle="278.3"/>
+        <space x="-221.43" y="-567.49" width="2.5" length="5" angle="98.3"/>
+        <space x="-229.92" y="-568.89" width="2.5" length="5" angle="278.3"/>
+        <space x="-221.80" y="-570.06" width="2.5" length="5" angle="98.3"/>
+        <space x="-230.29" y="-571.46" width="2.5" length="5" angle="278.3"/>
+        <space x="-222.18" y="-572.64" width="2.5" length="5" angle="98.3"/>
+        <space x="-230.66" y="-574.03" width="2.5" length="5" angle="278.3"/>
+        <space x="-222.55" y="-575.21" width="2.5" length="5" angle="98.3"/>
+        <space x="-231.04" y="-576.60" width="2.5" length="5" angle="278.3"/>
+        <space x="-222.92" y="-577.78" width="2.5" length="5" angle="98.3"/>
+        <space x="-231.41" y="-579.18" width="2.5" length="5" angle="278.3"/>
+        <space x="-223.30" y="-580.36" width="2.5" length="5" angle="98.3"/>
+        <space x="-231.78" y="-581.75" width="2.5" length="5" angle="278.3"/>
+        <space x="-223.67" y="-582.93" width="2.5" length="5" angle="98.3"/>
+        <space x="-232.16" y="-584.32" width="2.5" length="5" angle="278.3"/>
+        <space x="-224.04" y="-585.50" width="2.5" length="5" angle="98.3"/>
+        <space x="-232.53" y="-586.90" width="2.5" length="5" angle="278.3"/>
+        <space x="-224.42" y="-588.08" width="2.5" length="5" angle="98.3"/>
+        <space x="-232.90" y="-589.47" width="2.5" length="5" angle="278.3"/>
+        <space x="-224.79" y="-590.65" width="2.5" length="5" angle="98.3"/>
+        <space x="-233.28" y="-592.04" width="2.5" length="5" angle="278.3"/>
+        <space x="-225.16" y="-593.22" width="2.5" length="5" angle="98.3"/>
+        <space x="-233.65" y="-594.62" width="2.5" length="5" angle="278.3"/>
+        <space x="-225.54" y="-595.79" width="2.5" length="5" angle="98.3"/>
+        <space x="-234.04" y="-597.31" width="2.5" length="5" angle="276.5"/>
+        <space x="-225.89" y="-598.24" width="2.5" length="5" angle="96.5"/>
+        <space x="-234.24" y="-600.11" width="2.5" length="5" angle="273.7"/>
+        <space x="-226.06" y="-600.63" width="2.5" length="5" angle="93.7"/>
+        <space x="-234.41" y="-602.70" width="2.5" length="5" angle="273.7"/>
+        <space x="-226.23" y="-603.23" width="2.5" length="5" angle="93.7"/>
+        <space x="-234.58" y="-605.30" width="2.5" length="5" angle="273.7"/>
+        <space x="-226.40" y="-605.82" width="2.5" length="5" angle="93.7"/>
+        <space x="-234.75" y="-607.89" width="2.5" length="5" angle="273.7"/>
+        <space x="-226.56" y="-608.42" width="2.5" length="5" angle="93.7"/>
+        <space x="-234.91" y="-610.49" width="2.5" length="5" angle="273.7"/>
+        <space x="-226.73" y="-611.01" width="2.5" length="5" angle="93.7"/>
+    </parkingArea>
+    <parkingArea id="PC" lane="C3_CE_0" startPos="20" endPos="-20" roadsideCapacity="40" angle="90" name="교내주차장" friendlyPos="true"/>
+    <poly id="rail_0" type="rail" color="150,70,200" fill="0" lineWidth="2.5" layer="-1" shape="-874.80,95.12 -800.29,70.60 -521.51,25.41 -50.48,-38.72 145.87,-70.23 222.18,-92.07 286.62,-120.28 339.77,-148.68 393.48,-186.14 434.27,-222.68 492.08,-285.38 951.24,-931.69 1181.74,-1249.01"/>
+    <poly id="rail_1" type="rail" color="150,70,200" fill="0" lineWidth="2.5" layer="-1" shape="-873.18,101.98 -796.84,77.82 -518.91,36.05 -49.32,-26.24 148.11,-61.53 224.23,-83.74 290.54,-112.52 344.45,-142.22 398.38,-180.28 440.80,-216.34 498.38,-282.11 824.72,-743.46 1188.59,-1244.93"/>
+    <poly id="rail_2" type="rail" color="150,70,200" fill="0" lineWidth="2.5" layer="-1" shape="1169.32,-1257.81 807.10,-752.67 681.14,-568.69 481.36,-290.95 425.10,-231.60 331.41,-160.22 219.23,-104.15 142.28,-84.15 73.98,-71.28 -51.76,-55.84 -658.04,33.34 -835.14,67.46 -893.78,90.41"/>
+    <poly id="rail_3" type="rail" color="150,70,200" fill="0" lineWidth="2.5" layer="-1" shape="1174.83,-1254.63 812.67,-749.76 686.07,-565.73 486.61,-288.22 430.87,-225.98 390.17,-190.10 336.08,-153.78 221.13,-96.38 144.77,-74.47 -267.99,-9.87 -492.20,16.86 -661.60,42.75 -833.96,73.93 -887.85,93.93"/>
+    <poly id="rail_4" type="rail" color="150,70,200" fill="0" lineWidth="2.5" layer="-1" shape="1214.35,-1295.12 1296.72,-1416.60"/>
+    <poly id="rail_5" type="rail" color="150,70,200" fill="0" lineWidth="2.5" layer="-1" shape="1221.03,-1290.75 1303.93,-1414.34"/>
+    <poly id="rail_6" type="rail" color="150,70,200" fill="0" lineWidth="2.5" layer="-1" shape="1221.03,-1290.75 1188.59,-1244.93"/>
+    <poly id="rail_7" type="rail" color="150,70,200" fill="0" lineWidth="2.5" layer="-1" shape="1181.74,-1249.01 1214.35,-1295.12"/>
+    <poly id="rail_8" type="rail" color="150,70,200" fill="0" lineWidth="2.5" layer="-1" shape="1207.91,-1301.79 1174.83,-1254.63"/>
+    <poly id="rail_9" type="rail" color="150,70,200" fill="0" lineWidth="2.5" layer="-1" shape="1203.48,-1307.12 1169.32,-1257.81"/>
+    <poly id="rail_10" type="rail" color="150,70,200" fill="0" lineWidth="2.5" layer="-1" shape="1275.07,-1415.20 1203.48,-1307.12"/>
+    <poly id="rail_11" type="rail" color="150,70,200" fill="0" lineWidth="2.5" layer="-1" shape="1289.54,-1421.10 1207.91,-1301.79"/>
+    <poi id="lbl_SG" type="Sageori (scramble)" x="12.0" y="12.0" color="0,0,0,0" layer="100"/>
+    <poi id="lbl_G1" type="G1 Hwasan-ro" x="-17.1" y="-121.4" color="0,0,0,0" layer="100"/>
+    <poi id="lbl_G2" type="G2 U-turn" x="-106.0" y="-254.0" color="0,0,0,0" layer="100"/>
+    <poi id="lbl_G3" type="G3 U-turn" x="-186.6" y="-427.6" color="0,0,0,0" layer="100"/>
+    <poi id="lbl_G4" type="G4 U-turn" x="-220.7" y="-628.0" color="0,0,0,0" layer="100"/>
+    <poi id="lbl_P1i" type="Public parking 1" x="-28.1" y="-143.9" color="0,0,0,0" layer="100"/>
+    <poi id="lbl_P2i" type="Public parking 2" x="-119.2" y="-275.2" color="0,0,0,0" layer="100"/>
+    <poi id="lbl_P3i" type="Public parking 3" x="-192.7" y="-451.8" color="0,0,0,0" layer="100"/>
+    <poi id="lbl_JM" type="Main gate (only car gate)" x="137.0" y="-1078.0" color="0,0,0,0" layer="100"/>
+    <poi id="lbl_CN1" type="Campus one-way loop" x="22.0" y="-492.0" color="0,0,0,0" layer="100"/>
+    <poi id="lbl_YG" type="Footbridge (over rail)" x="578.0" y="-320.0" color="0,0,0,0" layer="100"/>
+    <poi id="lbl_JU" type="Jeongcheon underpass" x="1002.0" y="-1088.0" color="0,0,0,0" layer="100"/>
+    <poi id="lbl_NN" type="Highway end (Bongdam-Gwacheon-ro 5km)" x="36.0" y="285.0" color="0,0,0,0" layer="100"/>
+    <poi id="lbl_CE" type="Campus parking" x="274.0" y="-768.0" color="0,0,0,0" layer="100"/>
+    <poi id="lbl_JS1" type="Jeongjacheon-ro 13" x="591.0" y="-861.0" color="0,0,0,0" layer="100"/>
+</additional>

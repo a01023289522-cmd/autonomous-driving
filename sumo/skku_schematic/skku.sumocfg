@@ -1,0 +1,14 @@
+<configuration>
+    <input>
+        <net-file value="skku.net.xml"/>
+        <route-files value="skku.rou.xml"/>
+        <additional-files value="skku.stops.add.xml"/>
+        <gui-settings-file value="skku.gui.xml"/>
+    </input>
+    <time><begin value="0"/><end value="3600"/></time>
+    <processing>
+        <time-to-teleport value="300"/>
+        <collision.action value="warn"/>
+    </processing>
+    <random_number><seed value="42"/></random_number>
+</configuration>

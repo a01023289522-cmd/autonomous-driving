@@ -1,0 +1,168 @@
+<routes>
+    <vType id="DEFAULT_VEHTYPE" sigma="0.5" impatience="0.5" color="255,220,0"/>
+    <vType id="hwcar" carFollowModel="IDM" accel="1.0" decel="2.0" tau="1.2" impatience="0.5" color="100,200,255"/>
+    <vType id="bus" vClass="bus" color="0,160,80"/>
+    <vType id="parker" sigma="0.5" impatience="0.5" color="255,120,0"/>
+    <route id="r_bus_sb" edges="NN_SG SG_D0 D0_G1 G1_G2#0 G1_G2#1 G2_G3 G3_G4 G4_LD LD_IW IW_SS">
+        <stop busStop="bs_N_s" duration="20"/>
+        <stop busStop="bs_G1G2" duration="20"/>
+        <stop busStop="bs_G2G3" duration="20"/>
+        <stop busStop="bs_G4LD" duration="20"/>
+    </route>
+    <route id="r_bus_nb" edges="SS_IW IW_LD LD_G4 G4_G3 G3_G2 G2_G1#0 G2_G1#1 G1_D0 D0_SG SG_NN#0 SG_NN#1">
+        <stop busStop="bs_LDG4" duration="20"/>
+        <stop busStop="bs_G3G2" duration="20"/>
+        <stop busStop="bs_G2G1" duration="20"/>
+        <stop busStop="bs_N_n" duration="20"/>
+    </route>
+    <route id="r_bus_eb" edges="WW_WJ WJ_DW DW_DE DE_E1 E1_YG YG_E2 E2_EF EF_EX#0 EF_EX#1">
+        <stop busStop="bs_E1YG" duration="20"/>
+        <stop busStop="bs_YGE2" duration="20"/>
+        <stop busStop="bs_E2EF" duration="20"/>
+    </route>
+    <route id="r_bus_wb" edges="EX_EF#0 EX_EF#1 EF_E2 E2_YG#0 E2_YG#1 YG_E1 E1_DE DE_DW DW_WJ WJ_WW">
+        <stop busStop="bs_EFE2" duration="20"/>
+        <stop busStop="bs_E2YG" duration="20"/>
+        <stop busStop="bs_YGE1" duration="20"/>
+    </route>
+    <route id="r_bus_gate" edges="SS_IW IW_JM JM_IE1 IE1_IE2#0 IE1_IE2#1 IE1_IE2#2 IE2_IE3#0 IE2_IE3#1 IE3_JS3 JS3_JSs#0 JS3_JSs#1 JS3_JSs#2 JS3_JSs#3 JSs_JSm JSm_JS1 JS1_JE JE_JN JN_H3 H3_H2 H2_H1 H1_G1#0 H1_G1#1 H1_G1#2 H1_G1#3 G1_D0 D0_SG SG_NN#0 SG_NN#1">
+        <stop busStop="bs_IWJM" duration="20"/>
+        <stop busStop="bs_JS1" duration="20"/>
+        <stop busStop="bs_JS2" duration="20"/>
+        <stop busStop="bs_JS3" duration="20"/>
+        <stop busStop="bs_H2H1" duration="20"/>
+    </route>
+    <route id="r_bus_gate_r" edges="NN_SG SG_D0 D0_G1 G1_H1#0 G1_H1#1 G1_H1#2 G1_H1#3 H1_H2 H2_H3 H3_JN JN_JE JE_JS1 JS1_JSm JSm_JSs JSs_JS3#0 JSs_JS3#1 JSs_JS3#2 JSs_JS3#3 JS3_IE3 IE3_IE2#0 IE3_IE2#1 IE2_IE1#0 IE2_IE1#1 IE2_IE1#2 IE1_JM JM_IW IW_SS">
+        <stop busStop="bs_H1H2" duration="20"/>
+        <stop busStop="bs_JS3r" duration="20"/>
+        <stop busStop="bs_JS2r" duration="20"/>
+        <stop busStop="bs_JS1r" duration="20"/>
+        <stop busStop="bs_JMIW" duration="20"/>
+    </route>
+    <route id="r_bus_hwasan" edges="NN_SG SG_D0 D0_G1 G1_H1#0 G1_H1#1 G1_H1#2 G1_H1#3 H1_H2 H2_H3 H3_H4 H4_H5 H5_JU JU_UE UE_EF EF_EX#0 EF_EX#1">
+        <stop busStop="bs_H1H2" duration="20"/>
+    </route>
+    <flow id="bus_sb" type="bus" begin="0" end="3600" period="300" route="r_bus_sb"/>
+    <flow id="bus_nb" type="bus" begin="0" end="3600" period="300" route="r_bus_nb"/>
+    <flow id="bus_eb" type="bus" begin="0" end="3600" period="240" route="r_bus_eb"/>
+    <flow id="bus_wb" type="bus" begin="0" end="3600" period="240" route="r_bus_wb"/>
+    <flow id="bus_gate" type="bus" begin="0" end="3600" period="600" route="r_bus_gate"/>
+    <flow id="bus_gate_r" type="bus" begin="0" end="3600" period="600" route="r_bus_gate_r"/>
+    <flow id="bus_hwasan" type="bus" begin="0" end="3600" period="600" route="r_bus_hwasan"/>
+    <flow id="sb_thru" begin="0" end="3600" period="exp(0.0417)" from="HW_NN" to="IW_SS" type="hwcar" departLane="best" departSpeed="max" />
+    <flow id="nb_thru" begin="0" end="3600" period="exp(0.0417)" from="SS_IW" to="NN_HW" departLane="best" departSpeed="max" />
+    <flow id="sb_surf" begin="0" end="3600" period="exp(0.0133)" from="HW_NN" to="IW_SS" type="hwcar" departLane="best" departSpeed="max" via="D0_G1 G1_G2#0 G1_G2#1 G2_G3 G3_G4 G4_LD"/>
+    <flow id="nb_surf" begin="0" end="3600" period="exp(0.0133)" from="SS_IW" to="NN_HW" departLane="best" departSpeed="max" via="LD_G4 G4_G3 G3_G2 G2_G1#0 G2_G1#1 G1_D0"/>
+    <flow id="w_s" begin="0" end="3600" period="exp(0.0300)" from="WW_WJ" to="IW_SS" departLane="best" departSpeed="max" />
+    <flow id="s_w" begin="0" end="3600" period="exp(0.0300)" from="SS_IW" to="WJ_WW" departLane="best" departSpeed="max" />
+    <flow id="e_s" begin="0" end="3600" period="exp(0.0200)" from="EX_EF#1" to="IW_SS" departLane="best" departSpeed="max" />
+    <flow id="s_e" begin="0" end="3600" period="exp(0.0200)" from="SS_IW" to="EF_EX#0" departLane="best" departSpeed="max" />
+    <flow id="w_e" begin="0" end="3600" period="exp(0.0417)" from="WW_WJ" to="EF_EX#0" departLane="best" departSpeed="max" />
+    <flow id="e_w" begin="0" end="3600" period="exp(0.0417)" from="EX_EF#1" to="WJ_WW" departLane="best" departSpeed="max" />
+    <flow id="n_e" begin="0" end="3600" period="exp(0.0200)" from="HW_NN" to="EF_EX#0" type="hwcar" departLane="best" departSpeed="max" />
+    <flow id="e_n" begin="0" end="3600" period="exp(0.0200)" from="EX_EF#1" to="NN_HW" departLane="best" departSpeed="max" />
+    <flow id="n_w" begin="0" end="3600" period="exp(0.0133)" from="HW_NN" to="WJ_WW" type="hwcar" departLane="best" departSpeed="max" />
+    <flow id="w_n" begin="0" end="3600" period="exp(0.0133)" from="WW_WJ" to="NN_HW" departLane="best" departSpeed="max" />
+    <flow id="n_ies" begin="0" end="3600" period="exp(0.0100)" from="HW_NN" to="IE3_IES" type="hwcar" departLane="best" departSpeed="max" />
+    <flow id="ies_n" begin="0" end="3600" period="exp(0.0100)" from="IES_IE3" to="NN_HW" departLane="best" departSpeed="max" />
+    <flow id="w_ies" begin="0" end="3600" period="exp(0.0067)" from="WW_WJ" to="IE3_IES" departLane="best" departSpeed="max" />
+    <flow id="ies_e" begin="0" end="3600" period="exp(0.0067)" from="IES_IE3" to="EF_EX#0" departLane="best" departSpeed="max" />
+    <flow id="e_ies" begin="0" end="3600" period="exp(0.0067)" from="EX_EF#1" to="IE3_IES" departLane="best" departSpeed="max" />
+    <flow id="h6_jex" begin="0" end="3600" period="exp(0.0067)" from="H6_JU" to="UE_JEX" departLane="best" departSpeed="max" />
+    <flow id="jex_n" begin="0" end="3600" period="exp(0.0067)" from="JEX_UE" to="NN_HW" departLane="best" departSpeed="max" />
+    <flow id="n_jex" begin="0" end="3600" period="exp(0.0067)" from="HW_NN" to="UE_JEX" type="hwcar" departLane="best" departSpeed="max" />
+    <flow id="jex_h6" begin="0" end="3600" period="exp(0.0067)" from="JEX_UE" to="JU_H6" departLane="best" departSpeed="max" />
+    <flow id="wa1_e" begin="0" end="3600" period="exp(0.0050)" from="WA1_G1#1" to="EF_EX#0" departLane="best" departSpeed="max" />
+    <flow id="p1_a" begin="0" end="3600" period="exp(0.0067)" from="HW_NN" to="IW_SS" type="parker" departLane="best" departSpeed="max" >
+        <stop parkingArea="P1" duration="300"/>
+    </flow>
+    <flow id="p1_b" begin="0" end="3600" period="exp(0.0050)" from="SS_IW" to="NN_HW" type="parker" departLane="best" departSpeed="max" >
+        <stop parkingArea="P1" duration="300"/>
+    </flow>
+    <flow id="p1_c" begin="0" end="3600" period="exp(0.0033)" from="WW_WJ" to="NN_HW" type="parker" departLane="best" departSpeed="max" >
+        <stop parkingArea="P1" duration="300"/>
+    </flow>
+    <flow id="p2_a" begin="0" end="3600" period="exp(0.0050)" from="EX_EF#1" to="IW_SS" type="parker" departLane="best" departSpeed="max" >
+        <stop parkingArea="P2" duration="300"/>
+    </flow>
+    <flow id="p2_b" begin="0" end="3600" period="exp(0.0050)" from="SS_IW" to="NN_HW" type="parker" departLane="best" departSpeed="max" >
+        <stop parkingArea="P2" duration="300"/>
+    </flow>
+    <flow id="p3_a" begin="0" end="3600" period="exp(0.0050)" from="HW_NN" to="IW_SS" type="parker" departLane="best" departSpeed="max" >
+        <stop parkingArea="P3" duration="300"/>
+    </flow>
+    <flow id="p3_b" begin="0" end="3600" period="exp(0.0050)" from="SS_IW" to="NN_HW" type="parker" departLane="best" departSpeed="max" >
+        <stop parkingArea="P3" duration="300"/>
+    </flow>
+    <flow id="c_w" begin="0" end="3600" period="exp(0.0067)" from="WW_WJ" to="IW_SS" type="parker" departLane="best" departSpeed="max" >
+        <stop parkingArea="PC" duration="600"/>
+    </flow>
+    <flow id="c_e" begin="0" end="3600" period="exp(0.0067)" from="EX_EF#1" to="NN_HW" type="parker" departLane="best" departSpeed="max" >
+        <stop parkingArea="PC" duration="600"/>
+    </flow>
+    <flow id="c_s" begin="0" end="3600" period="exp(0.0067)" from="SS_IW" to="EF_EX#0" type="parker" departLane="best" departSpeed="max" >
+        <stop parkingArea="PC" duration="600"/>
+    </flow>
+    <flow id="c_loop" begin="0" end="3600" period="exp(0.0067)" from="SS_IW" to="IW_SS" departLane="best" departSpeed="max" via="JM_CJ CJ_C3 C3_CE CE_CN2 CN2_CN1 CN1_CM CM_CC CC_CJ CJ_JM"/>
+    <flow id="c_loop2" begin="0" end="3600" period="exp(0.0050)" from="WW_WJ" to="NN_HW" departLane="best" departSpeed="max" via="JM_CJ CJ_C3 C3_CE CE_CN2 CN2_CN1 CN1_CM CM_CC CC_CJ CJ_JM"/>
+    <flow id="al0_out" begin="0" end="3600" period="exp(0.0020)" from="m203r" to="IE3_IES" departLane="best" departSpeed="max" />
+    <flow id="al0_in" begin="0" end="3600" period="exp(0.0020)" from="WW_WJ" to="m203r" departLane="best" departSpeed="max" />
+    <flow id="al1_out" begin="0" end="3600" period="exp(0.0020)" from="m143r" to="NN_HW" departLane="best" departSpeed="max" />
+    <flow id="al1_in" begin="0" end="3600" period="exp(0.0020)" from="SS_IW" to="m143r" departLane="best" departSpeed="max" />
+    <flow id="al2_out" begin="0" end="3600" period="exp(0.0020)" from="m25" to="NN_HW" departLane="best" departSpeed="max" />
+    <flow id="al2_in" begin="0" end="3600" period="exp(0.0020)" from="IES_IE3" to="m25" departLane="best" departSpeed="max" />
+    <flow id="al3_out" begin="0" end="3600" period="exp(0.0020)" from="m99" to="IW_SS" departLane="best" departSpeed="max" />
+    <flow id="al3_in" begin="0" end="3600" period="exp(0.0020)" from="EX_EF#1" to="m99" departLane="best" departSpeed="max" />
+    <flow id="al4_out" begin="0" end="3600" period="exp(0.0020)" from="m110" to="WJ_WW" departLane="best" departSpeed="max" />
+    <flow id="al4_in" begin="0" end="3600" period="exp(0.0020)" from="SS_IW" to="m110" departLane="best" departSpeed="max" />
+    <flow id="al5_out" begin="0" end="3600" period="exp(0.0020)" from="m117r" to="IE3_IES" departLane="best" departSpeed="max" />
+    <flow id="al5_in" begin="0" end="3600" period="exp(0.0020)" from="HW_NN" to="m117r" type="hwcar" departLane="best" departSpeed="max" />
+    <flow id="al6_out" begin="0" end="3600" period="exp(0.0020)" from="m64" to="IE3_IES" departLane="best" departSpeed="max" />
+    <flow id="al6_in" begin="0" end="3600" period="exp(0.0020)" from="EX_EF#1" to="m64" departLane="best" departSpeed="max" />
+    <flow id="al7_out" begin="0" end="3600" period="exp(0.0020)" from="m122" to="IE3_IES" departLane="best" departSpeed="max" />
+    <flow id="al7_in" begin="0" end="3600" period="exp(0.0020)" from="JEX_UE" to="m122" departLane="best" departSpeed="max" />
+    <flow id="al8_out" begin="0" end="3600" period="exp(0.0020)" from="m218r" to="IW_SS" departLane="best" departSpeed="max" />
+    <flow id="al8_in" begin="0" end="3600" period="exp(0.0020)" from="HW_NN" to="m218r" type="hwcar" departLane="best" departSpeed="max" />
+    <flow id="al9_out" begin="0" end="3600" period="exp(0.0020)" from="m77r" to="IE3_IES" departLane="best" departSpeed="max" />
+    <flow id="al9_in" begin="0" end="3600" period="exp(0.0020)" from="IES_IE3" to="m77r" departLane="best" departSpeed="max" />
+    <flow id="al10_out" begin="0" end="3600" period="exp(0.0020)" from="m113r" to="UE_JEX" departLane="best" departSpeed="max" />
+    <flow id="al10_in" begin="0" end="3600" period="exp(0.0020)" from="SS_IW" to="m113r" departLane="best" departSpeed="max" />
+    <flow id="al11_out" begin="0" end="3600" period="exp(0.0020)" from="m57r" to="EF_EX#0" departLane="best" departSpeed="max" />
+    <flow id="al11_in" begin="0" end="3600" period="exp(0.0020)" from="HW_NN" to="m57r" type="hwcar" departLane="best" departSpeed="max" />
+    <flow id="al12_out" begin="0" end="3600" period="exp(0.0020)" from="m165" to="IE3_IES" departLane="best" departSpeed="max" />
+    <flow id="al12_in" begin="0" end="3600" period="exp(0.0020)" from="JEX_UE" to="m165" departLane="best" departSpeed="max" />
+    <flow id="al13_out" begin="0" end="3600" period="exp(0.0020)" from="m108r" to="NN_HW" departLane="best" departSpeed="max" />
+    <flow id="al13_in" begin="0" end="3600" period="exp(0.0020)" from="IES_IE3" to="m108r" departLane="best" departSpeed="max" />
+    <flow id="al14_out" begin="0" end="3600" period="exp(0.0020)" from="m120" to="NN_HW" departLane="best" departSpeed="max" />
+    <flow id="al14_in" begin="0" end="3600" period="exp(0.0020)" from="IES_IE3" to="m120" departLane="best" departSpeed="max" />
+    <flow id="al15_out" begin="0" end="3600" period="exp(0.0020)" from="m34r" to="IW_SS" departLane="best" departSpeed="max" />
+    <flow id="al15_in" begin="0" end="3600" period="exp(0.0020)" from="WW_WJ" to="m34r" departLane="best" departSpeed="max" />
+    <flow id="al16_out" begin="0" end="3600" period="exp(0.0020)" from="m30r" to="UE_JEX" departLane="best" departSpeed="max" />
+    <flow id="al16_in" begin="0" end="3600" period="exp(0.0020)" from="IES_IE3" to="m30r" departLane="best" departSpeed="max" />
+    <flow id="al17_out" begin="0" end="3600" period="exp(0.0020)" from="m116r" to="WJ_WW" departLane="best" departSpeed="max" />
+    <flow id="al17_in" begin="0" end="3600" period="exp(0.0020)" from="EX_EF#1" to="m116r" departLane="best" departSpeed="max" />
+    <flow id="al18_out" begin="0" end="3600" period="exp(0.0020)" from="m174r" to="WJ_WW" departLane="best" departSpeed="max" />
+    <flow id="al18_in" begin="0" end="3600" period="exp(0.0020)" from="IES_IE3" to="m174r" departLane="best" departSpeed="max" />
+    <flow id="al19_out" begin="0" end="3600" period="exp(0.0020)" from="m121" to="WJ_WW" departLane="best" departSpeed="max" />
+    <flow id="al19_in" begin="0" end="3600" period="exp(0.0020)" from="EX_EF#1" to="m121" departLane="best" departSpeed="max" />
+    <flow id="al20_out" begin="0" end="3600" period="exp(0.0020)" from="m68" to="EF_EX#0" departLane="best" departSpeed="max" />
+    <flow id="al20_in" begin="0" end="3600" period="exp(0.0020)" from="SS_IW" to="m68" departLane="best" departSpeed="max" />
+    <flow id="al21_out" begin="0" end="3600" period="exp(0.0020)" from="m32" to="IW_SS" departLane="best" departSpeed="max" />
+    <flow id="al21_in" begin="0" end="3600" period="exp(0.0020)" from="JEX_UE" to="m32" departLane="best" departSpeed="max" />
+    <flow id="al22_out" begin="0" end="3600" period="exp(0.0020)" from="m114" to="IW_SS" departLane="best" departSpeed="max" />
+    <flow id="al22_in" begin="0" end="3600" period="exp(0.0020)" from="HW_NN" to="m114" type="hwcar" departLane="best" departSpeed="max" />
+    <flow id="al23_out" begin="0" end="3600" period="exp(0.0020)" from="m71" to="IE3_IES" departLane="best" departSpeed="max" />
+    <flow id="al23_in" begin="0" end="3600" period="exp(0.0020)" from="EX_EF#1" to="m71" departLane="best" departSpeed="max" />
+    <flow id="al24_out" begin="0" end="3600" period="exp(0.0020)" from="m132" to="IE3_IES" departLane="best" departSpeed="max" />
+    <flow id="al24_in" begin="0" end="3600" period="exp(0.0020)" from="WW_WJ" to="m132" departLane="best" departSpeed="max" />
+    <flow id="al25_out" begin="0" end="3600" period="exp(0.0020)" from="m167r" to="EF_EX#0" departLane="best" departSpeed="max" />
+    <flow id="al25_in" begin="0" end="3600" period="exp(0.0020)" from="JEX_UE" to="m167r" departLane="best" departSpeed="max" />
+    <flow id="al26_out" begin="0" end="3600" period="exp(0.0020)" from="m91r" to="WJ_WW" departLane="best" departSpeed="max" />
+    <flow id="al26_in" begin="0" end="3600" period="exp(0.0020)" from="EX_EF#1" to="m91r" departLane="best" departSpeed="max" />
+    <flow id="al27_out" begin="0" end="3600" period="exp(0.0020)" from="m91" to="IE3_IES" departLane="best" departSpeed="max" />
+    <flow id="al27_in" begin="0" end="3600" period="exp(0.0020)" from="HW_NN" to="m91" type="hwcar" departLane="best" departSpeed="max" />
+    <flow id="al28_out" begin="0" end="3600" period="exp(0.0020)" from="m114r" to="NN_HW" departLane="best" departSpeed="max" />
+    <flow id="al28_in" begin="0" end="3600" period="exp(0.0020)" from="IES_IE3" to="m114r" departLane="best" departSpeed="max" />
+    <flow id="al29_out" begin="0" end="3600" period="exp(0.0020)" from="m76" to="WJ_WW" departLane="best" departSpeed="max" />
+    <flow id="al29_in" begin="0" end="3600" period="exp(0.0020)" from="SS_IW" to="m76" departLane="best" departSpeed="max" />
+</routes>

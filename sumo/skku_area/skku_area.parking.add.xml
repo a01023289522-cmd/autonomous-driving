@@ -1,0 +1,5 @@
+<additional>
+    <parkingArea id="pa0" lane="471663865_0" startPos="91.3" endPos="121.3" roadsideCapacity="8" name="성균관대역 환승주차장"/>   <!-- 역에서 65m 주차장 -->
+    <parkingArea id="pa1" lane="102532339_0" startPos="7.6" endPos="37.6" roadsideCapacity="8" name="성균관대역 환승주차장"/>   <!-- 역에서 73m 주차장 -->
+    <parkingArea id="pa2" lane="40791740#0_0" startPos="12.7" endPos="42.7" roadsideCapacity="8" name="pa2"/>   <!-- 역에서 77m 주차장 -->
+</additional>

@@ -1,0 +1,5 @@
+<additional>
+    <!-- 지하차도 덮개 (표시용, 콘크리트색). 색 = R,G,B,투명도 -->
+    <poly id="roof_west" type="underpass_roof" color="205,205,195,150" fill="1" layer="10" shape="430.00,243.60 585.00,243.60 585.00,256.40 430.00,256.40"/>
+    <poly id="roof_east" type="underpass_roof" color="205,205,195,150" fill="1" layer="10" shape="615.00,243.60 770.00,243.60 770.00,256.40 615.00,256.40"/>
+</additional>
