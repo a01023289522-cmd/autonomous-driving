@@ -1,0 +1,12 @@
+<viewsettings>
+    <scheme name="skku">
+        <background backgroundColor="238,236,230" showGrid="0"/>
+        <edges laneEdgeMode="21" laneShowBorders="1">
+            <colorScheme name="by height at start" interpolated="0"><entry color="0,0,0,0" threshold="-100.00"/><entry color="62,62,66,255" threshold="-3.00"/><entry color="0,0,0,0" threshold="3.00"/></colorScheme>
+        </edges>
+        <junctions junctionMode="0"><colorScheme name="uniform"><entry color="62,62,66,255"/><entry color="150,200,200" name="waterway"/><entry color="invisible" name="railway"/><entry color="200,240,240" name="airway"/></colorScheme></junctions>
+        <vehicles vehicleMode="0" vehicleQuality="2" vehicle_minSize="1.00" vehicle_exaggeration="1.00" vehicle_constantSize="0" showBlinker="1"/>
+        <pois poiType_show="1" poiType_size="55" poiType_color="45,45,60" poiType_constantSize="1"/>
+    </scheme>
+    <delay value="100"/>
+</viewsettings>
