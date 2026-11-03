@@ -164,6 +164,11 @@ def patch_cleanup(net, pt):
     # 서부로2106번길: 비스듬히 가로질러 X자로 겹치던 이름 없는 22 m 연결로, 남쪽에 나란히 붙어 고리 모양이던 서비스 길은
     #   지도·로드뷰에 없는 길이라 뺀다 (사용자 지적). 2106번길은 한 길로 쭉 이어진다
     pt.edg += [f'<delete id="{eid}"/>' for eid in ("4716974720", "-4716974720", "4716974730", "-4716974730") if net.hasEdge(eid)]
+    # G2 고가 밑을 대각선으로 건너는 이름 없는 17 m 연결로(서쪽 남행 → 동쪽 북행): 남행 유턴 길인데 카카오 길찾기로 확인한
+    #   G2 유턴은 북행만이다. 신호 교차로 안에서 양보만 하다 순간이동하는 차가 나와 뺀다 (G2 교차로를 통한 길은 그대로)
+    gone = {eid for eid in ("1025323430", "-1025323430") if net.hasEdge(eid)}
+    pt.edg += [f'<delete id="{eid}"/>' for eid in sorted(gone)]
+    pt.deleted |= gone                                    # 연결 다시 계산(reset)에서도 빼기
     # 구현 범위 경계에서 잘려 15 m도 안 남은 토막(경계 노드 9000000000…에 닿음): 끝에 돌아 나오는 부채꼴만 남아 깨져 보였다
     #   골목(주거·서비스·소로)만: 큰길의 경계 끝은 차가 드나드는 출발·도착점이라 남긴다
     stubs = {e.getID() for e in net.getEdges() if e.getLength() < 15
@@ -312,29 +317,41 @@ def apply_patches():
     return sumolib.net.readNet(W("pass2.net.xml"), withPrograms=True)
 
 
+# 사거리 신호 (가정, 2026-11-03): 직진 동시 → 좌회전 차례로 → 보행자 동시신호(사용자 지정: 횡단보도만 동시 녹색).
+#   이전에는 '보행자 동시신호'를 '차량 네 방향 동시 녹색'으로 잘못 넣어, 네 방향이 한꺼번에 들어와 사거리 한복판에서 엉켜 섰다(사용자 지적).
+#   방향마다 한 번씩만 녹색을 주는 방식(주기 166초)은 교통량을 못 받아 막혔다(순간이동 5~18건) → 직진끼리 같이 주는 방식으로.
+#   실제 순서·시간은 확인 못 함. 표지판으로 확인된 것: 남쪽(고가 쪽)에서 올라오는 차는 좌회전 금지 (turn_rules)
+#   방향: N = 북쪽에서 들어옴(남행), S = 남쪽에서(북행), W = 서쪽에서(동행), E = 동쪽에서(서행). 움직임: s 직진, l 좌회전, r 우회전
+SG_DIRS = {"N": (0, -1), "S": (0, 1), "W": (1, 0), "E": (-1, 0)}
+#   (현시 이름, 녹색 초, 녹색 움직임)
+SG_PHASES = [("서부로 직진", 40, {"Ns", "Nr", "Ss", "Sr"}),
+             ("서부로 남행 좌회전", 15, {"Ns", "Nl", "Nr"}),
+             ("덕영대로 직진", 30, {"Ws", "Wr", "Es", "Er"}),
+             ("덕영대로 좌회전", 15, {"Wl", "El", "Wr", "Er"})]
+SG_YELLOW, SG_PED = 3, 45
+
+
 def sageori_tls(net, sg_id):
-    """사거리 신호 (사용자 지정): 차량 네 방향 동시 녹색 70초 → 황색 3초 → 보행자 동시신호 45초(차량 전부 정지).
-    동시 녹색일 때 부딪히는 흐름은 서부로(남북) 직진·우회전이 우선(G), 나머지는 양보(g).
+    """사거리 신호를 SG_PHASES대로 다시 쓴다. 다른 현시 때 우회전은 양보하며 돌 수 있게(g), 보행자 동시신호 때는 전부 정지.
     이 계획을 netconvert에 다시 넣어(-i) 교차로 우선권을 신호에 맞게 계산한다."""
     tls = net.getTLSSecure(sg_id)
-    links, seen, merge = {}, {}, set()
-    for in_lane, out_lane, idx in sorted(tls.getConnections(), key=lambda c: c[0].getIndex()):
+    move = {}
+    for in_lane, out_lane, idx in tls.getConnections():
         c = [c for c in in_lane.getEdge().getConnections(out_lane.getEdge())
              if c.getFromLane() == in_lane and c.getToLane() == out_lane][0]
-        hx, hy = heading(in_lane.getEdge(), True)
-        ns = abs(hy) > abs(hx)
-        major = ns and c.getDirection() not in ("l", "L")
-        if major and out_lane.getID() in seen:
-            merge.add(idx)                                # 같은 차로로 합쳐지는 우선 흐름 둘 → 바깥쪽은 양보
-        seen[out_lane.getID()] = idx
-        links[idx] = major
-    n = max(links) + 1
-    green = "".join("G" if links[i] and i not in merge else "g" for i in range(n))
+        h = heading(in_lane.getEdge(), True)
+        d = max(SG_DIRS, key=lambda k: h[0] * SG_DIRS[k][0] + h[1] * SG_DIRS[k][1])
+        move[idx] = d + {"r": "r", "R": "r", "l": "l", "L": "l"}.get(c.getDirection(), "s")
+    n = max(move) + 1
+    rows = []
+    for name, dur, green_set in SG_PHASES:
+        state = ["G" if move[i] in green_set else "g" if move[i].endswith("r") else "r" for i in range(n)]
+        rows += [f'        <phase duration="{dur}" state="{"".join(state)}" name="{name}"/>\n',
+                 f'        <phase duration="{SG_YELLOW}" state="{"".join("y" if c == "G" else c for c in state)}"/>\n']
+    rows.append(f'        <phase duration="{SG_PED}" state="{"r" * n}" name="보행자 동시신호"/>\n')
     with open(W("sageori.tll.xml"), "w", encoding="utf-8") as f:
         f.write(f'<tlLogics>\n    <tlLogic id="{sg_id}" type="static" programID="0" offset="0">\n'
-                f'        <phase duration="70" state="{green}"/>\n        <phase duration="3" state="{"y" * n}"/>\n'
-                f'        <phase duration="45" state="{"r" * n}"/>\n    </tlLogic>\n')
-        f.write('</tlLogics>\n')
+                + "".join(rows) + '    </tlLogic>\n</tlLogics>\n')
     netconvert(["-s", W("pass2.net.xml"), "-i", W("sageori.tll.xml"), "-o", P("skku.net.xml"),
                 "--offset.disable-normalization", "true"], "pass3.log")
     return sumolib.net.readNet(P("skku.net.xml"), withPrograms=True)

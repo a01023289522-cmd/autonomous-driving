@@ -99,6 +99,7 @@ def write_routes(net, groups):
         f.write('<additional>\n'
                 '    <vType id="car" sigma="0.5" impatience="0.5" color="255,220,0" guiShape="passenger"/>\n'
                 '    <vType id="hwcar" carFollowModel="IDM" accel="1.0" decel="2.0" tau="1.2" impatience="0.5" '
+                'lcStrategic="3" lcAssertive="1.5" '
                 'color="100,200,255" guiShape="passenger/sedan"/>\n'
                 '    <vType id="parker" vClass="taxi" sigma="0.5" impatience="1.0" color="255,120,0" guiShape="passenger/hatchback"/>\n'
                 '    <vType id="bus" vClass="bus" color="0,160,80" guiShape="bus"/>\n</additional>\n')
@@ -111,7 +112,7 @@ def write_routes(net, groups):
     #   막다른 골목·교내·단지 도로에서는 거의 안 나오고, 고속화도로·주차장 통로는 0
     write_trip_weights(net, W("trip_w"))
     subprocess.run([sys.executable, os.path.join(SUMO_HOME, "tools", "randomTrips.py"), "-n", P("skku.net.xml"),
-                    "-o", W("random.trips.xml"), "-r", W("random.validated.rou.xml"), "-b", "0", "-e", "3600", "-p", "3.0", "--weights-prefix", W("trip_w"),
+                    "-o", W("random.trips.xml"), "-r", W("random.validated.rou.xml"), "-b", "0", "-e", "3600", "-p", "3.5", "--weights-prefix", W("trip_w"),
                     "--min-distance", "300", "--seed", "42", "--edge-permission", "passenger", "--validate",
                     "-a", P("vtypes.add.xml"),
                     "--trip-attributes", 'type="car" departLane="best"', "--prefix", "r"],
