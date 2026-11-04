@@ -1,31 +1,141 @@
 <routes>
-    <flow id="hw_s" type="hwcar" begin="0" end="3600" period="exp(0.0417)" from="hw_hS0_hS1" to="4953325790" departLane="best" departSpeed="max"/>
+    <flow id="hw_s_0" type="hwcar" begin="0" end="300" period="exp(0.0319)" from="hw_hS0_hS1" to="4953325790" departLane="best" departSpeed="max"/>
     <flow id="hw_s_cgout" type="hwcar" begin="0" end="3600" period="exp(0.1944)" from="hw_hS0_hS1" to="hw_cg_out" departLane="best" departSpeed="max"/>
     <flow id="hw_s_jc" type="hwcar" begin="0" end="3600" period="exp(0.0417)" from="hw_jc_in" to="hw_cg_out" departLane="best" departSpeed="max"/>
-    <flow id="hw_s_cg" type="hwcar" begin="0" end="3600" period="exp(0.0167)" from="hw_cg_in" to="4953325790" departLane="best" departSpeed="max"/>
-    <flow id="hw_s_rest" type="hwcar" begin="0" end="3600" period="exp(0.0167)" from="hw_hS0_hS1" to="4953325790" departLane="best" departSpeed="max"><stop parkingArea="RS" duration="300"/></flow>
-    <flow id="hw_n" type="car" begin="0" end="3600" period="exp(0.0417)" from="4953325810" to="hw_hN1_hN0" departLane="best" departSpeed="max"/>
+    <flow id="hw_s_cg_0" type="hwcar" begin="0" end="300" period="exp(0.0192)" from="hw_cg_in" to="4953325790" departLane="best" departSpeed="max"/>
+    <flow id="hw_s_rest_0" type="hwcar" begin="0" end="300" period="exp(0.0192)" from="hw_hS0_hS1" to="4953325790" departLane="best" departSpeed="max"><stop parkingArea="RS" duration="300"/></flow>
+    <flow id="hw_n_0" type="car" begin="0" end="300" period="exp(0.0479)" from="4953325810" to="hw_hN1_hN0" departLane="best" departSpeed="max"/>
     <flow id="hw_n_cg" type="hwcar" begin="0" end="3600" period="exp(0.1667)" from="hw_cg_in2" to="hw_hN1_hN0" departLane="best" departSpeed="max"/>
     <flow id="hw_n_jc" type="hwcar" begin="0" end="3600" period="exp(0.0417)" from="hw_cg_in2" to="hw_jc_out" departLane="best" departSpeed="max"/>
-    <flow id="hw_n_rest" type="car" begin="0" end="3600" period="exp(0.0111)" from="4953325810" to="hw_hN1_hN0" departLane="best" departSpeed="max"><stop parkingArea="RN" duration="300"/></flow>
-    <flow id="hw_in_0" type="hwcar" begin="0" end="3600" period="exp(0.0042)" from="hw_hS0_hS1" to="4953325790" departLane="best" departSpeed="max"/>
-    <flow id="hw_out_0" type="car" begin="0" end="3600" period="exp(0.0033)" from="4953325810" to="hw_hN1_hN0" departLane="best" departSpeed="max"/>
-    <flow id="hw_in_1" type="hwcar" begin="0" end="3600" period="exp(0.0042)" from="hw_hS0_hS1" to="4720447770" departLane="best" departSpeed="max"/>
-    <flow id="hw_out_1" type="car" begin="0" end="3600" period="exp(0.0033)" from="708509520" to="hw_hN1_hN0" departLane="best" departSpeed="max"/>
-    <flow id="hw_in_2" type="hwcar" begin="0" end="3600" period="exp(0.0042)" from="hw_hS0_hS1" to="4878820020" departLane="best" departSpeed="max"/>
-    <flow id="hw_out_2" type="car" begin="0" end="3600" period="exp(0.0033)" from="5477873690#0" to="hw_hN1_hN0" departLane="best" departSpeed="max"/>
-    <flow id="hw_in_3" type="hwcar" begin="0" end="3600" period="exp(0.0042)" from="hw_hS0_hS1" to="-8137434160" departLane="best" departSpeed="max"/>
-    <flow id="hw_out_3" type="car" begin="0" end="3600" period="exp(0.0033)" from="8137434160" to="hw_hN1_hN0" departLane="best" departSpeed="max"/>
-    <flow id="hw_in_4" type="hwcar" begin="0" end="3600" period="exp(0.0042)" from="hw_hS0_hS1" to="4878820130" departLane="best" departSpeed="max"/>
-    <flow id="hw_out_4" type="car" begin="0" end="3600" period="exp(0.0033)" from="-4878820130" to="hw_hN1_hN0" departLane="best" departSpeed="max"/>
-    <flow id="hw_in_5" type="hwcar" begin="0" end="3600" period="exp(0.0042)" from="hw_hS0_hS1" to="4255616100#5" departLane="best" departSpeed="max"/>
-    <flow id="hw_out_5" type="car" begin="0" end="3600" period="exp(0.0033)" from="-4255616100#5" to="hw_hN1_hN0" departLane="best" departSpeed="max"/>
-    <flow id="hw_in_6" type="hwcar" begin="0" end="3600" period="exp(0.0042)" from="hw_hS0_hS1" to="5899587190#1" departLane="best" departSpeed="max"/>
-    <flow id="hw_out_6" type="car" begin="0" end="3600" period="exp(0.0033)" from="-5899587190#1" to="hw_hN1_hN0" departLane="best" departSpeed="max"/>
-    <flow id="hw_in_7" type="hwcar" begin="0" end="3600" period="exp(0.0042)" from="hw_hS0_hS1" to="-5039133830" departLane="best" departSpeed="max"/>
-    <flow id="hw_out_7" type="car" begin="0" end="3600" period="exp(0.0033)" from="5039133830" to="hw_hN1_hN0" departLane="best" departSpeed="max"/>
-    <flow id="hw_in_8" type="hwcar" begin="0" end="3600" period="exp(0.0042)" from="hw_hS0_hS1" to="5552317740" departLane="best" departSpeed="max"/>
-    <flow id="hw_out_8" type="car" begin="0" end="3600" period="exp(0.0033)" from="-5552317740" to="hw_hN1_hN0" departLane="best" departSpeed="max"/>
-    <flow id="hw_in_9" type="hwcar" begin="0" end="3600" period="exp(0.0042)" from="hw_hS0_hS1" to="-7754668980" departLane="best" departSpeed="max"/>
-    <flow id="hw_out_9" type="car" begin="0" end="3600" period="exp(0.0033)" from="7754668980" to="hw_hN1_hN0" departLane="best" departSpeed="max"/>
+    <flow id="hw_n_rest_0" type="car" begin="0" end="300" period="exp(0.0128)" from="4953325810" to="hw_hN1_hN0" departLane="best" departSpeed="max"><stop parkingArea="RN" duration="300"/></flow>
+    <flow id="hw_in_0_0" type="hwcar" begin="0" end="300" period="exp(0.0026)" from="hw_hS0_hS1" to="4953325790" departLane="best" departSpeed="max"/>
+    <flow id="hw_out_0_0" type="car" begin="0" end="300" period="exp(0.0038)" from="4953325810" to="hw_hN1_hN0" departLane="best" departSpeed="max"/>
+    <flow id="hw_in_1_0" type="hwcar" begin="0" end="300" period="exp(0.0026)" from="hw_hS0_hS1" to="-4886417240#0" departLane="best" departSpeed="max"/>
+    <flow id="hw_out_1_0" type="car" begin="0" end="300" period="exp(0.0038)" from="4886417240#0" to="hw_hN1_hN0" departLane="best" departSpeed="max"/>
+    <flow id="hw_in_2_0" type="hwcar" begin="0" end="300" period="exp(0.0026)" from="hw_hS0_hS1" to="4878820020" departLane="best" departSpeed="max"/>
+    <flow id="hw_out_2_0" type="car" begin="0" end="300" period="exp(0.0038)" from="5477873690#0" to="hw_hN1_hN0" departLane="best" departSpeed="max"/>
+    <flow id="hw_in_3_0" type="hwcar" begin="0" end="300" period="exp(0.0026)" from="hw_hS0_hS1" to="-8137434160" departLane="best" departSpeed="max"/>
+    <flow id="hw_out_3_0" type="car" begin="0" end="300" period="exp(0.0038)" from="8137434160" to="hw_hN1_hN0" departLane="best" departSpeed="max"/>
+    <flow id="hw_in_4_0" type="hwcar" begin="0" end="300" period="exp(0.0026)" from="hw_hS0_hS1" to="4878820130" departLane="best" departSpeed="max"/>
+    <flow id="hw_out_4_0" type="car" begin="0" end="300" period="exp(0.0038)" from="-4878820130" to="hw_hN1_hN0" departLane="best" departSpeed="max"/>
+    <flow id="hw_in_5_0" type="hwcar" begin="0" end="300" period="exp(0.0026)" from="hw_hS0_hS1" to="4255616100#5" departLane="best" departSpeed="max"/>
+    <flow id="hw_out_5_0" type="car" begin="0" end="300" period="exp(0.0038)" from="-4255616100#5" to="hw_hN1_hN0" departLane="best" departSpeed="max"/>
+    <flow id="hw_in_6_0" type="hwcar" begin="0" end="300" period="exp(0.0026)" from="hw_hS0_hS1" to="4720447770#5" departLane="best" departSpeed="max"/>
+    <flow id="hw_out_6_0" type="car" begin="0" end="300" period="exp(0.0038)" from="708509520#0" to="hw_hN1_hN0" departLane="best" departSpeed="max"/>
+    <flow id="hw_in_7_0" type="hwcar" begin="0" end="300" period="exp(0.0026)" from="hw_hS0_hS1" to="6003175020" departLane="best" departSpeed="max"/>
+    <flow id="hw_out_7_0" type="car" begin="0" end="300" period="exp(0.0038)" from="6003175030" to="hw_hN1_hN0" departLane="best" departSpeed="max"/>
+    <flow id="hw_in_8_0" type="hwcar" begin="0" end="300" period="exp(0.0026)" from="hw_hS0_hS1" to="5552317740" departLane="best" departSpeed="max"/>
+    <flow id="hw_out_8_0" type="car" begin="0" end="300" period="exp(0.0038)" from="-5552317740" to="hw_hN1_hN0" departLane="best" departSpeed="max"/>
+    <flow id="hw_in_9_0" type="hwcar" begin="0" end="300" period="exp(0.0026)" from="hw_hS0_hS1" to="-7754668980" departLane="best" departSpeed="max"/>
+    <flow id="hw_out_9_0" type="car" begin="0" end="300" period="exp(0.0038)" from="7754668980" to="hw_hN1_hN0" departLane="best" departSpeed="max"/>
+    <flow id="ia_o6_ns_0" type="car" begin="0" end="300" period="exp(0.0650)" from="-4780072930" to="4526039580#4" via="4526039580#2 4526039580#3" departLane="best" departSpeed="max"/>
+    <flow id="ia_o6_sn_0" type="car" begin="0" end="300" period="exp(0.0542)" from="-4526039580#4" to="4780072930" via="-4526039580#3 -4526039580#2" departLane="best" departSpeed="max"/>
+    <flow id="ia_o7_ns_0" type="car" begin="0" end="300" period="exp(0.0542)" from="-4717154970" to="-4526039550#3" via="-4694200430 -4526039570#1" departLane="best" departSpeed="max"/>
+    <flow id="ia_o7_sn_0" type="car" begin="0" end="300" period="exp(0.0542)" from="4526039550#3" to="-9718133180" via="4526039570#1 4694200430" departLane="best" departSpeed="max"/>
+    <flow id="ia_o8_ns_0" type="car" begin="0" end="300" period="exp(0.0650)" from="586716230#1" to="-4526039550#3" via="4694200400 4717154970" departLane="best" departSpeed="max"/>
+    <flow id="ia_x9_join_0" type="car" begin="0" end="300" period="exp(0.0542)" from="-4709208800#2" to="-4780276970" via="-4709208800#1 5039133870#1" departLane="best" departSpeed="max"/>
+    <flow id="ia_rb_w_0" type="car" begin="0" end="300" period="exp(0.1625)" from="-3718967780#1" to="-5039133830#2" via="-3718967780#0 -5039133830#3" departLane="best" departSpeed="max"/>
+    <flow id="ia_rb_e_0" type="car" begin="0" end="300" period="exp(0.1083)" from="5039133830#2" to="4709208800#2" via="5039133830#3 5039133870#0" departLane="best" departSpeed="max"/>
+    <flow id="ia_rb_n_0" type="car" begin="0" end="300" period="exp(0.0903)" from="-4709208800#2" to="-14601887080" via="-5039133870#0" departLane="best" departSpeed="max"/>
+    <flow id="ia_gate_wb_0" type="car" begin="0" end="300" period="exp(0.0903)" from="5612296390#2" to="-3718967780#2" via="-5612296410" departLane="best" departSpeed="max"/>
+    <flow id="ia_gate_in_0" type="car" begin="0" end="300" period="exp(0.0217)" from="5612296410" to="-5612296410" via="-15379779810#1 9239987550#3" departLane="best" departSpeed="max"/>
+    <flow id="ia_gate_out_0" type="car" begin="0" end="300" period="exp(0.0217)" from="15371099040" to="-5612296410" via="15379779810#1" departLane="best" departSpeed="max"/>
+    <flow id="hw_s_1" type="hwcar" begin="300" end="600" period="exp(0.0278)" from="hw_hS0_hS1" to="4953325790" departLane="best" departSpeed="max"/>
+    <flow id="hw_s_cg_1" type="hwcar" begin="300" end="600" period="exp(0.0167)" from="hw_cg_in" to="4953325790" departLane="best" departSpeed="max"/>
+    <flow id="hw_s_rest_1" type="hwcar" begin="300" end="600" period="exp(0.0167)" from="hw_hS0_hS1" to="4953325790" departLane="best" departSpeed="max"><stop parkingArea="RS" duration="300"/></flow>
+    <flow id="hw_n_1" type="car" begin="300" end="600" period="exp(0.0417)" from="4953325810" to="hw_hN1_hN0" departLane="best" departSpeed="max"/>
+    <flow id="hw_n_rest_1" type="car" begin="300" end="600" period="exp(0.0111)" from="4953325810" to="hw_hN1_hN0" departLane="best" departSpeed="max"><stop parkingArea="RN" duration="300"/></flow>
+    <flow id="hw_in_0_1" type="hwcar" begin="300" end="600" period="exp(0.0022)" from="hw_hS0_hS1" to="4953325790" departLane="best" departSpeed="max"/>
+    <flow id="hw_out_0_1" type="car" begin="300" end="600" period="exp(0.0033)" from="4953325810" to="hw_hN1_hN0" departLane="best" departSpeed="max"/>
+    <flow id="hw_in_1_1" type="hwcar" begin="300" end="600" period="exp(0.0022)" from="hw_hS0_hS1" to="-4886417240#0" departLane="best" departSpeed="max"/>
+    <flow id="hw_out_1_1" type="car" begin="300" end="600" period="exp(0.0033)" from="4886417240#0" to="hw_hN1_hN0" departLane="best" departSpeed="max"/>
+    <flow id="hw_in_2_1" type="hwcar" begin="300" end="600" period="exp(0.0022)" from="hw_hS0_hS1" to="4878820020" departLane="best" departSpeed="max"/>
+    <flow id="hw_out_2_1" type="car" begin="300" end="600" period="exp(0.0033)" from="5477873690#0" to="hw_hN1_hN0" departLane="best" departSpeed="max"/>
+    <flow id="hw_in_3_1" type="hwcar" begin="300" end="600" period="exp(0.0022)" from="hw_hS0_hS1" to="-8137434160" departLane="best" departSpeed="max"/>
+    <flow id="hw_out_3_1" type="car" begin="300" end="600" period="exp(0.0033)" from="8137434160" to="hw_hN1_hN0" departLane="best" departSpeed="max"/>
+    <flow id="hw_in_4_1" type="hwcar" begin="300" end="600" period="exp(0.0022)" from="hw_hS0_hS1" to="4878820130" departLane="best" departSpeed="max"/>
+    <flow id="hw_out_4_1" type="car" begin="300" end="600" period="exp(0.0033)" from="-4878820130" to="hw_hN1_hN0" departLane="best" departSpeed="max"/>
+    <flow id="hw_in_5_1" type="hwcar" begin="300" end="600" period="exp(0.0022)" from="hw_hS0_hS1" to="4255616100#5" departLane="best" departSpeed="max"/>
+    <flow id="hw_out_5_1" type="car" begin="300" end="600" period="exp(0.0033)" from="-4255616100#5" to="hw_hN1_hN0" departLane="best" departSpeed="max"/>
+    <flow id="hw_in_6_1" type="hwcar" begin="300" end="600" period="exp(0.0022)" from="hw_hS0_hS1" to="4720447770#5" departLane="best" departSpeed="max"/>
+    <flow id="hw_out_6_1" type="car" begin="300" end="600" period="exp(0.0033)" from="708509520#0" to="hw_hN1_hN0" departLane="best" departSpeed="max"/>
+    <flow id="hw_in_7_1" type="hwcar" begin="300" end="600" period="exp(0.0022)" from="hw_hS0_hS1" to="6003175020" departLane="best" departSpeed="max"/>
+    <flow id="hw_out_7_1" type="car" begin="300" end="600" period="exp(0.0033)" from="6003175030" to="hw_hN1_hN0" departLane="best" departSpeed="max"/>
+    <flow id="hw_in_8_1" type="hwcar" begin="300" end="600" period="exp(0.0022)" from="hw_hS0_hS1" to="5552317740" departLane="best" departSpeed="max"/>
+    <flow id="hw_out_8_1" type="car" begin="300" end="600" period="exp(0.0033)" from="-5552317740" to="hw_hN1_hN0" departLane="best" departSpeed="max"/>
+    <flow id="hw_in_9_1" type="hwcar" begin="300" end="600" period="exp(0.0022)" from="hw_hS0_hS1" to="-7754668980" departLane="best" departSpeed="max"/>
+    <flow id="hw_out_9_1" type="car" begin="300" end="600" period="exp(0.0033)" from="7754668980" to="hw_hN1_hN0" departLane="best" departSpeed="max"/>
+    <flow id="ia_o6_ns_1" type="car" begin="300" end="600" period="exp(0.0625)" from="-4780072930" to="4526039580#4" via="4526039580#2 4526039580#3" departLane="best" departSpeed="max"/>
+    <flow id="ia_o6_sn_1" type="car" begin="300" end="600" period="exp(0.0521)" from="-4526039580#4" to="4780072930" via="-4526039580#3 -4526039580#2" departLane="best" departSpeed="max"/>
+    <flow id="ia_o7_ns_1" type="car" begin="300" end="600" period="exp(0.0521)" from="-4717154970" to="-4526039550#3" via="-4694200430 -4526039570#1" departLane="best" departSpeed="max"/>
+    <flow id="ia_o7_sn_1" type="car" begin="300" end="600" period="exp(0.0521)" from="4526039550#3" to="-9718133180" via="4526039570#1 4694200430" departLane="best" departSpeed="max"/>
+    <flow id="ia_o8_ns_1" type="car" begin="300" end="600" period="exp(0.0625)" from="586716230#1" to="-4526039550#3" via="4694200400 4717154970" departLane="best" departSpeed="max"/>
+    <flow id="ia_x9_join_1" type="car" begin="300" end="600" period="exp(0.0521)" from="-4709208800#2" to="-4780276970" via="-4709208800#1 5039133870#1" departLane="best" departSpeed="max"/>
+    <flow id="ia_rb_w_1" type="car" begin="300" end="600" period="exp(0.1562)" from="-3718967780#1" to="-5039133830#2" via="-3718967780#0 -5039133830#3" departLane="best" departSpeed="max"/>
+    <flow id="ia_rb_e_1" type="car" begin="300" end="600" period="exp(0.1042)" from="5039133830#2" to="4709208800#2" via="5039133830#3 5039133870#0" departLane="best" departSpeed="max"/>
+    <flow id="ia_rb_n_1" type="car" begin="300" end="600" period="exp(0.0868)" from="-4709208800#2" to="-14601887080" via="-5039133870#0" departLane="best" departSpeed="max"/>
+    <flow id="ia_gate_wb_1" type="car" begin="300" end="600" period="exp(0.0868)" from="5612296390#2" to="-3718967780#2" via="-5612296410" departLane="best" departSpeed="max"/>
+    <flow id="ia_gate_in_1" type="car" begin="300" end="600" period="exp(0.0208)" from="5612296410" to="-5612296410" via="-15379779810#1 9239987550#3" departLane="best" departSpeed="max"/>
+    <flow id="ia_gate_out_1" type="car" begin="300" end="600" period="exp(0.0208)" from="15371099040" to="-5612296410" via="15379779810#1" departLane="best" departSpeed="max"/>
+    <flow id="hw_s_2" type="hwcar" begin="600" end="3600" period="exp(0.0264)" from="hw_hS0_hS1" to="4953325790" departLane="best" departSpeed="max"/>
+    <flow id="hw_s_cg_2" type="hwcar" begin="600" end="3600" period="exp(0.0158)" from="hw_cg_in" to="4953325790" departLane="best" departSpeed="max"/>
+    <flow id="hw_s_rest_2" type="hwcar" begin="600" end="3600" period="exp(0.0158)" from="hw_hS0_hS1" to="4953325790" departLane="best" departSpeed="max"><stop parkingArea="RS" duration="300"/></flow>
+    <flow id="hw_n_2" type="car" begin="600" end="3600" period="exp(0.0396)" from="4953325810" to="hw_hN1_hN0" departLane="best" departSpeed="max"/>
+    <flow id="hw_n_rest_2" type="car" begin="600" end="3600" period="exp(0.0106)" from="4953325810" to="hw_hN1_hN0" departLane="best" departSpeed="max"><stop parkingArea="RN" duration="300"/></flow>
+    <flow id="hw_in_0_2" type="hwcar" begin="600" end="3600" period="exp(0.0021)" from="hw_hS0_hS1" to="4953325790" departLane="best" departSpeed="max"/>
+    <flow id="hw_out_0_2" type="car" begin="600" end="3600" period="exp(0.0032)" from="4953325810" to="hw_hN1_hN0" departLane="best" departSpeed="max"/>
+    <flow id="hw_in_1_2" type="hwcar" begin="600" end="3600" period="exp(0.0021)" from="hw_hS0_hS1" to="-4886417240#0" departLane="best" departSpeed="max"/>
+    <flow id="hw_out_1_2" type="car" begin="600" end="3600" period="exp(0.0032)" from="4886417240#0" to="hw_hN1_hN0" departLane="best" departSpeed="max"/>
+    <flow id="hw_in_2_2" type="hwcar" begin="600" end="3600" period="exp(0.0021)" from="hw_hS0_hS1" to="4878820020" departLane="best" departSpeed="max"/>
+    <flow id="hw_out_2_2" type="car" begin="600" end="3600" period="exp(0.0032)" from="5477873690#0" to="hw_hN1_hN0" departLane="best" departSpeed="max"/>
+    <flow id="hw_in_3_2" type="hwcar" begin="600" end="3600" period="exp(0.0021)" from="hw_hS0_hS1" to="-8137434160" departLane="best" departSpeed="max"/>
+    <flow id="hw_out_3_2" type="car" begin="600" end="3600" period="exp(0.0032)" from="8137434160" to="hw_hN1_hN0" departLane="best" departSpeed="max"/>
+    <flow id="hw_in_4_2" type="hwcar" begin="600" end="3600" period="exp(0.0021)" from="hw_hS0_hS1" to="4878820130" departLane="best" departSpeed="max"/>
+    <flow id="hw_out_4_2" type="car" begin="600" end="3600" period="exp(0.0032)" from="-4878820130" to="hw_hN1_hN0" departLane="best" departSpeed="max"/>
+    <flow id="hw_in_5_2" type="hwcar" begin="600" end="3600" period="exp(0.0021)" from="hw_hS0_hS1" to="4255616100#5" departLane="best" departSpeed="max"/>
+    <flow id="hw_out_5_2" type="car" begin="600" end="3600" period="exp(0.0032)" from="-4255616100#5" to="hw_hN1_hN0" departLane="best" departSpeed="max"/>
+    <flow id="hw_in_6_2" type="hwcar" begin="600" end="3600" period="exp(0.0021)" from="hw_hS0_hS1" to="4720447770#5" departLane="best" departSpeed="max"/>
+    <flow id="hw_out_6_2" type="car" begin="600" end="3600" period="exp(0.0032)" from="708509520#0" to="hw_hN1_hN0" departLane="best" departSpeed="max"/>
+    <flow id="hw_in_7_2" type="hwcar" begin="600" end="3600" period="exp(0.0021)" from="hw_hS0_hS1" to="6003175020" departLane="best" departSpeed="max"/>
+    <flow id="hw_out_7_2" type="car" begin="600" end="3600" period="exp(0.0032)" from="6003175030" to="hw_hN1_hN0" departLane="best" departSpeed="max"/>
+    <flow id="hw_in_8_2" type="hwcar" begin="600" end="3600" period="exp(0.0021)" from="hw_hS0_hS1" to="5552317740" departLane="best" departSpeed="max"/>
+    <flow id="hw_out_8_2" type="car" begin="600" end="3600" period="exp(0.0032)" from="-5552317740" to="hw_hN1_hN0" departLane="best" departSpeed="max"/>
+    <flow id="hw_in_9_2" type="hwcar" begin="600" end="3600" period="exp(0.0021)" from="hw_hS0_hS1" to="-7754668980" departLane="best" departSpeed="max"/>
+    <flow id="hw_out_9_2" type="car" begin="600" end="3600" period="exp(0.0032)" from="7754668980" to="hw_hN1_hN0" departLane="best" departSpeed="max"/>
+    <flow id="ia_o6_ns_2" type="car" begin="600" end="900" period="exp(0.0550)" from="-4780072930" to="4526039580#4" via="4526039580#2 4526039580#3" departLane="best" departSpeed="max"/>
+    <flow id="ia_o6_sn_2" type="car" begin="600" end="900" period="exp(0.0458)" from="-4526039580#4" to="4780072930" via="-4526039580#3 -4526039580#2" departLane="best" departSpeed="max"/>
+    <flow id="ia_o7_ns_2" type="car" begin="600" end="900" period="exp(0.0458)" from="-4717154970" to="-4526039550#3" via="-4694200430 -4526039570#1" departLane="best" departSpeed="max"/>
+    <flow id="ia_o7_sn_2" type="car" begin="600" end="900" period="exp(0.0458)" from="4526039550#3" to="-9718133180" via="4526039570#1 4694200430" departLane="best" departSpeed="max"/>
+    <flow id="ia_o8_ns_2" type="car" begin="600" end="900" period="exp(0.0550)" from="586716230#1" to="-4526039550#3" via="4694200400 4717154970" departLane="best" departSpeed="max"/>
+    <flow id="ia_x9_join_2" type="car" begin="600" end="900" period="exp(0.0458)" from="-4709208800#2" to="-4780276970" via="-4709208800#1 5039133870#1" departLane="best" departSpeed="max"/>
+    <flow id="ia_rb_w_2" type="car" begin="600" end="900" period="exp(0.1375)" from="-3718967780#1" to="-5039133830#2" via="-3718967780#0 -5039133830#3" departLane="best" departSpeed="max"/>
+    <flow id="ia_rb_e_2" type="car" begin="600" end="900" period="exp(0.0917)" from="5039133830#2" to="4709208800#2" via="5039133830#3 5039133870#0" departLane="best" departSpeed="max"/>
+    <flow id="ia_rb_n_2" type="car" begin="600" end="900" period="exp(0.0764)" from="-4709208800#2" to="-14601887080" via="-5039133870#0" departLane="best" departSpeed="max"/>
+    <flow id="ia_gate_wb_2" type="car" begin="600" end="900" period="exp(0.0764)" from="5612296390#2" to="-3718967780#2" via="-5612296410" departLane="best" departSpeed="max"/>
+    <flow id="ia_gate_in_2" type="car" begin="600" end="900" period="exp(0.0183)" from="5612296410" to="-5612296410" via="-15379779810#1 9239987550#3" departLane="best" departSpeed="max"/>
+    <flow id="ia_gate_out_2" type="car" begin="600" end="900" period="exp(0.0183)" from="15371099040" to="-5612296410" via="15379779810#1" departLane="best" departSpeed="max"/>
+    <flow id="ia_o6_ns_3" type="car" begin="900" end="1500" period="exp(0.0500)" from="-4780072930" to="4526039580#4" via="4526039580#2 4526039580#3" departLane="best" departSpeed="max"/>
+    <flow id="ia_o6_sn_3" type="car" begin="900" end="1500" period="exp(0.0417)" from="-4526039580#4" to="4780072930" via="-4526039580#3 -4526039580#2" departLane="best" departSpeed="max"/>
+    <flow id="ia_o7_ns_3" type="car" begin="900" end="1500" period="exp(0.0417)" from="-4717154970" to="-4526039550#3" via="-4694200430 -4526039570#1" departLane="best" departSpeed="max"/>
+    <flow id="ia_o7_sn_3" type="car" begin="900" end="1500" period="exp(0.0417)" from="4526039550#3" to="-9718133180" via="4526039570#1 4694200430" departLane="best" departSpeed="max"/>
+    <flow id="ia_o8_ns_3" type="car" begin="900" end="1500" period="exp(0.0500)" from="586716230#1" to="-4526039550#3" via="4694200400 4717154970" departLane="best" departSpeed="max"/>
+    <flow id="ia_x9_join_3" type="car" begin="900" end="1500" period="exp(0.0417)" from="-4709208800#2" to="-4780276970" via="-4709208800#1 5039133870#1" departLane="best" departSpeed="max"/>
+    <flow id="ia_rb_w_3" type="car" begin="900" end="1500" period="exp(0.1250)" from="-3718967780#1" to="-5039133830#2" via="-3718967780#0 -5039133830#3" departLane="best" departSpeed="max"/>
+    <flow id="ia_rb_e_3" type="car" begin="900" end="1500" period="exp(0.0833)" from="5039133830#2" to="4709208800#2" via="5039133830#3 5039133870#0" departLane="best" departSpeed="max"/>
+    <flow id="ia_rb_n_3" type="car" begin="900" end="1500" period="exp(0.0694)" from="-4709208800#2" to="-14601887080" via="-5039133870#0" departLane="best" departSpeed="max"/>
+    <flow id="ia_gate_wb_3" type="car" begin="900" end="1500" period="exp(0.0694)" from="5612296390#2" to="-3718967780#2" via="-5612296410" departLane="best" departSpeed="max"/>
+    <flow id="ia_gate_in_3" type="car" begin="900" end="1500" period="exp(0.0167)" from="5612296410" to="-5612296410" via="-15379779810#1 9239987550#3" departLane="best" departSpeed="max"/>
+    <flow id="ia_gate_out_3" type="car" begin="900" end="1500" period="exp(0.0167)" from="15371099040" to="-5612296410" via="15379779810#1" departLane="best" departSpeed="max"/>
+    <flow id="ia_o6_ns_4" type="car" begin="1500" end="3600" period="exp(0.0475)" from="-4780072930" to="4526039580#4" via="4526039580#2 4526039580#3" departLane="best" departSpeed="max"/>
+    <flow id="ia_o6_sn_4" type="car" begin="1500" end="3600" period="exp(0.0396)" from="-4526039580#4" to="4780072930" via="-4526039580#3 -4526039580#2" departLane="best" departSpeed="max"/>
+    <flow id="ia_o7_ns_4" type="car" begin="1500" end="3600" period="exp(0.0396)" from="-4717154970" to="-4526039550#3" via="-4694200430 -4526039570#1" departLane="best" departSpeed="max"/>
+    <flow id="ia_o7_sn_4" type="car" begin="1500" end="3600" period="exp(0.0396)" from="4526039550#3" to="-9718133180" via="4526039570#1 4694200430" departLane="best" departSpeed="max"/>
+    <flow id="ia_o8_ns_4" type="car" begin="1500" end="3600" period="exp(0.0475)" from="586716230#1" to="-4526039550#3" via="4694200400 4717154970" departLane="best" departSpeed="max"/>
+    <flow id="ia_x9_join_4" type="car" begin="1500" end="3600" period="exp(0.0396)" from="-4709208800#2" to="-4780276970" via="-4709208800#1 5039133870#1" departLane="best" departSpeed="max"/>
+    <flow id="ia_rb_w_4" type="car" begin="1500" end="3600" period="exp(0.1187)" from="-3718967780#1" to="-5039133830#2" via="-3718967780#0 -5039133830#3" departLane="best" departSpeed="max"/>
+    <flow id="ia_rb_e_4" type="car" begin="1500" end="3600" period="exp(0.0792)" from="5039133830#2" to="4709208800#2" via="5039133830#3 5039133870#0" departLane="best" departSpeed="max"/>
+    <flow id="ia_rb_n_4" type="car" begin="1500" end="3600" period="exp(0.0660)" from="-4709208800#2" to="-14601887080" via="-5039133870#0" departLane="best" departSpeed="max"/>
+    <flow id="ia_gate_wb_4" type="car" begin="1500" end="3600" period="exp(0.0660)" from="5612296390#2" to="-3718967780#2" via="-5612296410" departLane="best" departSpeed="max"/>
+    <flow id="ia_gate_in_4" type="car" begin="1500" end="3600" period="exp(0.0158)" from="5612296410" to="-5612296410" via="-15379779810#1 9239987550#3" departLane="best" departSpeed="max"/>
+    <flow id="ia_gate_out_4" type="car" begin="1500" end="3600" period="exp(0.0158)" from="15371099040" to="-5612296410" via="15379779810#1" departLane="best" departSpeed="max"/>
 </routes>

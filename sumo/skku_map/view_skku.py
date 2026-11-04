@@ -43,6 +43,13 @@ def lower_layers(net):
     return under, deck
 
 
+def base_color(v):
+    """화면에 보이는 원래 색. getColor는 XML·TraCI로 차에 직접 준 색만 돌려주고, 없으면 기본 노랑(255,255,0)이라
+    (userdoc/TraCI/Vehicle_Value_Retrieval.html "color") 차 종류(vType) 색을 쓰는 버스가 반투명을 풀 때 노랗게 바뀌었다."""
+    c = traci.vehicle.getColor(v)
+    return tuple(c[:3]) if tuple(c) != (255, 255, 0, 255) else tuple(traci.vehicletype.getColor(traci.vehicle.getTypeID(v))[:3])
+
+
 def main():
     net = sumolib.net.readNet(os.path.join(HERE, "skku.net.xml"), withInternal=True)
     under, deck = lower_layers(net)
@@ -65,7 +72,7 @@ def main():
                 if low == (v in faded):
                     continue
                 if v not in color:
-                    color[v] = traci.vehicle.getColor(v)[:3]
+                    color[v] = base_color(v)
                 traci.vehicle.setColor(v, color[v] + ((FADE,) if low else (255,)))
                 (faded.add if low else faded.discard)(v)
     except traci.exceptions.FatalTraCIError:

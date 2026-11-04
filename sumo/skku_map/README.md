@@ -39,6 +39,7 @@ cd verify && python -X utf8 route_check.py   # 카카오 길찾기 결과와 SUM
 | `bus_lines.py`, `bus_kakao.json` | 카카오맵 실제 버스 노선 17개 → 정류장·운행 |
 | `background.py`, `campus_poly.json` | 배경(건물·단지·공원·물·철도)과 지명 글자 (sumo-gui 글꼴에 한글이 없어 영어) |
 | `view_skku.py`, `run_skku.bat` | 시뮬레이션 보기 (sumo-gui + TraCI, 아래층 차를 반투명하게) |
+| `view_av_route.py` | AV 루트 주행 보기: 루트를 달리는 차(주황, SUMO 기본 승용차)를 화면이 따라가고 구간별 배속으로 보여 준다 |
 | `osm/` | OSM 원본 (OSM 공식 API로 받은 것) |
 | `verify/` | 카카오 길찾기 검증: 구간 목록(`make_checks.py`), 결과·근거(`kakao_routes.txt`, `kakao_verified.txt`), 비교(`route_check.py`) |
 | `img/` | 결과 화면, 높이 표현 방안 비교 화면 |
@@ -48,5 +49,20 @@ cd verify && python -X utf8 route_check.py   # 카카오 길찾기 결과와 SUM
 ## 확인한 것과 가정한 것
 - 확인(카카오 길찾기·위성사진·로드뷰): 일방통행, 큰길 차로 수(서부로·덕영대로·화산로·일월로·정자천로 등),
   막힌 캠퍼스 문(후문·서쪽 문), 버스 노선·정류장, 의왕TG·IC 순서
-- 사용자 지정: 사거리 신호(차량 동시 녹색 70초 → 황색 3초 → 보행자 동시신호 45초), 사거리 북쪽 방향 좌회전 금지
-- 가정: 사거리 외 교차로 신호 시간(SUMO 기본 생성), 교통량, 주차 시간, 요금소 부스 수(한 방향 10개)
+- 사용자 지정: 사거리 보행자 동시신호 45초, 사거리 북쪽 방향(남쪽에서 올라오는 차) 좌회전 금지
+- 가정: 사거리 차량 신호 순서·시간 (서부로 직진 50 → 서부로 남행 좌회전 15 → 덕영대로 동행 직좌 15 → 덕영대로 서행 직좌 25 → 보행자 45초)
+- 가정: 나머지 신호 교차로 4곳 (build.py korean_plan): 좌회전·직진을 같이 쓰는 차로가 있는 진입로는 방향별 직좌 동시신호,
+  없으면 직진 동시 → 좌회전 동시. 우회전은 다른 신호 때도 양보하며. 녹색 2차로 이상 30초, 1차로 18초, 좌회전 15초
+- 가정: 교통량, 주차 시간, 요금소 부스 수(한 방향 10개)
+- 교통량은 시간대별 배율(traffic.py DEMAND·HW_DEMAND): 처음 10~15분 많이 넣어 대기 줄을 만들고 그 뒤 조금 줄여 쌓인 정도를 유지
+
+## AV 루트 후보 (2026-11-03, 팀 회의에서 정함)
+- **제안 (`img/av_route_full.png`, 경로 `verify/av_route_full.json`)**: 위 띠는 고속도로(남행, 구간 순서만), 아래는 실제 지도
+  - 고속도로(청계IC 진입 뒤, 가속 차로) → 휴게소 합류 → 의왕TG 요금소(3→10→3차로) → 서부로 (2.9 km)
+  - 성대역 사거리 → 고가/지상 분기 → 지상 서부로(버스 정류장, G1) → 올리브영 사거리(G2)에서 오른쪽 골목 → 오거리 3곳 →
+    율전로 회전교차로 → 율전로64번길 → 서부로×일월로 보호 좌회전 → 일월로 → 학교 정문 좌회전 (2.4 km)
+  - 정문 길 따라 북쪽으로 Modular Bldg 지나 Global Plaza 앞에서 우회전 → 교내 큰 주차장 L1(약 270칸)에 주차·출차 →
+    교내 순환로(반시계 일방통행) 한 바퀴 → 정문 (1.9 km)
+  - 정문 나가며 좌회전 → 일월로 동쪽 → 일월로 남쪽 끝 도착 (0.5 km). 전체 약 7.8 km, 정문 길 말고는 같은 길을 다시 지나지 않음
+  - 다시 만들기: `python -X utf8 verify/route_big.py verify verify/av_route_full.json` → `python -X utf8 verify/draw_combined.py verify/av_route_full.json img/toll_sumo.png img/av_route_full.png`
+- 짧은 대안 (`img/av_route.png`, `verify/av_route.json`, 약 2.1 km): 서부로 북쪽 → 성대역 사거리 → 오거리 → 회전교차로 → 서부로×일월로

@@ -45,11 +45,43 @@ def pts(s):
     return [tuple(map(float, p.split())) for p in s.split(",")]
 
 
+def elevated(e):
+    """서부로 고가(via_sb, via_nb). 버스는 이 고가를 타지 않는다: 지상 서부로를 고가에서 띄워 그려서(viaduct.py) 카카오 노선
+    좌표가 고가에 더 가까워, 지상 정류장(성균관대역·성균관대학교·삼성아파트)이 고가 위에 놓였었다.
+    (덕영대로 율전고가교도 +6 m지만 버스가 실제로 다니는 길이라 빼지 않는다)"""
+    return e.getID().startswith("via_")
+
+
+def heading_at(sh, off):
+    """꺾은선 sh의 offset 지점 진행 방향 (단위 벡터)."""
+    acc = 0.0
+    for a, b in zip(sh, sh[1:]):
+        L = math.dist(a, b)
+        if acc + L >= off or (a, b) == (sh[-2], sh[-1]):
+            break
+        acc += L
+    return (b[0] - a[0]) / max(L, 1e-6), (b[1] - a[1]) / max(L, 1e-6)
+
+
+def opposite_side(net, p, e, dist):
+    """정류장 좌표 p가 이 버스가 달리는 엣지 e보다 반대 방향 도로에 더 가까우면 True (길 건너편 정류장).
+    왼쪽·오른쪽으로 가르지 않는 이유: 지상 서부로는 고가에서 띄워 그려서 실제 남행 정류장이 도로 왼쪽에 놓인다."""
+    d = heading_at([q[:2] for q in e.getShape()], geomhelper.polygonOffsetAndDistanceToPoint(p, [q[:2] for q in e.getShape()])[0])
+    for o, od in net.getNeighboringEdges(p[0], p[1], dist + 1):
+        if o == e or not o.allows("bus") or elevated(o) or od >= dist:
+            continue
+        osh = [q[:2] for q in o.getShape()]
+        h = heading_at(osh, geomhelper.polygonOffsetAndDistanceToPoint(p, osh)[0])
+        if h[0] * d[0] + h[1] * d[1] < -0.5:
+            return True
+    return False
+
+
 def candidates(net, p, d, r=25, k=4):
     """p 근처에서 방향 d로 가는 버스 통행 가능 엣지 후보 (가까운 순 k개): (엣지, 거리, 엣지 위 위치)."""
     out = []
     for e, dist in net.getNeighboringEdges(p[0], p[1], r):
-        if not e.allows("bus"):
+        if not e.allows("bus") or elevated(e):
             continue
         sh = [q[:2] for q in e.getShape()]
         off, _ = geomhelper.polygonOffsetAndDistanceToPoint(p, sh)
@@ -168,19 +200,26 @@ def build(net_file, rou_out, stops_out, report=print):
                 cand = [(e, dd) for e, dd in net.getNeighboringEdges(p[0], p[1], 25) if e.getID() in on]
                 if not cand:
                     continue
-                e, _ = min(cand, key=lambda c: c[1])
-                pos = geomhelper.polygonOffsetAndDistanceToPoint(p, [q[:2] for q in e.getShape()])[0]
-                pos = min(max(pos * e.getLength() / max(geomhelper.polyLength([q[:2] for q in e.getShape()]), 0.1), 15),
-                          e.getLength() - 1)
+                e, de = min(cand, key=lambda c: c[1])
+                if opposite_side(net, p, e, de):
+                    continue                    # 길 건너편 = 반대 방향 정류장 (노선 정류장 목록에는 오가는 방향이 다 들어 있다)
+                sh = [q[:2] for q in e.getShape()]
+                pos = geomhelper.polygonOffsetAndDistanceToPoint(p, sh)[0]
+                pos = min(max(pos * e.getLength() / max(geomhelper.polyLength(sh), 0.1), 15), e.getLength() - 1)
                 key = (nm, e.getID())
                 if key not in stops:
                     stops[key] = (f"bs_{len(stops)}", pos)
                 seq.append((on[e.getID()], stops[key][1], stops[key][0]))
             seq.sort()
-            sids = []
-            for _, _, sid in seq:
-                if sid not in sids:
+            start = [0.0]
+            for e in edges:
+                start.append(start[-1] + e.getLength())
+            sids, last = [], -1e9
+            for i, pos, sid in seq:
+                # 이름만 다르고 거의 같은 자리인 정류장(예: 삼성아파트 / 삼성1차아파트)은 한 번만 선다
+                if sid not in sids and start[i] + pos - last >= 30:
                     sids.append(sid)
+                    last = start[i] + pos
             rid = f"bus_{line['n']}_{k}"
             rows.append(f'    <route id="r_{rid}" edges="{" ".join(e.getID() for e in edges)}">\n'
                         + "".join(f'        <stop busStop="{s}" duration="20"/>\n' for s in sids)
