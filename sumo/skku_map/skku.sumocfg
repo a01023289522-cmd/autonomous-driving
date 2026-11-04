@@ -6,6 +6,6 @@
         <gui-settings-file value="skku.gui.xml"/>
     </input>
     <time><begin value="0"/><end value="3600"/><step-length value="0.2"/></time>
-    <processing><time-to-teleport value="300"/><collision.action value="warn"/><ignore-route-errors value="true"/></processing>
+    <processing><time-to-teleport value="300"/><ignore-junction-blocker value="60"/><collision.action value="warn"/><ignore-route-errors value="true"/></processing>
     <random_number><seed value="42"/></random_number>
 </configuration>

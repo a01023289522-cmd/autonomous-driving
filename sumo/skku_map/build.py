@@ -321,19 +321,89 @@ def apply_patches():
 #   이전에는 '보행자 동시신호'를 '차량 네 방향 동시 녹색'으로 잘못 넣어, 네 방향이 한꺼번에 들어와 사거리 한복판에서 엉켜 섰다(사용자 지적).
 #   방향마다 한 번씩만 녹색을 주는 방식(주기 166초)은 교통량을 못 받아 막혔다(순간이동 5~18건) → 직진끼리 같이 주는 방식으로.
 #   실제 순서·시간은 확인 못 함. 표지판으로 확인된 것: 남쪽(고가 쪽)에서 올라오는 차는 좌회전 금지 (turn_rules)
+#   서부로 직진은 40초였으나 교통을 늘린 뒤(traffic.py) 남행 대기 줄이 사거리 앞 짧은 구간을 넘어 차로를 못 바꾼 차가
+#   순간이동했다(1시간에 최대 6건) → 50초. 고속도로가 서부로에 바로 이어지는 간선이라 서부로 쪽에 더 준다
 #   방향: N = 북쪽에서 들어옴(남행), S = 남쪽에서(북행), W = 서쪽에서(동행), E = 동쪽에서(서행). 움직임: s 직진, l 좌회전, r 우회전
 SG_DIRS = {"N": (0, -1), "S": (0, 1), "W": (1, 0), "E": (-1, 0)}
+#   덕영대로는 직진 동시(30초) → 좌회전 동시(15초)였으나, 동행(서쪽에서 옴)은 1차로를 직진·좌회전·유턴이 같이 써서
+#   직진 녹색 때 맨 앞 좌회전 차가 서 있으면 뒤 직진 차가 못 갔다 → 방향별 직좌 동시신호 (아래 TL_ 규칙과 같은 기준)
 #   (현시 이름, 녹색 초, 녹색 움직임)
-SG_PHASES = [("서부로 직진", 40, {"Ns", "Nr", "Ss", "Sr"}),
+SG_PHASES = [("서부로 직진", 50, {"Ns", "Nr", "Ss", "Sr"}),
              ("서부로 남행 좌회전", 15, {"Ns", "Nl", "Nr"}),
-             ("덕영대로 직진", 30, {"Ws", "Wr", "Es", "Er"}),
-             ("덕영대로 좌회전", 15, {"Wl", "El", "Wr", "Er"})]
+             ("덕영대로 동행 직좌", 15, {"Ws", "Wl", "Wr"}),
+             ("덕영대로 서행 직좌", 25, {"Es", "El", "Er"})]
 SG_YELLOW, SG_PED = 3, 45
 
+# 사거리 밖 신호 교차로 (가정, 2026-11-03): netconvert가 만든 신호는 좌회전이 직진 녹색 때 마주 오는 직진에 양보하며 도는
+#   비보호였다 (좌회전 녹색은 6초). 좌회전 차가 교차로 안에서 기다리며 같은 차로 뒤 직진 차를 막았다 (사용자 지적).
+#   우리나라에서 흔한 방식으로 다시 쓴다: 마주 보는 두 진입로에 좌회전·직진을 같이 쓰는 차로가 없으면 직진 동시 → 좌회전 동시,
+#   있으면 방향별 직좌 동시신호. 우회전은 다른 현시 때도 양보하며 돌 수 있게(g). 유턴은 좌회전과 같이.
+#   녹색: 2차로 이상 진입로 30초, 1차로 18초, 좌회전 동시 15초, 황색 3초. 좌회전이 없는 신호(서부로 지상 횡단 등)는 그대로
+TL_BIG, TL_SMALL, TL_LEFT, TL_YELLOW = 30, 18, 15, 3
 
-def sageori_tls(net, sg_id):
-    """사거리 신호를 SG_PHASES대로 다시 쓴다. 다른 현시 때 우회전은 양보하며 돌 수 있게(g), 보행자 동시신호 때는 전부 정지.
-    이 계획을 netconvert에 다시 넣어(-i) 교차로 우선권을 신호에 맞게 계산한다."""
+
+def bearing(h):
+    """진행 방향 → 남행/북행/동행/서행."""
+    return max((("동행", (1, 0)), ("서행", (-1, 0)), ("북행", (0, 1)), ("남행", (0, -1))),
+               key=lambda kv: h[0] * kv[1][0] + h[1] * kv[1][1])[0]
+
+
+def korean_plan(tls):
+    """신호 교차로 하나의 [(현시 이름, 녹색 초, 상태 문자열)] (위 규칙). 좌회전이 없으면 None."""
+    move, app, approaches = {}, {}, []
+    for in_lane, out_lane, idx in tls.getConnections():
+        e = in_lane.getEdge()
+        c = [c for c in e.getConnections(out_lane.getEdge()) if c.getFromLane() == in_lane and c.getToLane() == out_lane][0]
+        move[idx] = {"r": "r", "R": "r", "l": "l", "L": "l", "t": "l"}.get(c.getDirection(), "s")
+        h = heading(e, True)
+        a = next((a for a in approaches if a["h"][0] * h[0] + a["h"][1] * h[1] > 0.85), None)
+        if a is None:
+            a = {"h": h, "name": e.getName() or e.getID(), "lanes": {}}
+            approaches.append(a)
+        a["lanes"].setdefault(in_lane.getID(), set()).add(move[idx])
+        app[idx] = approaches.index(a)
+    if "l" not in move.values():
+        return None
+    for a in approaches:
+        a["shared"] = any({"l", "s"} <= ms for ms in a["lanes"].values())
+        a["green"] = TL_BIG if len(a["lanes"]) >= 2 else TL_SMALL
+    axes, used = [], set()
+    for i, a in enumerate(approaches):
+        if i in used:
+            continue
+        j = next((j for j, b in enumerate(approaches)
+                  if j != i and j not in used and a["h"][0] * b["h"][0] + a["h"][1] * b["h"][1] < -0.7), None)
+        axes.append([i] if j is None else [i, j])
+        used |= set(axes[-1])
+    axes.sort(key=lambda ax: -sum(len(approaches[k]["lanes"]) for k in ax))     # 큰길 축부터
+    phases = []
+    for ax in axes:
+        if len(ax) == 2 and not any(approaches[k]["shared"] for k in ax):
+            name = approaches[ax[0]]["name"]
+            phases.append((f"{name} 직진 동시", max(approaches[k]["green"] for k in ax),
+                           {i for i in move if app[i] in ax and move[i] in "sr"}))
+            if any(move[i] == "l" for i in move if app[i] in ax):
+                phases.append((f"{name} 좌회전 동시", TL_LEFT, {i for i in move if app[i] in ax and move[i] in "lr"}))
+        else:
+            for k in ax:
+                a = approaches[k]
+                phases.append((f"{a['name']} {bearing(a['h'])} 직좌", a["green"], {i for i in move if app[i] == k}))
+    n = max(move) + 1
+    return [(name, dur, "".join("G" if i in green else "g" if move[i] == "r" else "r" for i in range(n)))
+            for name, dur, green in phases]
+
+
+def write_tls(net, sg_id):
+    """사거리 신호를 SG_PHASES대로, 나머지 신호 교차로는 korean_plan대로 다시 쓴다. 사거리: 다른 현시 때 우회전은 양보하며
+    돌 수 있게(g), 보행자 동시신호 때는 전부 정지. 이 계획을 netconvert에 다시 넣어(-i) 교차로 우선권을 신호에 맞게 계산한다."""
+    logics = []
+    for tl in net.getTrafficLights():
+        plan = korean_plan(tl) if tl.getID() != sg_id else None
+        if plan:
+            logics.append(f'    <tlLogic id="{tl.getID()}" type="static" programID="0" offset="0">\n' + "".join(
+                f'        <phase duration="{d}" state="{s}" name="{nm}"/>\n'
+                f'        <phase duration="{TL_YELLOW}" state="{s.replace("G", "y")}"/>\n' for nm, d, s in plan)
+                + '    </tlLogic>\n')
     tls = net.getTLSSecure(sg_id)
     move = {}
     for in_lane, out_lane, idx in tls.getConnections():
@@ -349,10 +419,10 @@ def sageori_tls(net, sg_id):
         rows += [f'        <phase duration="{dur}" state="{"".join(state)}" name="{name}"/>\n',
                  f'        <phase duration="{SG_YELLOW}" state="{"".join("y" if c == "G" else c for c in state)}"/>\n']
     rows.append(f'        <phase duration="{SG_PED}" state="{"r" * n}" name="보행자 동시신호"/>\n')
-    with open(W("sageori.tll.xml"), "w", encoding="utf-8") as f:
+    with open(W("signals.tll.xml"), "w", encoding="utf-8") as f:
         f.write(f'<tlLogics>\n    <tlLogic id="{sg_id}" type="static" programID="0" offset="0">\n'
-                + "".join(rows) + '    </tlLogic>\n</tlLogics>\n')
-    netconvert(["-s", W("pass2.net.xml"), "-i", W("sageori.tll.xml"), "-o", P("skku.net.xml"),
+                + "".join(rows) + '    </tlLogic>\n' + "".join(logics) + '</tlLogics>\n')
+    netconvert(["-s", W("pass2.net.xml"), "-i", W("signals.tll.xml"), "-o", P("skku.net.xml"),
                 "--offset.disable-normalization", "true"], "pass3.log")
     return sumolib.net.readNet(P("skku.net.xml"), withPrograms=True)
 
@@ -371,7 +441,7 @@ def main():
     sg_id = write_patches(net1)
     apply_patches()
     net2, _ = turn_rules(sumolib.net.readNet(W("pass2.net.xml")))
-    net = sageori_tls(net2, sg_id)
+    net = write_tls(net2, sg_id)
     print(f"도로망: 노드 {len(net.getNodes())}, 엣지 {len(net.getEdges())}, 신호 {len(net.getTrafficLights())}")
     groups = write_additional(net)
     import background

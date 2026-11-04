@@ -165,8 +165,11 @@ def vehicles(groups, ends, per_hour, seed=7, caps=None):
     snks = [v[1] for v in ends.values()]
     out = []
     for lot, ids in groups.items():
-        n = per_hour.get(lot[:2] if lot.startswith("P") else "L", 0)
-        n = round(n * (len(ids) / 10 if not lot.startswith("P") else 1))
+        if lot in per_hour and not lot.startswith("P"):
+            n = per_hour[lot]                             # 따로 정한 주차장 (예: AV가 주차하는 L1)
+        else:
+            n = per_hour.get(lot[:2] if lot.startswith("P") else "L", 0)
+            n = round(n * (len(ids) / 10 if not lot.startswith("P") else 1))
         dur = (300, 1200) if lot.startswith("P") else (1200, 3600)
         for k in range(n):
             t = rnd.uniform(0, 3600)
