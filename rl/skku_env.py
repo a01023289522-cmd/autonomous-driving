@@ -12,16 +12,19 @@ import json
 import os
 
 import course
+from env import sumo_env
 from env.sumo_env import SumoHighwayEnv
 
 import gymnasium as gym  # noqa: E402
-import traci  # noqa: E402
 from sumolib import checkBinary  # noqa: E402
+
+traci = sumo_env.traci      # 수업 환경이 고른 것과 같은 모듈을 쓴다 (libsumo를 깔면 화면 없는 실행은 libsumo가 된다)
 
 MAP = os.path.join(course.TEAM, "sumo", "skku_map")
 STATES = os.path.join(MAP, "work", "states")
 TRAFFIC_FILES = ("skku.net.xml", "skku.rou.xml", "bus.rou.xml", "parking.rou.xml", "random.rou.xml", "skku.sumocfg")
 ROUTE_ID = "av_route"
+STATE_RADIUS = 100.0        # state에 저장할 주변 차량 반경 (m). 전부 저장하면 스텝마다 약 400대가 된다
 
 
 def route_edges(start, goal):
@@ -104,7 +107,33 @@ class SkkuEnv(SumoHighwayEnv):
         self.step_count = 0
         return self._get_obs(), {}
 
+    def get_privileged_state(self):
+        s = super().get_privileged_state()
+        if s.get("ego_alive"):
+            ex, ey = s["ego_x"], s["ego_y"]
+            s["vehicles"] = [v for v in s["vehicles"] if (v["x"] - ex) ** 2 + (v["y"] - ey) ** 2 <= STATE_RADIUS ** 2]
+            s["simulation_time_s"] = float(traci.simulation.getTime())
+        return s
+
+    def get_detected_vehicles(self):
+        out = super().get_detected_vehicles()
+        for v in out:
+            v["type"] = traci.vehicle.getTypeID(v["id"])
+        return out
+
+    def signal_info(self):
+        """AV 경로의 다음 신호: (색 r/y/G/g 또는 none, 거리 m 또는 -1). userdoc/TraCI/Vehicle_Value_Retrieval.html "next TLS"."""
+        if self.ego_id in traci.vehicle.getIDList():
+            tls = traci.vehicle.getNextTLS(self.ego_id)
+            if tls:
+                return tls[0][3], float(tls[0][2])
+        return "none", -1.0
+
     def step(self, action):
         obs, reward, terminated, truncated, info = super().step(action)
         info["arrived"] = info["arrived"] and not info["collided"]   # 충돌하면 차가 제거되어 도착으로도 잡힌다
+        if info["lane_after"] is None:                               # 종료로 차가 사라진 스텝은 마지막 차로로 기록
+            info["lane_after"] = info["lane_before"]
+        # 수업 코드는 차로 유지(0) 명령도 applied=True로 돌려준다. 데이터 정의는 "차선 변경이 실제 적용되었는가"
+        info["lane_change_applied"] = bool(info["lane_change_applied"] and info["lane_change"] != 0)
         return obs, reward, terminated, truncated, info

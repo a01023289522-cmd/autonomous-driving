@@ -43,6 +43,7 @@
 | 100 에피소드 평가 | `python -X utf8 rl/test_skku.py results/.../model.pt --config 내설정 --episodes 100 --nogui` |
 | 데이터 수집 | `python -X utf8 rl/collect_skku.py --config 내설정 --model results/.../model.pt --episodes 100` |
 | BC 학습 | 수업 저장소에서 `python train_bc.py --data <수집한 npz>` |
+| 칼럼 과제용 CSV | `python -X utf8 rl/make_column_sample.py 출력.csv` (도착·충돌·차로 변경이 들어간 16줄) |
 | 도로만 보기 | `sumo/skku_map`에서 `python -X utf8 view_av_route.py` (기본 승용차가 경로 주행. 학습한 AV 아님) |
 
 **실험 설정 만들기:** `rl/configs/example.py`를 복사해 `rl/configs/보상_01.py`처럼 저장하고, 바꿀 값만 적는다. `base.py`는 고치지 않는다.
