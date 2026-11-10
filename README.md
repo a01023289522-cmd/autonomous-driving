@@ -38,6 +38,8 @@
 
 | 문서 | 내용 |
 |---|---|
+| [docs/work_guide.md](docs/work_guide.md) | ⭐ **AV 학습·평가·데이터 수집 사용법, 역할 분담** — 작업 시작 전에 읽기 |
+| [docs/experiments.md](docs/experiments.md) | 실험 기록표 |
 | [docs/project_overview.md](docs/project_overview.md) | 프로젝트 주제, 평가 기준, 진행 단계, 수업 코드 구조 요약 |
 | [docs/roadmap.md](docs/roadmap.md) | 단계별 체크리스트, 결정 기록, 회의 기록 — **진행하면서 채워 나가는 곳** |
 | [docs/korean_road_features.md](docs/korean_road_features.md) | 한국 도로의 특징(교통 규칙·속도·구조)과 SUMO 구현 방법 |
