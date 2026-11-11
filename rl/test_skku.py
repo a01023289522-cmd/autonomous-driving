@@ -2,6 +2,8 @@
 
     python rl/test_skku.py results/example_1117_120000/model.pt --config example --episodes 100 --nogui   # 지표
     python rl/test_skku.py results/example_1117_120000/model.pt --config example --episodes 3             # 주행 보기
+    python rl/test_skku.py results/.../model.pt --start 회전교차로 --delay 20 --episodes 3                 # 회전교차로부터, 빠르게
+구간 이름은 config.SEGMENTS (사거리, 버스, 오거리, 회전교차로, 일월로, 정문). 엣지 ID를 직접 줘도 된다.
 """
 import argparse
 import importlib.util
@@ -26,8 +28,14 @@ def main():
     ap.add_argument("--config", default="base")
     ap.add_argument("--episodes", type=int, default=100)
     ap.add_argument("--nogui", action="store_true")
+    ap.add_argument("--start", help="출발 구간 이름 또는 엣지 ID (보기용. 평가 지표는 기본 출발로 잰다)")
+    ap.add_argument("--delay", type=float, help="화면 한 스텝당 쉬는 시간(ms). 작을수록 빠르다 (기본 100)")
     a = ap.parse_args()
     cfg = config.load(a.config)
+    if a.start:
+        cfg["scenario"]["start_edge"] = config.SEGMENTS.get(a.start, a.start)
+    if a.delay is not None:
+        cfg["simulation"]["gui_delay"] = a.delay
     env = config.make_env(cfg, gui=not a.nogui)
     env.use_seeds(cfg["scenario"]["eval_seeds"])
     try:

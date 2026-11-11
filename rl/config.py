@@ -12,6 +12,10 @@ from train import HPARAMS, REWARD  # noqa: E402  수업 train.py의 기본값
 
 DICT_KEYS = ("SCENARIO", "SIMULATION", "OBSERVATION", "ACTION_SAFETY", "REWARD", "HPARAMS")
 
+# 경로 위 구간별 출발 엣지 (보기·구간별 학습용). test_skku.py --start 이름
+SEGMENTS = {"사거리": "7754567510", "버스": "700812830", "오거리": "7755484380#1",
+            "회전교차로": "-4526039590#0", "일월로": "3718967780#2", "정문": "-15379779810#1"}
+
 
 def load(name):
     """이름의 설정을 합쳐 dict로 돌려준다. name이 base면 기본값 그대로."""

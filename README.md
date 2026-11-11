@@ -38,7 +38,8 @@
 
 | 문서 | 내용 |
 |---|---|
-| [docs/work_guide.md](docs/work_guide.md) | ⭐ **AV 학습·평가·데이터 수집 사용법, 역할 분담** — 작업 시작 전에 읽기 |
+| [docs/concepts.md](docs/concepts.md) | 개념 정리: 기준선·BC·PPO, 보상과 학습의 관계, 실행 명령 |
+| [docs/work_guide.md](docs/work_guide.md) | 작업 가이드: 확정 사항, 팀원별 작업, 사용법 |
 | [docs/experiments.md](docs/experiments.md) | 실험 기록표 |
 | [docs/project_overview.md](docs/project_overview.md) | 프로젝트 주제, 평가 기준, 진행 단계, 수업 코드 구조 요약 |
 | [docs/roadmap.md](docs/roadmap.md) | 단계별 체크리스트, 결정 기록, 회의 기록 — **진행하면서 채워 나가는 곳** |
