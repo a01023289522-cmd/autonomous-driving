@@ -15,6 +15,7 @@ env/sumo/
 data/*.npz
 data/*.jsonl
 data/*.jsonl.gz
+data/*.csv
 
 # 에디터·OS
 .vscode/
