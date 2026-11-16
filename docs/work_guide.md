@@ -42,7 +42,7 @@
 
 | 순서 | 내용 | 명령 |
 |---|---|---|
-| 1 | 학습 (20만 스텝, 추정 3–4시간. 시간이 부족하면 `--timesteps 50000`) | `python -X utf8 rl/train_skku.py --config base` |
+| 1 | 학습 (20만 스텝, 측정 38분. PC에 따라 다름) | `python -X utf8 rl/train_skku.py --config base` |
 | 2 | 주행 화면 3 에피소드 | `python -X utf8 rl/test_skku.py results/폴더/model.pt --episodes 3` |
 | 3 | 20 에피소드 지표 | `python -X utf8 rl/test_skku.py results/폴더/model.pt --episodes 20 --nogui` |
 
@@ -161,7 +161,7 @@ HPARAMS = {"gamma": 0.995}
 3. [실험 기록표](experiments.md)에 설정, 지표, 관찰 내용, 모델 위치를 기록한다.
 4. 다음에 바꿀 변수 하나를 정해 새 설정으로 학습한다.
 
-소요 시간(측정값): 주행 초당 약 25–40스텝, 에피소드 시작 약 4초. 20만 스텝은 수 시간이 걸리므로 후보 설정은 5만 스텝으로 먼저 비교한다.
+소요 시간(측정값, 11/16): 20만 스텝 학습 38분, 20 에피소드 평가 약 3분(평가용 교통 상태를 처음 만들 때는 약 10분 추가). 후보 설정은 5만 스텝(약 10분)으로 먼저 비교한다. 첫 기준 학습 결과는 [실험 기록표](experiments.md)에 있다.
 
 ## 9. 학습 방식 (제안)
 
