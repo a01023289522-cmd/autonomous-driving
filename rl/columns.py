@@ -1,9 +1,10 @@
 """데이터 칼럼 정의. make_column_sample.py(과제 예시)와 collect_columns.py(최종 수집)가 같이 쓴다.
 
 필수 칼럼 19개(조교 공개, 삭제 불가) 뒤에 팀 칼럼을 붙인다.
-  - 신호등 7개마다 독립된 숫자 칼럼 2개 (11/17 교수님 피드백: 신호 하나당 독립 칼럼, 문자열 금지)
-      tls_<이름>_phase  : 현재 현시 번호 (정수). 현시 번호 ↔ 방향별 신호색은 신호 계획이 고정이라 표 하나로 정해진다
-                          (python -X utf8 rl/columns.py 로 표 출력)
+  - 경로 위 신호등 6개마다 독립된 숫자 칼럼 3개 (11/17 교수님 공지: 문자열 대신 숫자, 신호 칼럼은 차원을 쪼개어)
+      tls_<이름>_color  : AV 경로 방향의 신호색. 빨강 0, 노랑 0.5, 초록 1 (공지의 예시와 같은 값)
+      tls_<이름>_phase  : 현재 현시 번호 (정수). 다른 방향의 신호까지 정해진다. 현시 번호 ↔ 방향별 신호색 표는
+                          python -X utf8 rl/columns.py 로 출력
       tls_<이름>_remain : 현시가 바뀌기까지 남은 시간 (초)
   - event.red_light : 이번 스텝에 빨간불에서 교차로에 들어갔는가 (신호 위반. 다른 칼럼으로 계산할 수 없어 따로 둔다)
   - route.lane_changes : 경로를 따라가려면 필요한 차로 변경 수 (+ 왼쪽, - 오른쪽). 경로는 정해 주되 언제 바꿀지는 정책이 정한다
@@ -19,7 +20,7 @@ REQUIRED = ["episode", "t", "observation", "action_raw", "action.accel_raw", "ac
             "action.lane_change_applied", "reward", "terminated", "truncated", "state", "detected_vehicles", "event.collided",
             "event.arrived", "event.lane_before", "event.lane_after", "next_observation", "next_state"]
 
-# 이름: (신호 ID, 위치 설명). 경로 순서대로, 경로 밖 신호는 마지막
+# 이름: (신호 ID, 위치 설명). 경로 순서대로. 경로 밖 신호(서부로×서부로2105번길)는 AV 진행 방향이 없어 뺐다
 TLS = {
     "hayul":     ("cluster_495951062_5357160054", "서부로×하률로 (출발 직후, 경로 1번째 신호)"),
     "sageori":   ("cluster_4650845824_4655421093_4662858740_4662858741_#2more", "성대역 사거리"),
@@ -27,10 +28,9 @@ TLS = {
     "seobu2123": ("cluster_1184134292_726912991_837163934", "서부로×서부로2123번길 (골목 진입)"),
     "ilwol":     ("cluster_452394408_4871043595", "서부로×일월로"),
     "gate":      ("520991292", "일월로×학교 정문"),
-    "seobu2105": ("cluster_4637428747_495943443", "서부로×서부로2105번길 (경로 밖)"),
 }
 ROAD_NAMES = {"15379779810#1": "정문 진입로", "700812840#2": "서쪽 골목"}
-TEAM = [f"tls_{n}_{k}" for n in TLS for k in ("phase", "remain")] + ["event.red_light", "route.lane_changes"]
+TEAM = [f"tls_{n}_{k}" for n in TLS for k in ("color", "phase", "remain")] + ["event.red_light", "route.lane_changes"]
 COLUMNS = REQUIRED + TEAM
 
 
@@ -48,11 +48,30 @@ def js(x):
     return json.dumps(rnd(x), ensure_ascii=False, separators=(",", ":"))
 
 
-def tls_values(traci):
-    """신호 7개의 (현시 번호, 남은 초)를 TEAM 칼럼 순서대로."""
-    now, out = traci.simulation.getTime(), []
+COLOR = {"r": 0.0, "R": 0.0, "u": 0.0, "y": 0.5, "Y": 0.5, "g": 1.0, "G": 1.0, "s": 1.0, "o": 1.0, "O": 1.0}
+_route_links = {}
+
+
+def route_links(traci, edges):
+    """신호마다 AV 경로의 연결 번호들 (경로 엣지 k → k+1을 잇는 연결). trafficlight.getControlledLinks로 찾는다."""
+    key = tuple(edges)
+    if key not in _route_links:
+        pairs = set(zip(edges, edges[1:]))
+        found = {}
+        for tid, _ in TLS.values():
+            found[tid] = [i for i, links in enumerate(traci.trafficlight.getControlledLinks(tid))
+                          for a, b, _via in links if (a.rsplit("_", 1)[0], b.rsplit("_", 1)[0]) in pairs]
+        _route_links[key] = found
+    return _route_links[key]
+
+
+def tls_values(traci, edges):
+    """신호 6개의 (AV 방향 신호색, 현시 번호, 남은 초)를 TEAM 칼럼 순서대로."""
+    now, out, links = traci.simulation.getTime(), [], route_links(traci, edges)
     for tid, _ in TLS.values():
-        out += [traci.trafficlight.getPhase(tid), round(traci.trafficlight.getNextSwitch(tid) - now, 1)]
+        state = traci.trafficlight.getRedYellowGreenState(tid)
+        color = max((COLOR.get(state[i], 0.0) for i in links[tid]), default=0.0)
+        out += [color, traci.trafficlight.getPhase(tid), round(traci.trafficlight.getNextSwitch(tid) - now, 1)]
     return out
 
 
@@ -63,7 +82,7 @@ def step_row(env, traci, episode, t, obs, action):
     """한 스텝을 진행하고 (칼럼 한 줄, next_obs, term, trunc, info)를 돌려준다. 신호 칼럼은 행동을 정하기 전 시점(state와 같은 시점) 값.
     state는 직전 스텝의 next_state와 같은 시점이므로 다시 계산하지 않는다."""
     state = _next_state.pop(id(env)) if t > 0 and id(env) in _next_state else js(env.get_privileged_state())
-    seen, tls, lane_changes = env.get_detected_vehicles(), tls_values(traci), env.route_lane_changes()
+    seen, tls, lane_changes = env.get_detected_vehicles(), tls_values(traci, env.edges), env.route_lane_changes()
     next_obs, reward, term, trunc, info = env.step(action)
     next_state = js(env.get_privileged_state())
     if not (term or trunc):

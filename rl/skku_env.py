@@ -1,7 +1,7 @@
 """수업 환경(SumoHighwayEnv)을 성대역 도로망(sumo/skku_map)에서 돌리는 환경.
 
 행동과 기본 보상은 수업 코드를 그대로 쓰고, 다음을 바꾼다:
-  - 환경 v1 (SCENARIO["obs_v1"]): 관측 12개 추가(신호, 경로 차로, 교차 차량, 제한속도), 신호 위반·과속 감점. 아래 _v1_obs
+  - 환경 v1 (SCENARIO["obs_v1"]): 관측 10개 추가(신호, 교차 차량, 제한속도), 신호 위반·과속 감점. 아래 _v1_obs
   - 도로를 새로 만들지 않고 skku.sumocfg를 읽는다
   - 경로는 verify/av_route_full.json에서 start_edge ~ goal_edge를 잘라 쓴다
   - 시드를 정해 둔 목록에서 차례로 쓴다 (평가 조건을 똑같이 맞추기 위해)
@@ -195,18 +195,19 @@ class SkkuEnv(SumoHighwayEnv):
         return "none", -1.0
 
     # ------------------------------------------------------------------
-    # 환경 v1 관측: 수업 관측 31개 뒤에 12개를 붙인다 (SCENARIO["obs_v1"]가 False면 v0 그대로 31개)
+    # 환경 v2 관측: 수업 관측 31개 뒤에 10개를 붙인다 (SCENARIO["obs_v1"]가 False면 v0 그대로 31개)
     #   [31] 다음 신호까지 거리 /100 (신호가 없거나 100 m 밖이면 1)   [32] 빨간불  [33] 노란불
     #   [34] 현재 신호색이 바뀌기까지 남은 시간 /30
-    #   [35] 경로에 필요한 차로 변경 수 /2 (+는 행동의 +1 방향)        [36] 지금 차로로 더 갈 수 있는 거리 /200
-    #   [37] 다음 교차로까지 거리 /100   [38] 다음 교차로에서 양보해야 함 (신호 없는 비우선 연결)
-    #   [39] 양보해야 할 교차 차량 중 가장 가까운 차의 충돌 지점까지 거리 /60 (없으면 1)  [40] 그 차 속도 /vmax
-    #   [41] 양보해야 할 교차 차량 수 /3
-    #   [42] 지금 차로 제한속도 /vmax
-    # 쓰는 TraCI: getNextTLS, trafficlight.getNextSwitch, getBestLanes, getNextLinks, getJunctionFoes
-    #   (userdoc/TraCI/Vehicle_Value_Retrieval.html: next TLS, best lanes, next links, junction foes)
+    #   [35] 다음 교차로까지 거리 /100   [36] 다음 교차로에서 양보해야 함 (신호 없는 비우선 연결)
+    #   [37] 양보해야 할 교차 차량 중 가장 가까운 차의 충돌 지점까지 거리 /60 (없으면 1)  [38] 그 차 속도 /vmax
+    #   [39] 양보해야 할 교차 차량 수 /3
+    #   [40] 지금 차로 제한속도 /vmax
+    # 경로에 필요한 차로 정보(getBestLanes)는 넣지 않는다 (v1에는 있었음): 11/17 교수님 공지 "큰 틀의 라우팅은 가능,
+    #   어떤 차선으로 주행해야 하는지 등 세밀한 주행 정보는 안 됨". 차로는 수업 관측의 연결성 값과 보상으로 배운다
+    # 쓰는 TraCI: getNextTLS, trafficlight.getNextSwitch, getNextLinks, getJunctionFoes
+    #   (userdoc/TraCI/Vehicle_Value_Retrieval.html: next TLS, next links, junction foes)
     # ------------------------------------------------------------------
-    V1_DIM = 12
+    V1_DIM = 10
     FOE_RANGE = 60.0
 
     def _v1_obs(self):
@@ -218,12 +219,7 @@ class SkkuEnv(SumoHighwayEnv):
             f += [dist / 100, float(state in "rRu"), float(state in "yY"), min(left, 30) / 30]
         else:
             f += [1.0, 0.0, 0.0, 1.0]
-        lane_id, lane_idx = traci.vehicle.getLaneID(e), traci.vehicle.getLaneIndex(e)
-        best = [b for b in traci.vehicle.getBestLanes(e) if b[0] == lane_id]
-        if best:
-            f += [max(-1.0, min(1.0, best[0][3] / 2)), min(best[0][1] - traci.vehicle.getLanePosition(e), 200) / 200]
-        else:                                      # 교차로 안 (내부 차로): 변경 불가, 그대로 진행
-            f += [0.0, 1.0]
+        lane_id = traci.vehicle.getLaneID(e)
         links = traci.vehicle.getNextLinks(e)
         if lane_id.startswith(":") or not links:
             jd, yld = 0.0, 0.0
