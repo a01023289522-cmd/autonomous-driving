@@ -95,7 +95,12 @@ class SkkuEnv(SumoHighwayEnv):
         tmp = f"{state}.{os.getpid()}.xml.gz"
         traci.simulation.saveState(tmp)
         traci.close()
-        os.replace(tmp, state)                # 여러 학습을 동시에 돌려도 반쯤 쓴 파일을 읽지 않게
+        try:
+            os.replace(tmp, state)            # 여러 학습을 동시에 돌려도 반쯤 쓴 파일을 읽지 않게
+        except PermissionError:               # Windows: 다른 학습이 같은 파일을 먼저 만들어 읽는 중이면 그 파일을 쓴다
+            if not os.path.exists(state):
+                raise
+            os.remove(tmp)
 
     def _insert_ego(self):
         """배경 교통을 채운 상태에서 AV를 넣는다. 들어갈 자리가 끝내 없으면 False."""
