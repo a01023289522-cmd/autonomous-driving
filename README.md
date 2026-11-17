@@ -45,6 +45,7 @@
 
 | 문서 | 내용 |
 |---|---|
+| [docs/evaluation.md](docs/evaluation.md) | **평가 기준, 일정, 통과 기준, 데이터 규칙, 11/17 컨설팅 공지, 결정할 때 쓰는 점검표** |
 | [docs/concepts.md](docs/concepts.md) | 개념 정리: 기준선·BC·PPO, 보상과 학습의 관계, 실행 명령 |
 | [docs/work_guide.md](docs/work_guide.md) | 작업 가이드: 확정 사항, 팀원별 작업, 사용법 |
 | [docs/experiments.md](docs/experiments.md) | 실험 기록표 |
