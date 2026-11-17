@@ -24,15 +24,22 @@
 | 임재성 | imjaeseong970-cpu | 미정 |
 | 임수진 | sUUjin-L | 미정 |
 
-역할 분담 예시는 [프로젝트 개요 — 역할 분담](docs/project_overview.md#6-역할-분담-예시)을 참고해서 정한다.
+## 🚀 시작하기
 
-## 🚀 처음 들어온 팀원이 할 일
+1. 이 저장소와 [수업 저장소](https://github.com/bmil-ssu/Artificial-Intelligence-and-Control-for-Autonomous-Driving)를 **같은 상위 폴더**에 clone한다 (`rl/course.py`가 옆 폴더의 수업 코드를 찾는다)
+2. 설치·확인 명령: [작업 가이드 3장 초기 설정](docs/work_guide.md)
+3. 학습·평가·수집 명령: [작업 가이드 4장](docs/work_guide.md), 개념: [개념 정리](docs/concepts.md)
+4. 지금까지의 결과와 환경 버전: [실험 기록표](docs/experiments.md)
 
-1. GitHub에서 이 저장소 **초대(invitation) 수락** (비공개 저장소라 초대받아야 보인다)
-2. **[Git 협업 가이드](docs/git_guide.md)** 읽고 Git 프로그램 준비(**GitHub Desktop 권장**, 익숙한 것 아무거나 OK) → 이 저장소 Clone
-3. **[프로젝트 개요](docs/project_overview.md)** 읽기 — 무엇을 만들고 어떻게 평가받는지
-4. **[한국 도로의 특징](docs/korean_road_features.md)** 읽기 — 평가 1순위가 "한국 도로 특징 반영"
-5. **[진행 계획](docs/roadmap.md)** 에서 현재 단계와 내 할 일 확인
+## 📁 구성
+
+| 폴더 | 내용 |
+|---|---|
+| `rl/` | 성대역 환경(`skku_env.py`), 실험 설정(`configs/`), 학습·평가·수집 스크립트, 데이터 칼럼 정의(`columns.py`) |
+| `sumo/skku_map/` | 성대역 일대 SUMO 도로망·교통·보기 도구. 사용법은 [`sumo/skku_map/README.md`](sumo/skku_map/README.md) |
+| `docs/` | 문서 (아래 표) |
+
+학습 결과(`results/`), 수집 데이터(`data/`), 배경 교통 상태 파일(`sumo/skku_map/work/`)은 올리지 않는다.
 
 ## 📚 문서
 
@@ -42,7 +49,6 @@
 | [docs/work_guide.md](docs/work_guide.md) | 작업 가이드: 확정 사항, 팀원별 작업, 사용법 |
 | [docs/experiments.md](docs/experiments.md) | 실험 기록표 |
 | [docs/project_overview.md](docs/project_overview.md) | 프로젝트 주제, 평가 기준, 진행 단계, 수업 코드 구조 요약 |
-| [docs/roadmap.md](docs/roadmap.md) | 단계별 체크리스트, 결정 기록, 회의 기록 — **진행하면서 채워 나가는 곳** |
 | [docs/korean_road_features.md](docs/korean_road_features.md) | 한국 도로의 특징(교통 규칙·속도·구조)과 SUMO 구현 방법 |
 | [docs/sumo_reference.md](docs/sumo_reference.md) | SUMO 공식 문서 찾는 법, 자주 쓰는 페이지, 신호등 기본 사용법 |
 | [docs/git_guide.md](docs/git_guide.md) | Git 프로그램 고르기(GitHub Desktop 권장), GitHub Desktop·Fork 사용법, pull·push·merge 개념, 팀 규칙 |
@@ -51,7 +57,7 @@
 
 - https://github.com/bmil-ssu/Artificial-Intelligence-and-Control-for-Autonomous-Driving
 - 수업 코드와 강의 문서는 계속 업데이트되므로 **이 저장소에 복사해 두지 않는다.** 필요할 때 원본을 직접 본다.
-- 실제 코드 작업을 시작할 때 어떻게 가져올지는 [진행 계획 — 코드 작업 시작](docs/roadmap.md#코드-작업-시작-방법-정해지면-채우기)에서 정한다.
+- 수업 코드는 `rl/course.py`가 옆 폴더(또는 환경 변수 `COURSE_REPO`)에서 불러 쓴다. 수업 코드는 고치지 않는다.
 
 ## 🤝 협업 규칙 (요약)
 

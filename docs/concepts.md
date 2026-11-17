@@ -148,7 +148,7 @@ PPO의 개선은 주어진 보상 규칙 안에서만 일어난다. 규칙에 �
 | 100 에피소드 평가 | `python -X utf8 rl/test_skku.py results/폴더/model.pt --config 설정이름 --episodes 100 --nogui` | 충돌률, 완주율, 평균 속도, 보상 |
 | 데이터 수집 | `python -X utf8 rl/collect_skku.py --config 설정이름 --model results/폴더/model.pt --episodes 20` | `data/`에 `.jsonl.gz`, `.npz` |
 | BC 학습 | 수업 저장소 폴더에서 `python train_bc.py --data <npz 경로>` | 수업 저장소 `results/bc_*` |
-| 칼럼 과제 형식 CSV | `python -X utf8 rl/make_column_sample.py 출력.csv` | 16줄 CSV |
+| 최종 데이터 (칼럼 형식) | `python -X utf8 rl/collect_columns.py results/폴더/model.pt --config 설정이름 --episodes 20` | `data/columns_*.csv` (칼럼 정의: `rl/columns.py`) |
 | 도로·교통 확인 | `sumo/skku_map` 폴더에서 `python -X utf8 view_av_route.py` | 기준선 주행(SUMO 기본 승용차) |
 | 도로·교통 재생성 | `sumo/skku_map` 폴더에서 `python -X utf8 build.py --no-check` | 교통·신호 수정 후 실행 |
 

@@ -1,7 +1,7 @@
 # 프로젝트 규칙 (Claude Code용)
 
 이 저장소는 "자율주행 인공지능 및 제어" 수업의 팀 프로젝트 저장소다.
-프로젝트 개요는 `docs/project_overview.md`, 진행 상황은 `docs/roadmap.md`를 먼저 읽는다.
+프로젝트 개요는 `docs/project_overview.md`, 작업 방법은 `docs/work_guide.md`, 실험 결과와 환경 버전은 `docs/experiments.md`를 먼저 읽는다.
 
 ## 규칙 1. SUMO 관련 작업은 항상 SUMO 공식 문서부터 확인한다
 
@@ -24,4 +24,4 @@ SUMO와 관련된 작업이면 **무엇을 하든 시작 전에 한 번** SUMO �
 
 - `main`에 직접 커밋하지 않는다. `이름/작업내용` 브랜치에서 작업하고 PR로 합친다.
 - 커밋 메시지는 `분류: 내용` (예: `도로: 사거리 노드 추가`).
-- 실험·결정은 `docs/roadmap.md`에 기록한다.
+- 실험 결과는 `docs/experiments.md`에 기록한다.
