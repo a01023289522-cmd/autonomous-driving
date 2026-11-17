@@ -3,7 +3,8 @@ test_skku.py의 지표만으로는 실패 원인을 알 수 없어서 점검 문
 
     python rl/eval_detail.py results/base_1117_120000/model.pt --config base --episodes 20
     python rl/eval_detail.py results/base_1116_191213/model.pt --config v0 --episodes 20     # v0 모델
-결과: 화면 출력 + 모델 폴더의 eval_detail.json
+결과: 화면 출력 + 모델 폴더의 eval_detail_<설정>.json
+난이도별 평가: --config level_easy / base / level_hard / level_special (학습은 base로 한 모델 그대로)
 """
 import argparse
 import collections
@@ -70,7 +71,7 @@ def main():
         where = collections.Counter((r["edge_idx"], r["edge"]) for r in rows if r["result"] == kind)
         if where:
             print(f"{kind} 위치(경로 엣지 순번, 엣지): " + ", ".join(f"{i}번 {e} ×{c}" for (i, e), c in sorted(where.items())))
-    with open(os.path.join(os.path.dirname(os.path.abspath(a.model)), "eval_detail.json"), "w", encoding="utf-8") as f:
+    with open(os.path.join(os.path.dirname(os.path.abspath(a.model)), f"eval_detail_{a.config}.json"), "w", encoding="utf-8") as f:
         json.dump(rows, f, ensure_ascii=False, indent=1)
 
 

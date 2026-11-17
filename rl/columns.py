@@ -6,6 +6,8 @@
                           (python -X utf8 rl/columns.py 로 표 출력)
       tls_<이름>_remain : 현시가 바뀌기까지 남은 시간 (초)
   - event.red_light : 이번 스텝에 빨간불에서 교차로에 들어갔는가 (신호 위반. 다른 칼럼으로 계산할 수 없어 따로 둔다)
+  - route.lane_changes : 경로를 따라가려면 필요한 차로 변경 수 (+ 왼쪽, - 오른쪽). 경로는 정해 주되 언제 바꿀지는 정책이 정한다
+    (11/17 컨설팅: "이동해야 하는 차선 변경 수" 칼럼 권장)
 state 칼럼(JSON)은 AV 반경 100 m 차량마다 차종·진행 방향·가속도·방향지시등·제동등을, AV마다 차로 수·제한속도·
 다음 교차로까지 거리·양보 여부를 담는다 (rl/skku_env.py get_privileged_state). 데이터만으로 주행 중인 도로 상황을 다시 그릴 수 있게.
 """
@@ -28,7 +30,7 @@ TLS = {
     "seobu2105": ("cluster_4637428747_495943443", "서부로×서부로2105번길 (경로 밖)"),
 }
 ROAD_NAMES = {"15379779810#1": "정문 진입로", "700812840#2": "서쪽 골목"}
-TEAM = [f"tls_{n}_{k}" for n in TLS for k in ("phase", "remain")] + ["event.red_light"]
+TEAM = [f"tls_{n}_{k}" for n in TLS for k in ("phase", "remain")] + ["event.red_light", "route.lane_changes"]
 COLUMNS = REQUIRED + TEAM
 
 
@@ -61,14 +63,14 @@ def step_row(env, traci, episode, t, obs, action):
     """한 스텝을 진행하고 (칼럼 한 줄, next_obs, term, trunc, info)를 돌려준다. 신호 칼럼은 행동을 정하기 전 시점(state와 같은 시점) 값.
     state는 직전 스텝의 next_state와 같은 시점이므로 다시 계산하지 않는다."""
     state = _next_state.pop(id(env)) if t > 0 and id(env) in _next_state else js(env.get_privileged_state())
-    seen, tls = env.get_detected_vehicles(), tls_values(traci)
+    seen, tls, lane_changes = env.get_detected_vehicles(), tls_values(traci), env.route_lane_changes()
     next_obs, reward, term, trunc, info = env.step(action)
     next_state = js(env.get_privileged_state())
     if not (term or trunc):
         _next_state[id(env)] = next_state
     row = [episode, t, js(obs), js(action), rnd(info["accel_raw"]), rnd(info["lane_change_raw"]), info["lane_change"],
            info["lane_change_applied"], rnd(reward), term, trunc, state, js(seen), info["collided"], info["arrived"],
-           info["lane_before"], info["lane_after"], js(next_obs), next_state, *tls, info.get("red_light", False)]
+           info["lane_before"], info["lane_after"], js(next_obs), next_state, *tls, info.get("red_light", False), lane_changes]
     return row, next_obs, term, trunc, info
 
 

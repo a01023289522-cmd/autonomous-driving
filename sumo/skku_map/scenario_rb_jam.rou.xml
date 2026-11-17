@@ -1,0 +1,5 @@
+<routes>
+    <flow id="rbj_west" type="car" begin="550" end="1300" period="exp(0.1667)" from="5039133830#2" to="4709208800#2" via="5039133830#3 5039133870#0" departLane="best" departSpeed="avg"/>
+    <flow id="rbj_63" type="car" begin="550" end="1300" period="exp(0.1667)" from="14601887080" to="4709208800#2" via="-4526039560#0 5039133870#0" departLane="best" departSpeed="avg"/>
+    <flow id="rbj_av" type="car" begin="550" end="1300" period="exp(0.1389)" from="4780276970" to="-5039133830#2" via="-5039133870#1 -5039133870#0 -5039133830#3" departLane="best" departSpeed="avg"/>
+</routes>

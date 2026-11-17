@@ -45,6 +45,8 @@ class SkkuEnv(SumoHighwayEnv):
             self.observation_space = gym.spaces.Box(-1.0, 1.0, shape=(self.obs_dim,), dtype=np.float32)
         self.edges = route_edges(scenario["start_edge"], scenario["goal_edge"])
         self.warmup_seconds = float(scenario["warmup_seconds"])
+        self.traffic_scale = float(scenario.get("traffic_scale", 1.0))   # 배경 교통량 배율 (난이도). sumo --scale
+        self.extra_routes = list(scenario.get("extra_routes", []))         # 추가 교통 파일 (sumo/skku_map/scenarios.py)
         self.use_seeds(scenario["train_seeds"])
 
     def use_seeds(self, seeds):
@@ -52,11 +54,12 @@ class SkkuEnv(SumoHighwayEnv):
         self.seeds, self._next = list(seeds), 0
 
     def _state_file(self, seed):
-        return os.path.join(STATES, f"s{seed}_w{self.warmup_seconds:.0f}_dt{self.step_length}_rng.xml.gz")
+        return os.path.join(STATES, f"s{seed}_w{self.warmup_seconds:.0f}_dt{self.step_length}_x{self.traffic_scale:g}"
+                            + "".join(f"_{os.path.splitext(os.path.splitext(f)[0])[0]}" for f in self.extra_routes) + "_rng.xml.gz")
 
     def _state_ready(self, path):
         """저장한 상태가 있고 도로·교통 파일이 그 뒤로 바뀌지 않았는가."""
-        return os.path.exists(path) and os.path.getmtime(path) >= max(os.path.getmtime(os.path.join(MAP, f)) for f in TRAFFIC_FILES)
+        return os.path.exists(path) and os.path.getmtime(path) >= max(os.path.getmtime(os.path.join(MAP, f)) for f in (*TRAFFIC_FILES, *self.extra_routes))
 
     def _start_sumo(self):
         seed = self.seeds[self._next % len(self.seeds)]
@@ -65,23 +68,28 @@ class SkkuEnv(SumoHighwayEnv):
         cmd = [checkBinary("sumo"), "-c", self.cfg_path, "--step-length", str(self.step_length),
                "--collision.action", "remove", "--collision.check-junctions", "true",
                "--no-warnings", "true", "--no-step-log", "true", "--seed", str(seed),
-               "--save-state.rng", "true"]   # 난수 상태까지 저장 (userdoc/Simulation/SaveAndLoad.html)
+               "--save-state.rng", "true",   # 난수 상태까지 저장 (userdoc/Simulation/SaveAndLoad.html)
+               "--scale", str(self.traffic_scale)]   # 교통량 배율: 차량을 지우거나 복제 (userdoc/sumo.html)
         state = self._state_file(seed)
         if not self._state_ready(state):
             self._make_state(cmd, state)
         if self.gui:
             cmd[0] = checkBinary("sumo-gui")
-            cmd += ["--quit-on-end", "--delay", str(self.gui_delay), "--start"]
+            cmd += ["--quit-on-end", "--delay", str(self.gui_delay), "--start", "-a", self._additional(True)]
         else:                                 # 화면이 없으면 배경 도형은 읽지 않는다
-            cmd += ["-a", ",".join(os.path.join(MAP, f) for f in ("vtypes.add.xml", "bus.stops.xml", "skku.add.xml"))]
+            cmd += ["-a", self._additional(False)]
         traci.start(cmd + ["--load-state", state, "--begin", str(self.warmup_seconds)])
         self._started = True
+
+    def _additional(self, gui):
+        files = ("vtypes.add.xml", "bus.stops.xml", "skku.add.xml") + (("bg.add.xml",) if gui else ()) + tuple(self.extra_routes)
+        return ",".join(os.path.join(MAP, f) for f in files)
 
     def _make_state(self, cmd, state):
         """배경 교통을 warmup_seconds만큼 채운 상태를 파일로 만든다. 주행은 항상 이 파일을 불러와 시작한다.
         차로 변경 모델 내부 상태 등은 상태 파일에 저장되지 않으므로(SaveAndLoad.html Known Issues), 처음 만든 실행에서 바로
         주행하면 저장된 상태를 불러온 실행과 결과가 달라진다. 그래서 만드는 실행과 주행하는 실행을 나눈다."""
-        traci.start(cmd + ["-a", ",".join(os.path.join(MAP, f) for f in ("vtypes.add.xml", "bus.stops.xml", "skku.add.xml"))])
+        traci.start(cmd + ["-a", self._additional(False)])
         traci.simulationStep(self.warmup_seconds)
         os.makedirs(STATES, exist_ok=True)
         tmp = f"{state}.{os.getpid()}.xml.gz"
@@ -129,6 +137,14 @@ class SkkuEnv(SumoHighwayEnv):
         return {"type": traci.vehicle.getTypeID(vid), "angle": float(traci.vehicle.getAngle(vid)),
                 "accel": float(traci.vehicle.getAcceleration(vid)),
                 "blinker": 1 if sig & 2 else -1 if sig & 1 else 0, "brake_light": int(bool(sig & 8))}
+
+    def route_lane_changes(self):
+        """경로를 따라가려면 필요한 차로 변경 수 (+는 행동 +1 방향 = 왼쪽, 교차로 안이면 0). getBestLanes의 offset."""
+        if self.ego_id not in traci.vehicle.getIDList():
+            return 0
+        lane_id = traci.vehicle.getLaneID(self.ego_id)
+        best = [b for b in traci.vehicle.getBestLanes(self.ego_id) if b[0] == lane_id]
+        return int(best[0][3]) if best else 0
 
     def _road_info(self):
         """AV가 달리는 도로: 차로 수, 제한속도, 다음 교차로까지 거리, 그 교차로에서 양보해야 하는지 (도로망 파일 없이 읽을 수 있게)."""
