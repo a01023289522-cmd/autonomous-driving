@@ -23,9 +23,10 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--config", default="base")
     ap.add_argument("--timesteps", type=int)
+    ap.add_argument("--init", help="이어서 학습할 model.pt (커리큘럼·추가 학습). 관측 차원이 같아야 한다")
     a = ap.parse_args()
     cfg = config.load(a.config)
-    run_dir = os.path.join(course.TEAM, "results", f"{a.config}_{datetime.now():%m%d_%H%M%S}")
+    run_dir = os.path.join(course.TEAM, "results", f"{a.config}{'_init' if a.init else ''}_{datetime.now():%m%d_%H%M%S}")
     os.makedirs(run_dir)
     with open(os.path.join(run_dir, "config.json"), "w", encoding="utf-8") as f:
         json.dump(cfg, f, ensure_ascii=False, indent=1)
@@ -33,6 +34,11 @@ def main():
     env = config.make_env(cfg)
     agent = PPO(obs_dim=env.observation_space.shape[0], act_dim=env.action_space.shape[0],
                 buffer=RolloutBuffer(), **cfg["hparams"])
+    if a.init:
+        agent.load(a.init)
+        cfg["init"] = a.init
+        with open(os.path.join(run_dir, "config.json"), "w", encoding="utf-8") as f:
+            json.dump(cfg, f, ensure_ascii=False, indent=1)
     print(f"결과 폴더: {run_dir}\n경로 엣지 {len(env.edges)}개, 시작 {env.edges[0]}, 도착 {env.edges[-1]}")
     try:
         agent.learn(env, total_timesteps=a.timesteps or cfg["total_timesteps"], logger=logger,
