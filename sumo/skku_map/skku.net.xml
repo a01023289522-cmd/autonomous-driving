@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!-- generated on 2026-11-17T11:49:31.641606+09:00 by Eclipse SUMO netconvert 1.27.1
+<!-- generated on 2026-11-17T16:05:40.265991+09:00 by Eclipse SUMO netconvert 1.27.1
 <netconvertConfiguration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/netconvertConfiguration.xsd">
 
     <input>
@@ -11609,14 +11609,14 @@
         <phase duration="3"  state="grrryyyrrrrgr"/>
     </tlLogic>
     <tlLogic id="cluster_4650845824_4655421093_4662858740_4662858741_#2more" type="static" programID="0" offset="0">
-        <phase duration="50" state="GGGGrgrrrGGGGGggrr" name="서부로 직진"/>
-        <phase duration="3"  state="yyyyrgrrryyyyyggrr"/>
+        <phase duration="50" state="GGGGrgrrrgGGGGggrr" name="서부로 직진"/>
+        <phase duration="3"  state="yyyyrgrrrgyyyyggrr"/>
         <phase duration="15" state="GGGGGgrrrgrgrrggrr" name="서부로 남행 좌회전"/>
         <phase duration="3"  state="yyyyygrrrgrgrrggrr"/>
         <phase duration="15" state="grrrrgrrrgrgrrGGGG" name="덕영대로 동행 직좌"/>
         <phase duration="3"  state="grrrrgrrrgrgrryyyy"/>
         <phase duration="25" state="grrrrGGGGgrgrrggrr" name="덕영대로 서행 직좌"/>
-        <phase duration="3"  state="grrrryyyygrgrrggrr"/>
+        <phase duration="3"  state="yrrrryyyyyryrryyrr"/>
         <phase duration="45" state="rrrrrrrrrrrrrrrrrr" name="보행자 동시신호"/>
     </tlLogic>
     <tlLogic id="cluster_495951062_5357160054" type="static" programID="0" offset="0">

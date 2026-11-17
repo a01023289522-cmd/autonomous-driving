@@ -406,8 +406,9 @@ def write_tls(net, sg_id):
                 f'        <phase duration="{TL_YELLOW}" state="{s.replace("G", "y")}"/>\n' for nm, d, s in plan)
                 + '    </tlLogic>\n')
     tls = net.getTLSSecure(sg_id)
-    move = {}
+    move, target = {}, {}
     for in_lane, out_lane, idx in tls.getConnections():
+        target[idx] = out_lane.getID()
         c = [c for c in in_lane.getEdge().getConnections(out_lane.getEdge())
              if c.getFromLane() == in_lane and c.getToLane() == out_lane][0]
         h = heading(in_lane.getEdge(), True)
@@ -415,10 +416,16 @@ def write_tls(net, sg_id):
         move[idx] = d + {"r": "r", "R": "r", "l": "l", "L": "l"}.get(c.getDirection(), "s")
     n = max(move) + 1
     rows = []
-    for name, dur, green_set in SG_PHASES:
+    for k, (name, dur, green_set) in enumerate(SG_PHASES):
         state = ["G" if move[i] in green_set else "g" if move[i].endswith("r") else "r" for i in range(n)]
+        # 같은 차로로 들어가는 우선 녹색(G)이 둘이면 우회전 쪽을 양보 녹색(g)으로 (2026-11-17 SUMO 경고 "Unsafe green phase",
+        #   userdoc/Simulation/Traffic_Lights.html: G = 우선 녹색, g = 양보 녹색)
+        for i in range(n):
+            if state[i] == "G" and move[i].endswith("r") and sum(state[j] == "G" and target.get(j) == target.get(i) for j in range(n)) > 1:
+                state[i] = "g"
+        last = k == len(SG_PHASES) - 1     # 다음이 보행자 동시신호(전부 적색)면 양보 녹색(우회전)도 황색을 거친다 ("Missing yellow phase" 경고)
         rows += [f'        <phase duration="{dur}" state="{"".join(state)}" name="{name}"/>\n',
-                 f'        <phase duration="{SG_YELLOW}" state="{"".join("y" if c == "G" else c for c in state)}"/>\n']
+                 f'        <phase duration="{SG_YELLOW}" state="{"".join("y" if c == "G" or (last and c == "g") else c for c in state)}"/>\n']
     rows.append(f'        <phase duration="{SG_PED}" state="{"r" * n}" name="보행자 동시신호"/>\n')
     with open(W("signals.tll.xml"), "w", encoding="utf-8") as f:
         f.write(f'<tlLogics>\n    <tlLogic id="{sg_id}" type="static" programID="0" offset="0">\n'
