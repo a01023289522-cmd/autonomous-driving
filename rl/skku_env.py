@@ -271,6 +271,24 @@ class SkkuEnv(SumoHighwayEnv):
             over = max(0.0, info["speed"] - lim)
             info["overspeed"] = over
             reward -= float(self.rw.get("overspeed_penalty", 0.0)) * over / self.vmax
+        # 정차 감점: 거의 서 있는데 앞이 비어 있으면 감점 (갈 수 있는데 안 가는 것).
+        # 앞 = 같은 차로 앞차, 빨강·노랑 신호의 정지선 중 가까운 것. 양보할 교차 차량이 있으면 기다리는 게 맞으므로 감점 없음.
+        # 막힘 감점(수업 코드)은 앞차 20 m 안에서만 붙어서 멀리 떨어져 서 있으면 피할 수 있었다 (11/18 정차 분석)
+        idle = float(self.rw.get("idle_penalty", 0.0))
+        info["idle"] = False
+        if idle > 0 and info["speed"] is not None and self.ego_id in traci.vehicle.getIDList():
+            e = self.ego_id
+            lim = traci.lane.getMaxSpeed(traci.vehicle.getLaneID(e))
+            if info["speed"] < self.rw.get("idle_speed_frac", 0.3) * lim:
+                lead = traci.vehicle.getLeader(e, 100)
+                free = lead[1] if lead else 100.0
+                if after and after[3] in "rRyYu":
+                    free = min(free, after[2])
+                if any(f[7] for f in traci.vehicle.getJunctionFoes(e, 60)):
+                    free = 0.0
+                if free > self.rw.get("idle_gap", 15.0):
+                    info["idle"] = True
+                    reward -= idle
         info["tls_state"], info["tls_distance_m"] = (after[3], after[2]) if after else ("none", -1.0)
         info["arrived"] = info["arrived"] and not info["collided"]   # 충돌하면 차가 제거되어 도착으로도 잡힌다
         if info["lane_after"] is None:                               # 종료로 차가 사라진 스텝은 마지막 차로로 기록
