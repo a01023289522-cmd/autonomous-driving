@@ -127,8 +127,9 @@ class Patch:
 
 def patch_signals(net, pt):
     # 신호 교차로 (사거리 + 고가 밑 갈림목 G1·G2·G3 + 서부로×일월로 + 서부로×하률로: 기존 모델과 동일)
+    #   + 일월로×학교 정문 (125, -1100): 실제 도로에 좌회전 신호 있음 (2026-11-17 거리뷰 확인, 사용자 지적)
     sg = junction_near(net, SAGEORI)
-    for p in (*GAPS.values(), (-250, -1080), (24, 273)):
+    for p in (*GAPS.values(), (-250, -1080), (24, 273), (125, -1100)):
         pt.nod.append(f'<node id="{junction_near(net, p).getID()}" type="traffic_light"/>')
     pt.nod.append(f'<node id="{sg.getID()}" shape="{fmt(square_shape(sg))}"/>')
     return sg.getID()

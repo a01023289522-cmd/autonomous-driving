@@ -14,6 +14,7 @@ SCENARIO = {
     "decel": 4.5,                    # 행동 -1일 때 감속도 (m/s^2)
     "train_seeds": list(range(20)),  # 학습 때 돌려 쓰는 교통 시드
     "eval_seeds": list(range(1000, 1100)),  # 평가용 고정 시드 (모든 실험 공통)
+    "obs_v1": True,                  # 환경 v1 관측 12개 추가 (신호, 경로 차로, 교차 차량, 제한속도. rl/skku_env.py)
 }
 
 SIMULATION = {"max_steps": 1600}     # 800초. 경로 평균 약 8분 + 여유
@@ -23,6 +24,10 @@ OBSERVATION = {}
 # 수업 코드의 spawn_protect는 "차로 위 위치"로 판단해서, 짧은 엣지가 많은 우리 도로에서는 차로 변경이 거의 막힌다
 ACTION_SAFETY = {"spawn_protect": 0.0}
 
-REWARD = {}
+REWARD = {
+    "red_light_penalty": 5.0,        # 빨간불에 교차로 진입 1회당 감점 (충돌 벌점과 같은 크기에서 시작)
+    "overspeed_penalty": 0.3,        # 스텝당 0.3 × (제한속도 초과 m/s ÷ 13.89). 시속 20 km 구간을 50 km로 달리면 속도 보상(0.1)보다 큼
+    "blocked_penalty": 0.0,          # 수업 기본 0.05는 신호 대기·골목 서행도 감점하므로 끔 (1차 점검 제안)
+}
 
 HPARAMS = {}

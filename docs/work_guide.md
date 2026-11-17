@@ -88,6 +88,8 @@ SUMO와 수업 코드 패키지는 주차별 과제에서 설치한 상태를 �
 | 학습 | `python -X utf8 rl/train_skku.py --config 설정이름` |
 | 주행 화면 | `python -X utf8 rl/test_skku.py results/폴더/model.pt --config 설정이름 --episodes 3` |
 | 100 에피소드 평가 | 위 명령에서 `--episodes 100 --nogui` |
+| 실패 원인 기록 | `python -X utf8 rl/eval_detail.py results/폴더/model.pt --config 설정이름 --episodes 20` (에피소드별 결과, 끝난 위치·차로, 빨간불 진입, 과속, 차로 변경) |
+| v0 모델 평가 | 11/16 이전 모델은 관측이 31개라 `--config v0` |
 | 학습 곡선 | `tensorboard --logdir results` |
 
 ## 5. 주행 화면 조작 (sumo-gui)
@@ -227,13 +229,13 @@ HPARAMS = {"gamma": 0.995}
 
 | 순위 | 항목 | 종류 |
 |---|---|---|
-| 1 | 신호 관측 추가 | 환경 코드 |
-| 2 | 경로 기준 차로 관측 | 환경 코드 |
-| 3 | `blocked_penalty` 0 | 설정 |
+| 1 | 신호 관측 추가 | 환경 코드 (v1 반영) |
+| 2 | 경로 기준 차로 관측 | 환경 코드 (v1 반영) |
+| 3 | `blocked_penalty` 0 | 설정 (v1 기본값 반영) |
 | 4 | `collision_penalty`, `arrival_bonus` 확대 (시작값 각 20) | 설정 |
 | 5 | `gamma` 0.995 | 설정 |
-| 6 | 신호 위반 벌점 | 환경 코드, 설정 |
-| 7 | 속도 기준을 구간 제한속도로 변경 | 환경 코드 |
+| 6 | 신호 위반 벌점 | 환경 코드, 설정 (v1 반영, `red_light_penalty` 5) |
+| 7 | 구간 제한속도 반영 | 환경 코드 (v1 반영, `overspeed_penalty` 0.3) |
 
 1, 2가 없으면 3–5를 수정해도 완주가 어렵다. 3–5의 값은 시작값이며 학습으로 확인한다.
 
@@ -244,19 +246,29 @@ HPARAMS = {"gamma": 0.995}
 | `rl/skku_env.py` | 수업 환경을 성대역 도로에 연결 (경로, 시드, 교차로 충돌 검사, 배경 교통 저장·불러오기, 신호 조회) |
 | `rl/config.py`, `rl/configs/` | 실험 설정, 구간 이름 |
 | `rl/train_skku.py`, `rl/test_skku.py`, `rl/collect_skku.py` | 학습, 평가·주행 확인, 데이터 수집 |
+| `rl/eval_detail.py` | 실패 원인 기록 (점검 문서용) |
 | `rl/make_column_sample.py` | 칼럼 과제 형식 CSV |
-| 수업 저장소 `env/sumo_env.py` | 관측(31개), 행동, 보상 계산 |
+| 수업 저장소 `env/sumo_env.py` | 관측 31개, 행동, 보상 계산 (v1 관측 12개와 신호 위반·과속 감점은 `rl/skku_env.py`) |
 | 수업 저장소 `algorithms/ppo.py` | PPO 구현 |
 
-## 12. 환경 보완 작업 (팀원 1)
+## 12. 환경 보완 작업
 
-| 순서 | 항목 | 내용 |
-|---|---|---|
-| 1 | 신호 관측 | `_get_obs`를 재정의해 기존 31개 뒤에 신호 값을 추가하고, `obs_dim`과 `observation_space`를 다시 생성. `signal_info()` 사용 |
-| 2 | 경로 기준 차로 | 수업 코드의 연결성 값은 다음 도로로 이어지기만 하면 1이므로 회전에 필요한 차로를 알 수 없음. TraCI `getBestLanes`(`userdoc/TraCI/Vehicle_Value_Retrieval.html`)로 필요한 차로 변경 수 확인 |
-| 3 | 교차로 측면 차량 | 오거리·회전교차로의 측면 접근 차량이 관측되지 않음. 11/17 이후 진행 가능 |
-| 4 | 안전 제어 | `speedMode=0`(SUMO 안전 제어 전체 해제) 유지 여부 결정 (`userdoc/TraCI/Change_Vehicle_State.html`) |
-| 5 | 제한속도 | `vmax`가 시속 50 km로 고정되어 교내(시속 20 km)에서 위반 가능 |
+11/17 환경 v1 반영. `configs/base.py`의 `obs_v1: True`가 기본이고, v0 재현은 `--config v0`.
+
+| 순서 | 항목 | 상태 | 내용 |
+|---|---|---|---|
+| 1 | 신호 관측 | v1 반영 | 다음 신호까지 거리, 빨간불, 노란불, 색이 바뀌기까지 남은 시간 (`getNextTLS`, `trafficlight.getNextSwitch`) |
+| 2 | 경로 기준 차로 | v1 반영 | 필요한 차로 변경 수와 지금 차로로 더 갈 수 있는 거리 (`getBestLanes`). 2차 점검의 정문 앞 정지 14건은 모두 좌회전이 안 되는 0번 차로에서 멈춘 경우 |
+| 3 | 교차로 측면 차량 | v1 반영 (기본형) | 다음 교차로까지 거리, 양보해야 하는 연결인지, 양보할 교차 차량 중 가장 가까운 차의 거리·속도, 그 수 (`getNextLinks`, `getJunctionFoes`, 60 m 안) |
+| 4 | 제한속도 | v1 반영 | 지금 차로 제한속도 관측, 초과분 감점 `overspeed_penalty` |
+| 5 | 신호 위반 벌점 | v1 반영 | 15 m 안 빨간불에서 교차로에 들어가면 `red_light_penalty` |
+| 6 | 정문 신호 | 반영 | 일월로×정문 교차로에 신호 추가 (실제 도로 거리뷰 확인). 일월로 방향별 직좌 30초, 정문 출구 18초 |
+| 7 | 안전 제어 | 미정 | `speedMode=0`(SUMO 안전 제어 전체 해제) 유지 여부 (`userdoc/TraCI/Change_Vehicle_State.html`) |
+| 8 | 정류장 앞 정지 | 확인 필요 | 앞에 버스가 없는데 AV(빨간 차)가 정류장 앞에서 멈춤. AV에는 정차 명령이 없으므로 정책의 감속. v1 학습 후에도 남으면 원인 확인 |
+
+v1 관측 순서 (31개 뒤): `[31]` 신호 거리/100, `[32]` 빨간불, `[33]` 노란불, `[34]` 남은 시간/30, `[35]` 필요 차로 변경 수/2,
+`[36]` 차로 유지 가능 거리/200, `[37]` 교차로 거리/100, `[38]` 양보 연결, `[39]` 교차 차량 거리/60, `[40]` 교차 차량 속도/vmax,
+`[41]` 교차 차량 수/3, `[42]` 제한속도/vmax. 관측 수가 바뀌었으므로 v0 모델과 v1 모델은 서로 불러올 수 없다.
 
 ## 13. 작업 규칙
 

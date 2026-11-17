@@ -1,6 +1,7 @@
 """수업 환경(SumoHighwayEnv)을 성대역 도로망(sumo/skku_map)에서 돌리는 환경.
 
-관측·행동·보상 계산은 수업 코드를 그대로 쓰고, 도로에 묶인 부분만 바꾼다:
+행동과 기본 보상은 수업 코드를 그대로 쓰고, 다음을 바꾼다:
+  - 환경 v1 (SCENARIO["obs_v1"]): 관측 12개 추가(신호, 경로 차로, 교차 차량, 제한속도), 신호 위반·과속 감점. 아래 _v1_obs
   - 도로를 새로 만들지 않고 skku.sumocfg를 읽는다
   - 경로는 verify/av_route_full.json에서 start_edge ~ goal_edge를 잘라 쓴다
   - 시드를 정해 둔 목록에서 차례로 쓴다 (평가 조건을 똑같이 맞추기 위해)
@@ -16,6 +17,7 @@ from env import sumo_env
 from env.sumo_env import SumoHighwayEnv
 
 import gymnasium as gym  # noqa: E402
+import numpy as np  # noqa: E402
 from sumolib import checkBinary  # noqa: E402
 
 traci = sumo_env.traci      # 수업 환경이 고른 것과 같은 모듈을 쓴다 (libsumo를 깔면 화면 없는 실행은 libsumo가 된다)
@@ -37,6 +39,10 @@ class SkkuEnv(SumoHighwayEnv):
         road = {"speed_limit": scenario["speed_limit"], "num_lanes": 3, "length": 1e9}
         ego = {"depart_lane": "best", "depart_speed": 0, "accel": scenario["accel"], "decel": scenario["decel"]}
         super().__init__(os.path.join(MAP, "skku.sumocfg"), road, ego, mdp_sim, mdp_obs, action, reward, gui=gui)
+        self.v1 = bool(scenario.get("obs_v1", False))
+        if self.v1:
+            self.obs_dim += self.V1_DIM
+            self.observation_space = gym.spaces.Box(-1.0, 1.0, shape=(self.obs_dim,), dtype=np.float32)
         self.edges = route_edges(scenario["start_edge"], scenario["goal_edge"])
         self.warmup_seconds = float(scenario["warmup_seconds"])
         self.use_seeds(scenario["train_seeds"])
@@ -129,8 +135,83 @@ class SkkuEnv(SumoHighwayEnv):
                 return tls[0][3], float(tls[0][2])
         return "none", -1.0
 
+    # ------------------------------------------------------------------
+    # 환경 v1 관측: 수업 관측 31개 뒤에 12개를 붙인다 (SCENARIO["obs_v1"]가 False면 v0 그대로 31개)
+    #   [31] 다음 신호까지 거리 /100 (신호가 없거나 100 m 밖이면 1)   [32] 빨간불  [33] 노란불
+    #   [34] 현재 신호색이 바뀌기까지 남은 시간 /30
+    #   [35] 경로에 필요한 차로 변경 수 /2 (+는 행동의 +1 방향)        [36] 지금 차로로 더 갈 수 있는 거리 /200
+    #   [37] 다음 교차로까지 거리 /100   [38] 다음 교차로에서 양보해야 함 (신호 없는 비우선 연결)
+    #   [39] 양보해야 할 교차 차량 중 가장 가까운 차의 충돌 지점까지 거리 /60 (없으면 1)  [40] 그 차 속도 /vmax
+    #   [41] 양보해야 할 교차 차량 수 /3
+    #   [42] 지금 차로 제한속도 /vmax
+    # 쓰는 TraCI: getNextTLS, trafficlight.getNextSwitch, getBestLanes, getNextLinks, getJunctionFoes
+    #   (userdoc/TraCI/Vehicle_Value_Retrieval.html: next TLS, best lanes, next links, junction foes)
+    # ------------------------------------------------------------------
+    V1_DIM = 12
+    FOE_RANGE = 60.0
+
+    def _v1_obs(self):
+        e, f = self.ego_id, []
+        tls = traci.vehicle.getNextTLS(e)
+        if tls and tls[0][2] <= 100:
+            tid, _, dist, state = tls[0]
+            left = traci.trafficlight.getNextSwitch(tid) - traci.simulation.getTime()
+            f += [dist / 100, float(state in "rRu"), float(state in "yY"), min(left, 30) / 30]
+        else:
+            f += [1.0, 0.0, 0.0, 1.0]
+        lane_id, lane_idx = traci.vehicle.getLaneID(e), traci.vehicle.getLaneIndex(e)
+        best = [b for b in traci.vehicle.getBestLanes(e) if b[0] == lane_id]
+        if best:
+            f += [max(-1.0, min(1.0, best[0][3] / 2)), min(best[0][1] - traci.vehicle.getLanePosition(e), 200) / 200]
+        else:                                      # 교차로 안 (내부 차로): 변경 불가, 그대로 진행
+            f += [0.0, 1.0]
+        links = traci.vehicle.getNextLinks(e)
+        if lane_id.startswith(":") or not links:
+            jd, yld = 0.0, 0.0
+        else:
+            jd = traci.lane.getLength(lane_id) - traci.vehicle.getLanePosition(e)
+            yld = float(links[0][5] in "mswg=")    # 소문자 m/g, 정지(s), 전방향 정지(w): 다른 차에 양보하는 연결
+        foes = [x for x in traci.vehicle.getJunctionFoes(e, self.FOE_RANGE) if x[7]]   # egoResponse: 내가 양보할 차
+        if foes:
+            near = min(foes, key=lambda x: x[2])
+            f += [min(jd, 100) / 100, yld, min(near[2], self.FOE_RANGE) / self.FOE_RANGE,
+                  traci.vehicle.getSpeed(near[0]) / self.vmax, min(len(foes), 3) / 3]
+        else:
+            f += [min(jd, 100) / 100, yld, 1.0, 0.0, 0.0]
+        f.append(traci.lane.getMaxSpeed(lane_id) / self.vmax)
+        return f
+
+    def _get_obs(self):
+        base = super()._get_obs()
+        if not self.v1:
+            return base
+        if self.ego_id not in traci.vehicle.getIDList():
+            return np.zeros(self.obs_dim, dtype=np.float32)
+        return np.clip(np.concatenate([base, np.array(self._v1_obs(), dtype=np.float32)]), -1.0, 1.0)
+
+    def _tls_ahead(self):
+        if self.ego_id in traci.vehicle.getIDList():
+            tls = traci.vehicle.getNextTLS(self.ego_id)
+            if tls:
+                return tls[0][0], tls[0][1], float(tls[0][2]), tls[0][3]
+        return None
+
     def step(self, action):
+        before = self._tls_ahead()
         obs, reward, terminated, truncated, info = super().step(action)
+        # 신호 위반: 직전 스텝에 15 m 안의 빨간불이었는데 이번 스텝에 그 신호를 지나쳤으면 (교차로 진입)
+        after = self._tls_ahead() if not terminated else None
+        info["red_light"] = bool(before and before[3] in "rRu" and before[2] < 15
+                                 and (after is None or after[:2] != before[:2]) and not info["arrived"])
+        if info["red_light"]:
+            reward -= float(self.rw.get("red_light_penalty", 0.0))
+        # 과속: 지금 차로 제한속도를 넘은 만큼 감점 (수업 보상의 속도 기준은 vmax 하나라서 교내 시속 20 km 구간도 50 km까지 보상)
+        if info["speed"] is not None and self.ego_id in traci.vehicle.getIDList():
+            lim = traci.lane.getMaxSpeed(traci.vehicle.getLaneID(self.ego_id))
+            over = max(0.0, info["speed"] - lim)
+            info["overspeed"] = over
+            reward -= float(self.rw.get("overspeed_penalty", 0.0)) * over / self.vmax
+        info["tls_state"], info["tls_distance_m"] = (after[3], after[2]) if after else ("none", -1.0)
         info["arrived"] = info["arrived"] and not info["collided"]   # 충돌하면 차가 제거되어 도착으로도 잡힌다
         if info["lane_after"] is None:                               # 종료로 차가 사라진 스텝은 마지막 차로로 기록
             info["lane_after"] = info["lane_before"]
