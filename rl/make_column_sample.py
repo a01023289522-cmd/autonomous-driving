@@ -1,4 +1,4 @@
-"""데이터 칼럼 과제용 CSV: 성대역 도로에서 실제로 주행해 필수 칼럼 + 팀별 추가 칼럼을 기록한다.
+"""데이터 칼럼 과제용 CSV: 성대역 도로에서 실제로 주행해 필수 칼럼 + 팀별 추가 칼럼을 기록한다. 칼럼 정의는 columns.py.
 
 학습 전 단계라 규칙으로 움직이는 정책을 쓴다. 에피소드 끝부분만 남겨 도착·충돌·차로 변경이 들어가게 한다.
     python -X utf8 rl/make_column_sample.py 출력.csv
@@ -10,25 +10,12 @@ import sys
 import config
 import course  # noqa: F401
 import numpy as np
+from columns import COLUMNS, step_row
+from env import sumo_env
 
-COLUMNS = ["episode", "t", "observation", "action_raw", "action.accel_raw", "action.lane_change_raw", "action.lane_change",
-           "action.lane_change_applied", "reward", "terminated", "truncated", "state", "detected_vehicles", "event.collided",
-           "event.arrived", "event.lane_before", "event.lane_after", "next_observation", "next_state", "tls_state", "tls_distance_m"]
+traci = sumo_env.traci
+
 KEEP = 8
-
-
-def rnd(x):
-    if isinstance(x, (float, np.floating)):
-        return round(float(x), 3)
-    if isinstance(x, dict):
-        return {k: rnd(v) for k, v in x.items()}
-    if isinstance(x, (list, tuple, np.ndarray)):
-        return [rnd(v) for v in x]
-    return x
-
-
-def js(x):
-    return json.dumps(rnd(x), ensure_ascii=False, separators=(",", ":"))
 
 
 def run(env, episode, policy, want):
@@ -37,12 +24,8 @@ def run(env, episode, policy, want):
         obs, _info = env.reset()
         rows, t = [], 0
         while True:
-            state, seen, (tls, dist) = env.get_privileged_state(), env.get_detected_vehicles(), env.signal_info()
-            action = np.array(policy(t, obs), dtype=np.float32)
-            next_obs, reward, term, trunc, info = env.step(action)
-            rows.append([episode, t, js(obs), js(action), rnd(info["accel_raw"]), rnd(info["lane_change_raw"]), info["lane_change"],
-                         info["lane_change_applied"], rnd(reward), term, trunc, js(state), js(seen), info["collided"], info["arrived"],
-                         info["lane_before"], info["lane_after"], js(next_obs), js(env.get_privileged_state()), tls, rnd(dist)])
+            row, next_obs, term, trunc, info = step_row(env, traci, episode, t, obs, np.array(policy(t, obs), dtype=np.float32))
+            rows.append(row)
             obs, t = next_obs, t + 1
             if term or trunc:
                 break

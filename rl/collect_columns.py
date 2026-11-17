@@ -1,6 +1,6 @@
 """최종 데이터 수집기: 학습한 모델로 성대역 경로를 주행하고 모든 스텝을 CSV로 남긴다.
 
-`make_column_sample.py`와 칼럼·형식은 같고 세 가지가 다르다 (작업 가이드 2장, 팀원 3).
+칼럼은 columns.py에 정의하고 `make_column_sample.py`와 같이 쓴다. 세 가지가 다르다 (작업 가이드 2장, 팀원 3).
   - 끝 8줄만 남기지 않고 에피소드 전체 스텝을 적는다
   - 규칙 정책이 아니라 학습한 모델(PPO 또는 BC)로 주행한다
   - 조건에 맞는 주행을 골라 다시 돌리지 않는다. 정해둔 시드 순서대로 나온 주행을 그대로 적는다
@@ -18,11 +18,13 @@ import course
 import config
 import numpy as np
 
-from make_column_sample import COLUMNS, js, rnd  # noqa: E402  칼럼 정의를 한 곳에서만 관리한다
+from columns import COLUMNS, step_row  # noqa: E402  칼럼 정의를 한 곳에서만 관리한다
+from env import sumo_env  # noqa: E402
 from test_skku import course_load_agent  # noqa: E402
 
 # 학습(0~19)·평가(1000~1099)·collect_skku(3000~3499)·칼럼 예시(3000~3023)와 겹치지 않는 시드
 COLLECT_SEEDS = list(range(4000, 4100))
+traci = sumo_env.traci
 
 
 def episode_rows(env, agent, episode):
@@ -30,12 +32,9 @@ def episode_rows(env, agent, episode):
     obs, _ = env.reset()
     t = 0
     while True:
-        state, seen, (tls, dist) = env.get_privileged_state(), env.get_detected_vehicles(), env.signal_info()
-        action = np.asarray(agent.predict(obs, deterministic=True), dtype=np.float32)
-        next_obs, reward, term, trunc, info = env.step(action)
-        yield [episode, t, js(obs), js(action), rnd(info["accel_raw"]), rnd(info["lane_change_raw"]), info["lane_change"],
-               info["lane_change_applied"], rnd(reward), term, trunc, js(state), js(seen), info["collided"], info["arrived"],
-               info["lane_before"], info["lane_after"], js(next_obs), js(env.get_privileged_state()), tls, rnd(dist)]
+        row, next_obs, term, trunc, info = step_row(env, traci, episode, t, obs,
+                                                    np.asarray(agent.predict(obs, deterministic=True), dtype=np.float32))
+        yield row
         obs, t = next_obs, t + 1
         if term or trunc:
             end = "충돌" if info["collided"] else ("도착" if info["arrived"] else "시간초과")

@@ -247,7 +247,8 @@ HPARAMS = {"gamma": 0.995}
 | `rl/config.py`, `rl/configs/` | 실험 설정, 구간 이름 |
 | `rl/train_skku.py`, `rl/test_skku.py`, `rl/collect_skku.py` | 학습, 평가·주행 확인, 데이터 수집 |
 | `rl/eval_detail.py` | 실패 원인 기록 (점검 문서용) |
-| `rl/make_column_sample.py` | 칼럼 과제 형식 CSV |
+| `rl/columns.py` | 데이터 칼럼 정의, 신호 현시 번호 표 |
+| `rl/make_column_sample.py`, `rl/collect_columns.py` | 칼럼 과제 예시 CSV, 최종 데이터 수집 (학습 모델, 전체 스텝. 에피소드당 약 1분 20초, 27 MB) |
 | 수업 저장소 `env/sumo_env.py` | 관측 31개, 행동, 보상 계산 (v1 관측 12개와 신호 위반·과속 감점은 `rl/skku_env.py`) |
 | 수업 저장소 `algorithms/ppo.py` | PPO 구현 |
 
@@ -264,6 +265,8 @@ HPARAMS = {"gamma": 0.995}
 | 5 | 신호 위반 벌점 | v1 반영 | 15 m 안 빨간불에서 교차로에 들어가면 `red_light_penalty` |
 | 6 | 정문 신호 | 반영 | 일월로×정문 교차로에 신호 추가 (실제 도로 거리뷰 확인). 일월로 방향별 직좌 30초, 정문 출구 18초 |
 | 7 | 안전 제어 | 미정 | `speedMode=0`(SUMO 안전 제어 전체 해제) 유지 여부 (`userdoc/TraCI/Change_Vehicle_State.html`) |
+| 9 | 데이터 칼럼 | 반영 (11/17) | 교수님 피드백: 신호 7개마다 숫자 칼럼 `tls_<이름>_phase`(현시 번호), `tls_<이름>_remain`(남은 초), `event.red_light`. state에 100 m 안 차량의 차종·방향·가속도·방향지시등·제동등, AV 도로의 차로 수·제한속도·다음 교차로 거리·양보 여부. 정의는 `rl/columns.py`, 현시 번호 표는 `python -X utf8 rl/columns.py` |
+| 10 | 재현성 | 반영 (11/17) | 배경 교통 상태 파일에 난수 상태 저장(`--save-state.rng`), 상태를 처음 만드는 실행과 주행 실행을 분리. 같은 시드면 몇 번을 돌려도 같은 주행 |
 | 8 | 정류장 앞 정지 | 확인 필요 | 앞에 버스가 없는데 AV(빨간 차)가 정류장 앞에서 멈춤. AV에는 정차 명령이 없으므로 정책의 감속. v1 학습 후에도 남으면 원인 확인 |
 
 v1 관측 순서 (31개 뒤): `[31]` 신호 거리/100, `[32]` 빨간불, `[33]` 노란불, `[34]` 남은 시간/30, `[35]` 필요 차로 변경 수/2,

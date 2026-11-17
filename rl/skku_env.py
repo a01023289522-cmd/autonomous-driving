@@ -52,7 +52,7 @@ class SkkuEnv(SumoHighwayEnv):
         self.seeds, self._next = list(seeds), 0
 
     def _state_file(self, seed):
-        return os.path.join(STATES, f"s{seed}_w{self.warmup_seconds:.0f}_dt{self.step_length}.xml.gz")
+        return os.path.join(STATES, f"s{seed}_w{self.warmup_seconds:.0f}_dt{self.step_length}_rng.xml.gz")
 
     def _state_ready(self, path):
         """저장한 상태가 있고 도로·교통 파일이 그 뒤로 바뀌지 않았는가."""
@@ -62,27 +62,35 @@ class SkkuEnv(SumoHighwayEnv):
         seed = self.seeds[self._next % len(self.seeds)]
         self._next += 1
         self.seed_now = seed
-        cmd = [checkBinary("sumo-gui" if self.gui else "sumo"), "-c", self.cfg_path, "--step-length", str(self.step_length),
+        cmd = [checkBinary("sumo"), "-c", self.cfg_path, "--step-length", str(self.step_length),
                "--collision.action", "remove", "--collision.check-junctions", "true",
-               "--no-warnings", "true", "--no-step-log", "true", "--seed", str(seed)]
+               "--no-warnings", "true", "--no-step-log", "true", "--seed", str(seed),
+               "--save-state.rng", "true"]   # 난수 상태까지 저장 (userdoc/Simulation/SaveAndLoad.html)
+        state = self._state_file(seed)
+        if not self._state_ready(state):
+            self._make_state(cmd, state)
         if self.gui:
+            cmd[0] = checkBinary("sumo-gui")
             cmd += ["--quit-on-end", "--delay", str(self.gui_delay), "--start"]
         else:                                 # 화면이 없으면 배경 도형은 읽지 않는다
             cmd += ["-a", ",".join(os.path.join(MAP, f) for f in ("vtypes.add.xml", "bus.stops.xml", "skku.add.xml"))]
-        self._state, self._loaded = self._state_file(seed), self._state_ready(self._state_file(seed))
-        if self._loaded:
-            cmd += ["--load-state", self._state, "--begin", str(self.warmup_seconds)]
-        traci.start(cmd)
+        traci.start(cmd + ["--load-state", state, "--begin", str(self.warmup_seconds)])
         self._started = True
 
+    def _make_state(self, cmd, state):
+        """배경 교통을 warmup_seconds만큼 채운 상태를 파일로 만든다. 주행은 항상 이 파일을 불러와 시작한다.
+        차로 변경 모델 내부 상태 등은 상태 파일에 저장되지 않으므로(SaveAndLoad.html Known Issues), 처음 만든 실행에서 바로
+        주행하면 저장된 상태를 불러온 실행과 결과가 달라진다. 그래서 만드는 실행과 주행하는 실행을 나눈다."""
+        traci.start(cmd + ["-a", ",".join(os.path.join(MAP, f) for f in ("vtypes.add.xml", "bus.stops.xml", "skku.add.xml"))])
+        traci.simulationStep(self.warmup_seconds)
+        os.makedirs(STATES, exist_ok=True)
+        tmp = f"{state}.{os.getpid()}.xml.gz"
+        traci.simulation.saveState(tmp)
+        traci.close()
+        os.replace(tmp, state)                # 여러 학습을 동시에 돌려도 반쯤 쓴 파일을 읽지 않게
+
     def _insert_ego(self):
-        """배경 교통을 채운 뒤 AV를 넣는다. 들어갈 자리가 끝내 없으면 False."""
-        if not self._loaded:
-            traci.simulationStep(self.warmup_seconds)
-            os.makedirs(STATES, exist_ok=True)
-            tmp = f"{self._state}.{os.getpid()}.xml.gz"
-            traci.simulation.saveState(tmp)
-            os.replace(tmp, self._state)      # 여러 학습을 동시에 돌려도 반쯤 쓴 파일을 읽지 않게
+        """배경 교통을 채운 상태에서 AV를 넣는다. 들어갈 자리가 끝내 없으면 False."""
         traci.route.add(ROUTE_ID, self.edges)
         traci.vehicletype.copy("DEFAULT_VEHTYPE", "ego_type")
         traci.vehicletype.setColor("ego_type", (255, 0, 0, 255))
@@ -113,13 +121,48 @@ class SkkuEnv(SumoHighwayEnv):
         self.step_count = 0
         return self._get_obs(), {}
 
+    @staticmethod
+    def _vehicle_extra(vid):
+        """차종, 진행 방향(도, 북쪽 0 시계 방향), 가속도, 방향지시등(+1 왼쪽, -1 오른쪽, 0 없음), 제동등.
+        userdoc/TraCI/Vehicle_Signalling.html: bit0 오른쪽, bit1 왼쪽, bit3 제동등"""
+        sig = traci.vehicle.getSignals(vid)
+        return {"type": traci.vehicle.getTypeID(vid), "angle": float(traci.vehicle.getAngle(vid)),
+                "accel": float(traci.vehicle.getAcceleration(vid)),
+                "blinker": 1 if sig & 2 else -1 if sig & 1 else 0, "brake_light": int(bool(sig & 8))}
+
+    def _road_info(self):
+        """AV가 달리는 도로: 차로 수, 제한속도, 다음 교차로까지 거리, 그 교차로에서 양보해야 하는지 (도로망 파일 없이 읽을 수 있게)."""
+        e = self.ego_id
+        lane_id = traci.vehicle.getLaneID(e)
+        links = traci.vehicle.getNextLinks(e)
+        if lane_id.startswith(":") or not links:
+            jd, yld = 0.0, False
+        else:
+            jd = traci.lane.getLength(lane_id) - traci.vehicle.getLanePosition(e)
+            yld = links[0][5] in "mswg="          # 소문자 m/g, 정지(s), 전방향 정지(w): 다른 차에 양보하는 연결
+        return {"ego_lane_count": int(traci.edge.getLaneNumber(traci.vehicle.getRoadID(e))),
+                "ego_speed_limit": float(traci.lane.getMaxSpeed(lane_id)),
+                "next_junction_m": float(jd), "next_junction_yield": bool(yld)}
+
     def get_privileged_state(self):
-        s = super().get_privileged_state()
-        if s.get("ego_alive"):
-            ex, ey = s["ego_x"], s["ego_y"]
-            s["vehicles"] = [v for v in s["vehicles"] if (v["x"] - ex) ** 2 + (v["y"] - ey) ** 2 <= STATE_RADIUS ** 2]
-            s["simulation_time_s"] = float(traci.simulation.getTime())
-        return s
+        """수업 코드와 같은 형식이되, 위치로 먼저 100 m 안 차량만 고른 뒤 나머지 값을 조회한다 (전체 약 400대를 다 조회하면 수집이 4배 느림)."""
+        if self.ego_id not in traci.vehicle.getIDList():
+            return {"ego_alive": False}
+        ex, ey = traci.vehicle.getPosition(self.ego_id)
+        vehicles = []
+        for vid in traci.vehicle.getIDList():
+            x, y = traci.vehicle.getPosition(vid)
+            if (x - ex) ** 2 + (y - ey) ** 2 > STATE_RADIUS ** 2:
+                continue
+            vehicles.append({"id": vid, "x": float(x), "y": float(y), "speed": float(traci.vehicle.getSpeed(vid)),
+                             "lane": int(traci.vehicle.getLaneIndex(vid)), "lane_id": traci.vehicle.getLaneID(vid),
+                             "road_id": traci.vehicle.getRoadID(vid), "lane_pos": float(traci.vehicle.getLanePosition(vid)),
+                             **self._vehicle_extra(vid)})
+        ego = next(v for v in vehicles if v["id"] == self.ego_id)
+        return {"ego_alive": True, "ego_x": ego["x"], "ego_y": ego["y"], "ego_speed": ego["speed"], "ego_lane": ego["lane"],
+                "ego_lane_id": ego["lane_id"], "ego_road_id": ego["road_id"], "ego_lane_pos": ego["lane_pos"],
+                "ego_angle": ego["angle"], "ego_accel": ego["accel"], **self._road_info(), "vehicles": vehicles,
+                "simulation_time_s": float(traci.simulation.getTime())}
 
     def get_detected_vehicles(self):
         out = super().get_detected_vehicles()
