@@ -14,6 +14,7 @@ SCENARIO = {
     "decel": 4.5,                    # 행동 -1일 때 감속도 (m/s^2)
     "train_seeds": list(range(20)),  # 학습 때 돌려 쓰는 교통 시드
     "eval_seeds": list(range(1000, 1100)),  # 평가용 고정 시드 (모든 실험 공통)
+    "extra_routes": ["scenario_rb_av.rou.xml"],   # 환경 v3: 회전교차로 AV 진입로 교통 추가 (sumo/skku_map/scenarios.py)
     "obs_v1": True,                  # 환경 v1 관측 12개 추가 (신호, 경로 차로, 교차 차량, 제한속도. rl/skku_env.py)
 }
 

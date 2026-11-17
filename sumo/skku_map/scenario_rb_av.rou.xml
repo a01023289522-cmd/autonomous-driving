@@ -1,0 +1,4 @@
+<routes>
+    <flow id="rbav_west" type="car" begin="0" end="3600" period="exp(0.0417)" from="4780276970" to="-5039133830#2" via="-5039133870#1 -5039133870#0 -5039133830#3" departLane="best" departSpeed="avg"/>
+    <flow id="rbav_63" type="car" begin="0" end="3600" period="exp(0.0278)" from="4780276970" to="-14601887080" via="-5039133870#1 -5039133870#0 4526039560#0" departLane="best" departSpeed="avg"/>
+</routes>
