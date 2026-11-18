@@ -284,9 +284,37 @@ class SkkuEnv(SumoHighwayEnv):
                 return tls[0][0], tls[0][1], float(tls[0][2]), tls[0][3]
         return None
 
+    YIELD_TTC = 3.0
+
+    def _yield_risk(self):
+        """양보해야 하는 연결 앞이면 (지금 차로, 우선 차량이 충돌 지점에 오기까지 가장 짧은 시간 s), 아니면 None.
+        우선 차량 = getJunctionFoes 중 egoResponse(내가 양보)이고 아직 충돌 지점을 빠져나가지 않은 차 (foeExitDist > 0).
+        충돌 지점 안에 있는 차(foeDist < 0)는 0초. traci/_vehicle.py getJunctionFoes"""
+        e = self.ego_id
+        if e not in traci.vehicle.getIDList():
+            return None
+        lane = traci.vehicle.getLaneID(e)
+        links = traci.vehicle.getNextLinks(e)
+        if lane.startswith(":") or not links or links[0][5] not in "mswg=":
+            return None
+        ttc = [max(x[2], 0.0) / max(traci.vehicle.getSpeed(x[0]), 0.1)
+               for x in traci.vehicle.getJunctionFoes(e, self.FOE_RANGE) if x[7] and x[4] > 0]
+        return lane, min(ttc, default=float("inf"))
+
     def step(self, action):
         before = self._tls_ahead()
+        ywt = float(self.rw.get("yield_penalty", 0.0))
+        yrisk = self._yield_risk() if ywt > 0 else None
         obs, reward, terminated, truncated, info = super().step(action)
+        # 양보 위반: 양보해야 하는 연결 앞에서, 우선 차량이 YIELD_TTC초 안에 오는데 교차로에 들어갔으면 1회 감점.
+        # 충돌 감점은 실제로 부딪힐 때만 붙어 드물다 (11/18 임재성: 충돌 감점 크기로는 양보 실패가 안 줄어듦).
+        # 신호 위반 감점(red_light_penalty)을 무신호 교차로·회전교차로에 적용한 것
+        info["yield_violation"] = False
+        if yrisk and self.ego_id in traci.vehicle.getIDList():
+            now = traci.vehicle.getLaneID(self.ego_id)
+            if now != yrisk[0] and now.startswith(":") and yrisk[1] < self.rw.get("yield_ttc", self.YIELD_TTC):
+                info["yield_violation"] = True
+                reward -= ywt
         # 신호 위반: 직전 스텝에 15 m 안의 빨간불이었는데 이번 스텝에 그 신호를 지나쳤으면 (교차로 진입)
         after = self._tls_ahead() if not terminated else None
         info["red_light"] = bool(before and before[3] in "rRu" and before[2] < 15
