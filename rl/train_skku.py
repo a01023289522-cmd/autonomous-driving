@@ -25,6 +25,7 @@ def main():
     ap.add_argument("--timesteps", type=int)
     ap.add_argument("--init", help="이어서 학습할 model.pt (커리큘럼·추가 학습). 관측 차원이 같아야 한다")
     ap.add_argument("--ckpt-every", type=int, default=50000, help="이 스텝마다 중간 모델 model_<k>k.pt 저장 (0이면 안 함). quick_eval.py로 중간 판단")
+    ap.add_argument("--ppo-fix", action="store_true", help="수업 PPO의 시간초과 GAE 버그를 고친 rl/ppo_fix.py PPOFixed를 쓴다")
     ap.add_argument("--lr-end", type=float, help="학습률을 이 값까지 선형으로 낮춘다 (수업 PPO에는 스케줄이 없어 업데이트마다 optimizer에 넣는다)")
     ap.add_argument("--no-train-eval", action="store_true",
                     help="학습 중 3 에피소드 평가를 끈다 (판단에 쓰기엔 적고 시뮬레이션 시간의 약 15%%를 쓴다)")
@@ -52,7 +53,10 @@ def main():
             agent.save(os.path.join(run_dir, f"model_{last[0] * a.ckpt_every // 1000}k.pt"))
     logger.log_train = log_and_save
     env = config.make_env(cfg)
-    agent = PPO(obs_dim=env.observation_space.shape[0], act_dim=env.action_space.shape[0],
+    if a.ppo_fix:
+        from ppo_fix import PPOFixed
+        cfg["ppo_fix"] = True
+    agent = (PPOFixed if a.ppo_fix else PPO)(obs_dim=env.observation_space.shape[0], act_dim=env.action_space.shape[0],
                 buffer=RolloutBuffer(), **cfg["hparams"])
     if a.init:
         agent.load(a.init)
