@@ -369,6 +369,18 @@ class SkkuEnv(SumoHighwayEnv):
         if hw > 0 and info["gap"] is not None and info["speed"] is not None:
             if float(self.rw["close_gap_threshold"]) <= info["gap"] < info["speed"] * hw:
                 reward -= float(self.rw["close_gap_penalty"])
+        # 앞차 TTC: 같은 차로 앞차에 다가가는 중이고 TTC(간격 / 접근 속도)가 ttc_s 미만이면 ttc_penalty × (ttc_s − TTC)/ttc_s.
+        # 11/18 측정(r_q2 10만, 12 시드): 정상 에피소드에서 TTC<3초는 앞차 있는 스텝의 0.57%(그중 59%는 이미 감속 중),
+        # 충돌 3건(초록불 직후 회전하며 느려지는 앞차 추돌)은 충돌 약 3초 전부터 계속 3초 미만. 시간 간격 감점은 저속에서
+        # 기준 거리가 짧아(4 m/s → 8 m) 충돌 2초 전에야 붙었다. 교차로 양보 상대에는 쓰지 않는다 (같은 차로 앞차만)
+        tp = float(self.rw.get("ttc_penalty", 0.0))
+        if tp > 0 and not terminated and info["gap"] is not None and self.ego_id in traci.vehicle.getIDList():
+            lead = traci.vehicle.getLeader(self.ego_id, self.visibility)
+            if lead:
+                closing = info["speed"] - traci.vehicle.getSpeed(lead[0])
+                ts = float(self.rw.get("ttc_s", 3.0))
+                if closing > 0.1 and lead[1] / closing < ts:
+                    reward -= tp * (ts - lead[1] / closing) / ts
         # queue_fix: 앞차가 서 있으면(신호 대기열 등) 수업 코드의 막힘 감점을 되돌리고, 나도 서 있으면 6 m 간격 감점도 되돌린다.
         # 11/18 측정(r_idle_scaled 5 시드): AV와 앞차가 둘 다 서 있던 1045스텝 모두 간격 15 m 이상(중앙값 41 m). 막힘 감점(앞차 20 m 안,
         # 느림)과 6 m 간격 감점(정상 대기 간격 2.5 m에서 80초 대기 −16, 충돌 −5보다 큼)이 대기열에 붙어 서는 것을 벌하고,
