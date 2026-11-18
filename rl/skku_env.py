@@ -310,9 +310,12 @@ class SkkuEnv(SumoHighwayEnv):
                     free = min(free, after[2])
                 if any(f[7] for f in traci.vehicle.getJunctionFoes(e, 60)):
                     free = 0.0
-                if free > self.rw.get("idle_gap", 15.0):
+                gap = self.rw.get("idle_gap", 15.0)
+                if free > gap:
                     info["idle"] = True
-                    reward -= idle
+                    # idle_scaled: 빈 공간에 비례 (15 m에서 0, 100 m에서 idle). 계단형이면 16 m든 80 m든 같은 감점이라
+                    # 조금 다가가도 이득이 없어서 정지선 40–80 m 앞에 선다 (11/18 r_idle_s500 측정)
+                    reward -= idle * ((min(free, 100.0) - gap) / (100.0 - gap) if self.rw.get("idle_scaled", False) else 1.0)
         info["tls_state"], info["tls_distance_m"] = (after[3], after[2]) if after else ("none", -1.0)
         info["arrived"] = info["arrived"] and not info["collided"]   # 충돌하면 차가 제거되어 도착으로도 잡힌다
         if info["lane_after"] is None:                               # 종료로 차가 사라진 스텝은 마지막 차로로 기록
