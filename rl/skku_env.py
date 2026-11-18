@@ -249,7 +249,11 @@ class SkkuEnv(SumoHighwayEnv):
             foes = [x for x in foes if x[4] > 0]   # foeExitDist: 충돌 지점을 빠져나가기까지 거리 (traci/_vehicle.py)
         if self.foe_lanes and yld and jd <= self.FOE_RANGE:
             seen = {x[0] for x in foes}
-            for fl in traci.lane.getFoes(from_lane, links[0][0]):       # 내 연결보다 우선권이 있는 연결의 출발 차로
+            try:
+                foe_lanes = traci.lane.getFoes(from_lane, links[0][0])   # 내 연결보다 우선권이 있는 연결의 출발 차로
+            except traci.TraCIException:   # 지금 차로에서 그 연결로 바로 못 감 (경로상 차로 변경이 남음)
+                foe_lanes = []
+            for fl in foe_lanes:
                 length = traci.lane.getLength(fl)
                 for v in traci.lane.getLastStepVehicleIDs(fl):
                     d = length - traci.vehicle.getLanePosition(v)        # 그 차의 정지선까지 거리 (충돌 지점 대신 근사)
