@@ -375,9 +375,10 @@ class SkkuEnv(SumoHighwayEnv):
         # 정차 감점은 앞으로 밀어서 그 사이(약 40 m)에서 섰다. 달리는 중에는 두 감점 그대로 (꼬리물기 방지, 느린 차 추월)
         if self.rw.get("queue_fix", False) and not terminated and info["gap"] is not None and self.ego_id in traci.vehicle.getIDList():
             lead = traci.vehicle.getLeader(self.ego_id, self.visibility)
-            # 정류장에 선 버스는 제외: 그 뒤에서는 막힘 감점을 그대로 둬서 추월을 배우게 한다 (stop state의 atBusStop 비트,
-            # userdoc/TraCI/Vehicle_Value_Retrieval.html "stop state")
-            if lead and traci.vehicle.getSpeed(lead[0]) < 0.5 and not traci.vehicle.isAtBusStop(lead[0]):
+            # 정류장에 선 버스도 대기열과 같이 본다: 율전성당·성균관대역 정류장 바로 뒤(약 60 m)는 0번 차로로만 경로가 이어져서
+            # 추월하면 돌아오지 못하고 갇힌다 (11/18 r_safe_mix: 5552317710#2 왼쪽 차로 끝 시간초과 15/20). 버스 뒤에 붙어서 기다리게 한다.
+            # 이전 모델은 정류장 버스 17–24 m 뒤에 섰다(버스 20 m 안 막힘 감점 회피)
+            if lead and traci.vehicle.getSpeed(lead[0]) < 0.5:
                 g, v = info["gap"], info["speed"]
                 if g < float(self.rw.get("blocked_gap", 20.0)) and v < float(self.rw.get("blocked_speed_frac", 0.7)) * self.vmax:
                     reward += float(self.rw.get("blocked_penalty", 0.0))
