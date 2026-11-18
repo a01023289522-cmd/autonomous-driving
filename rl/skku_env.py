@@ -369,6 +369,20 @@ class SkkuEnv(SumoHighwayEnv):
         if hw > 0 and info["gap"] is not None and info["speed"] is not None:
             if float(self.rw["close_gap_threshold"]) <= info["gap"] < info["speed"] * hw:
                 reward -= float(self.rw["close_gap_penalty"])
+        # queue_fix: 앞차가 서 있으면(신호 대기열 등) 수업 코드의 막힘 감점을 되돌리고, 나도 서 있으면 6 m 간격 감점도 되돌린다.
+        # 11/18 측정(r_idle_scaled 5 시드): AV와 앞차가 둘 다 서 있던 1045스텝 모두 간격 15 m 이상(중앙값 41 m). 막힘 감점(앞차 20 m 안,
+        # 느림)과 6 m 간격 감점(정상 대기 간격 2.5 m에서 80초 대기 −16, 충돌 −5보다 큼)이 대기열에 붙어 서는 것을 벌하고,
+        # 정차 감점은 앞으로 밀어서 그 사이(약 40 m)에서 섰다. 달리는 중에는 두 감점 그대로 (꼬리물기 방지, 느린 차 추월)
+        if self.rw.get("queue_fix", False) and not terminated and info["gap"] is not None and self.ego_id in traci.vehicle.getIDList():
+            lead = traci.vehicle.getLeader(self.ego_id, self.visibility)
+            # 정류장에 선 버스는 제외: 그 뒤에서는 막힘 감점을 그대로 둬서 추월을 배우게 한다 (stop state의 atBusStop 비트,
+            # userdoc/TraCI/Vehicle_Value_Retrieval.html "stop state")
+            if lead and traci.vehicle.getSpeed(lead[0]) < 0.5 and not traci.vehicle.isAtBusStop(lead[0]):
+                g, v = info["gap"], info["speed"]
+                if g < float(self.rw.get("blocked_gap", 20.0)) and v < float(self.rw.get("blocked_speed_frac", 0.7)) * self.vmax:
+                    reward += float(self.rw.get("blocked_penalty", 0.0))
+                if g < float(self.rw["close_gap_threshold"]) and v < 0.5:
+                    reward += float(self.rw["close_gap_penalty"])
         # 정차 감점: 거의 서 있는데 앞이 비어 있으면 감점 (갈 수 있는데 안 가는 것).
         # 앞 = 같은 차로 앞차, 빨강·노랑 신호의 정지선 중 가까운 것. 양보할 교차 차량이 있으면 기다리는 게 맞으므로 감점 없음.
         # 막힘 감점(수업 코드)은 앞차 20 m 안에서만 붙어서 멀리 떨어져 서 있으면 피할 수 있었다 (11/18 정차 분석)
