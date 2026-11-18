@@ -8,6 +8,12 @@
 - v3 (11/18): v2 + 회전교차로 AV 진입로 교통 추가(`scenario_rb_av.rou.xml`, 시간당 250대). AV 진입로 바로 앞 통과 54 → 136대/1500초, 진입로 대기는 그대로 0대 수준. 보상에 정차 감점(`idle_penalty`) 항 추가 (설정에서 켤 때만)
 - v1 (11/17): 관측 43개 (신호, 경로 차로, 교차 차량, 제한속도 추가), 신호 위반·과속 감점, `blocked_penalty` 0, 정문 신호 추가. 내용은 [작업 가이드 12장](work_guide.md#12-환경-보완-작업)
 
+**빨리 돌리기 (11/18)**
+- `pip install libsumo==1.27.1 sumo-data==1.27.1` 후 화면 없는 실행에 환경변수 `LIBSUMO_AS_TRACI=quiet`를 붙이면 TraCI 소켓 통신 대신 libsumo를 쓴다 (`userdoc/Libsumo.html`). 코드 수정 없음. 같은 시드에서 스텝별 보상·관측이 TraCI와 완전히 같고, 환경 시간은 약 3배, 학습은 약 3.4배 빠르다. GUI(`test_skku.py`를 `--nogui` 없이)에는 붙이지 않는다 (Windows에서 sumo-gui와 같이 못 씀)
+- 여러 학습을 동시에 돌릴 때는 `OMP_NUM_THREADS=2`를 붙인다 (PyTorch가 학습마다 8스레드를 잡아 서로 경쟁)
+- 학습: `train_skku.py --no-train-eval` (학습 중 3 에피소드 평가 끄기), 중간 모델은 5만 스텝마다 `model_<k>k.pt`로 저장된다
+- 중간 판단: `python -X utf8 rl/quick_eval.py <model_100k.pt> --config <설정>` (20 에피소드, 위험 진입·시간 간격 위반·정지 위치). 100 에피소드 평가는 이걸 통과한 모델만
+
 평균 보상은 보상 설정이 다른 실험끼리 비교하지 않는다 (2차 점검 지적). 비교는 충돌률과 완주율로 한다.
 실패 원인은 `rl/eval_detail.py`로 기록한다.
 
