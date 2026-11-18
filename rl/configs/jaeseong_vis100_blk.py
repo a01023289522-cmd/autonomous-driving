@@ -16,6 +16,13 @@ blocked_penalty가 0이었다. 그 값은 1차 점검 제안으로 꺼진 것인
 대조군은 jaeseong_vis50_blk, 실험군은 jaeseong_vis100_blk이다.
 
     python -X utf8 rl/train_skku.py --config jaeseong_vis100_blk --no-train-eval
+
+결과 (11/19, 1시간 40분): 최종 평균 보상 +16.04. 네 번 중 가장 높다. 1라운드
+vis100(+2.16)보다 13.9점 높고 같은 라운드 vis50_blk(-0.65)보다 16.7점 높다.
+막힘 감점이 없으면 visibility 50이 우세하고(9.79 대 2.16) 있으면 visibility 100이
+우세하다(16.04 대 -0.65). 두 값이 서로를 필요로 하는 관계로 보인다. 시야를 늘리면
+앞차가 멀게 보여 느려지고 막히는데, 막힘 감점이 없으면 막혀 있어도 손해가 없어
+그대로 서 버린다. 감점을 켜면 멀리 보는 이점이 살아난다.
 """
 
 TOTAL_TIMESTEPS = 200_000

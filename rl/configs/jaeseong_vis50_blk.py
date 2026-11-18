@@ -16,6 +16,8 @@ blocked_penalty가 0이었다. 그 값은 1차 점검 제안으로 꺼진 것인
 대조군은 jaeseong_vis50_blk, 실험군은 jaeseong_vis100_blk이다.
 
     python -X utf8 rl/train_skku.py --config jaeseong_vis50_blk --no-train-eval
+
+결과 (11/19, 1시간 41분): 최종 평균 보상 -0.65. 1라운드 vis50(+9.79)보다 낮다.
 """
 
 TOTAL_TIMESTEPS = 200_000
