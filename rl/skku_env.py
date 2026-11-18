@@ -11,6 +11,7 @@
 """
 import json
 import os
+import random
 
 import course
 from env import sumo_env
@@ -57,6 +58,15 @@ class SkkuEnv(SumoHighwayEnv):
         # 나빠졌다(충돌 20% → 28%) → 기본 교통과 섞어서 학습한다
         self.mix = [dict(m) for m in scenario.get("difficulty_mix", [])]
         self._base_traffic = (self.traffic_scale, list(self.extra_routes))
+        # 출발점 섞기: 학습 시드마다 출발 엣지를 이 목록에서 하나 고른다 (같은 엣지를 여러 번 넣으면 비중이 커진다).
+        # 11/18: 위험 진입은 에피소드당 약 1회라 30만 스텝에도 300번 정도만 겪는다. r_segment(율전로98번길 출발만)는 회전교차로 충돌
+        # 12 → 1이었지만 앞 구간 신호를 잊고(빨간불 위반 0.9회) 달려 들어오는 상황에 약했다 → 전체 경로 출발과 섞는다.
+        # 중간 출발은 mid_depart_speed(기본 "max", userdoc/Definition_of_Vehicles... departSpeed)로 투입해 달려 들어오는 상황을 만든다.
+        # 섞기 두 가지 모두 학습 시드(train_seeds)에만 적용한다. 평가 시드는 항상 기본 출발·기본 교통
+        self.start_mix = list(scenario.get("start_mix", []))
+        self.mid_depart_speed = str(scenario.get("mid_depart_speed", "max"))
+        self._full_edges = list(self.edges)
+        self._train_seeds = set(scenario.get("train_seeds", []))
         self.use_seeds(scenario["train_seeds"])
 
     def use_seeds(self, seeds):
@@ -75,10 +85,14 @@ class SkkuEnv(SumoHighwayEnv):
         seed = self.seeds[self._next % len(self.seeds)]
         self._next += 1
         self.seed_now = seed
-        if self.mix:
-            m = self.mix[seed % len(self.mix)]
-            self.traffic_scale = float(m.get("traffic_scale", self._base_traffic[0]))
-            self.extra_routes = list(m.get("extra_routes", self._base_traffic[1]))
+        train = seed in self._train_seeds
+        m = self.mix[seed % len(self.mix)] if self.mix and train else {}
+        self.traffic_scale = float(m.get("traffic_scale", self._base_traffic[0]))
+        self.extra_routes = list(m.get("extra_routes", self._base_traffic[1]))
+        self.edges = self._full_edges
+        if self.start_mix and train:
+            start = self.start_mix[random.Random(f"start{seed}").randrange(len(self.start_mix))]
+            self.edges = self._full_edges[self._full_edges.index(start):]
         cmd = [checkBinary("sumo"), "-c", self.cfg_path, "--step-length", str(self.step_length),
                "--collision.action", "remove", "--collision.check-junctions", "true",
                "--no-warnings", "true", "--no-step-log", "true", "--seed", str(seed),
@@ -121,7 +135,8 @@ class SkkuEnv(SumoHighwayEnv):
         traci.route.add(ROUTE_ID, self.edges)
         traci.vehicletype.copy("DEFAULT_VEHTYPE", "ego_type")
         traci.vehicletype.setColor("ego_type", (255, 0, 0, 255))
-        traci.vehicle.add(self.ego_id, ROUTE_ID, typeID="ego_type", departLane="best", departPos="free", departSpeed="0")
+        traci.vehicle.add(self.ego_id, ROUTE_ID, typeID="ego_type", departLane="best", departPos="free",
+                          departSpeed="0" if self.edges[0] == self._full_edges[0] else self.mid_depart_speed)
         traci.vehicle.setSpeedMode(self.ego_id, 0)            # 수업 환경과 같음: 안전 제어는 정책 몫
         traci.vehicle.setLaneChangeMode(self.ego_id, 0)
         for _ in range(240):
