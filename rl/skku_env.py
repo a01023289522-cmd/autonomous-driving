@@ -52,6 +52,11 @@ class SkkuEnv(SumoHighwayEnv):
         self.warmup_seconds = float(scenario["warmup_seconds"])
         self.traffic_scale = float(scenario.get("traffic_scale", 1.0))   # 배경 교통량 배율 (난이도). sumo --scale
         self.extra_routes = list(scenario.get("extra_routes", []))         # 추가 교통 파일 (sumo/skku_map/scenarios.py)
+        # 난이도 섞기: [{"traffic_scale": 1.4}, {"extra_routes": [...]} ...]. 시드마다 하나를 고정으로 고른다 (seed % 개수).
+        # 비어 있으면 위의 traffic_scale·extra_routes 하나만 쓴다. 11/18 r_rb_stage1: 어려운 교통만으로 학습하면 기본 교통 성능이
+        # 나빠졌다(충돌 20% → 28%) → 기본 교통과 섞어서 학습한다
+        self.mix = [dict(m) for m in scenario.get("difficulty_mix", [])]
+        self._base_traffic = (self.traffic_scale, list(self.extra_routes))
         self.use_seeds(scenario["train_seeds"])
 
     def use_seeds(self, seeds):
@@ -70,6 +75,10 @@ class SkkuEnv(SumoHighwayEnv):
         seed = self.seeds[self._next % len(self.seeds)]
         self._next += 1
         self.seed_now = seed
+        if self.mix:
+            m = self.mix[seed % len(self.mix)]
+            self.traffic_scale = float(m.get("traffic_scale", self._base_traffic[0]))
+            self.extra_routes = list(m.get("extra_routes", self._base_traffic[1]))
         cmd = [checkBinary("sumo"), "-c", self.cfg_path, "--step-length", str(self.step_length),
                "--collision.action", "remove", "--collision.check-junctions", "true",
                "--no-warnings", "true", "--no-step-log", "true", "--seed", str(seed),
