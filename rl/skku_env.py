@@ -40,6 +40,9 @@ class SkkuEnv(SumoHighwayEnv):
         ego = {"depart_lane": "best", "depart_speed": 0, "accel": scenario["accel"], "decel": scenario["decel"]}
         super().__init__(os.path.join(MAP, "skku.sumocfg"), road, ego, mdp_sim, mdp_obs, action, reward, gui=gui)
         self.v1 = bool(scenario.get("obs_v1", False))
+        # 우선도로 접근 차량을 lane.getFoes로 직접 찾아 교차 차량 관측에 더한다 (11/18 충돌 분석: 율전로98번길 좌회전에서
+        # getJunctionFoes가 우선도로 직진 차를 늦게 돌려줌). 관측 차원은 그대로. userdoc/TraCI/Lane_Value_Retrieval.html "foes"
+        self.foe_lanes = bool(scenario.get("obs_foe_lanes", False))
         if self.v1:
             self.obs_dim += self.V1_DIM
             self.observation_space = gym.spaces.Box(-1.0, 1.0, shape=(self.obs_dim,), dtype=np.float32)
@@ -226,12 +229,29 @@ class SkkuEnv(SumoHighwayEnv):
             f += [1.0, 0.0, 0.0, 1.0]
         lane_id = traci.vehicle.getLaneID(e)
         links = traci.vehicle.getNextLinks(e)
-        if lane_id.startswith(":") or not links:
+        from_lane = lane_id                         # 다음 교차로 연결(links[0])이 시작하는 일반 차로
+        if lane_id.startswith(":") and links and self.foe_lanes:
+            # 교차로 안(내부 차로)에서도 getNextLinks[0]은 다음 교차로의 연결이다. 짧은 차로를 사이에 둔 연속 교차로에서
+            # 거리·양보 여부가 0으로 나오던 문제 (11/18 율전로98번길 좌회전 충돌: 앞 교차로 내부 차로 약 25 m 동안 못 봄)
+            out = traci.lane.getLinks(lane_id)
+            from_lane = out[0][0] if out else None
+        if not links or from_lane is None or from_lane.startswith(":"):
             jd, yld = 0.0, 0.0
         else:
-            jd = traci.lane.getLength(lane_id) - traci.vehicle.getLanePosition(e)
+            jd = traci.lane.getLength(from_lane) - (traci.vehicle.getLanePosition(e) if from_lane == lane_id else 0.0)
+            if from_lane != lane_id:
+                jd += traci.lane.getLength(lane_id) - traci.vehicle.getLanePosition(e)
             yld = float(links[0][5] in "mswg=")    # 소문자 m/g, 정지(s), 전방향 정지(w): 다른 차에 양보하는 연결
         foes = [x for x in traci.vehicle.getJunctionFoes(e, self.FOE_RANGE) if x[7]]   # egoResponse: 내가 양보할 차
+        if self.foe_lanes and yld and jd <= self.FOE_RANGE:
+            seen = {x[0] for x in foes}
+            for fl in traci.lane.getFoes(from_lane, links[0][0]):       # 내 연결보다 우선권이 있는 연결의 출발 차로
+                length = traci.lane.getLength(fl)
+                for v in traci.lane.getLastStepVehicleIDs(fl):
+                    d = length - traci.vehicle.getLanePosition(v)        # 그 차의 정지선까지 거리 (충돌 지점 대신 근사)
+                    if v not in seen and d <= self.FOE_RANGE:
+                        foes.append((v, jd, d))
+                        seen.add(v)
         if foes:
             near = min(foes, key=lambda x: x[2])
             f += [min(jd, 100) / 100, yld, min(near[2], self.FOE_RANGE) / self.FOE_RANGE,
