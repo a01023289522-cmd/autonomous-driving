@@ -299,6 +299,16 @@ class SkkuEnv(SumoHighwayEnv):
             return None
         ttc = [max(x[2], 0.0) / max(traci.vehicle.getSpeed(x[0]), 0.1)
                for x in traci.vehicle.getJunctionFoes(e, self.FOE_RANGE) if x[7] and x[4] > 0]
+        if self.foe_lanes:   # 관측 보완과 같은 차량 목록: getJunctionFoes가 빠뜨리는 우선도로 접근 차량 (11/18 seed 1024: TTC 99 → 0.4초)
+            try:
+                for fl in traci.lane.getFoes(lane, links[0][0]):
+                    length = traci.lane.getLength(fl)
+                    for v in traci.lane.getLastStepVehicleIDs(fl):
+                        d = length - traci.vehicle.getLanePosition(v)
+                        if d <= self.FOE_RANGE:
+                            ttc.append(d / max(traci.vehicle.getSpeed(v), 0.1))
+            except traci.TraCIException:
+                pass
         return lane, min(ttc, default=float("inf"))
 
     def step(self, action):
@@ -327,6 +337,13 @@ class SkkuEnv(SumoHighwayEnv):
             over = max(0.0, info["speed"] - lim)
             info["overspeed"] = over
             reward -= float(self.rw.get("overspeed_penalty", 0.0)) * over / self.vmax
+        # 앞차 시간 간격: 수업 코드의 close_gap은 6 m 고정이라 시속 20 km 이상으로 다가가면 6 m 안에 들어온 순간 이미 늦다
+        # (11/18 r_idle_scaled 출발 직후 추돌: 10 m 앞 앞차에 상대속도 -3 m/s로 접근). headway_s를 주면 기준을
+        # max(6 m, 내 속도 × headway_s)로 넓혀 같은 close_gap_penalty를 준다. 6 m 안은 수업 코드가 이미 감점
+        hw = float(self.rw.get("headway_s", 0.0))
+        if hw > 0 and info["gap"] is not None and info["speed"] is not None:
+            if float(self.rw["close_gap_threshold"]) <= info["gap"] < info["speed"] * hw:
+                reward -= float(self.rw["close_gap_penalty"])
         # 정차 감점: 거의 서 있는데 앞이 비어 있으면 감점 (갈 수 있는데 안 가는 것).
         # 앞 = 같은 차로 앞차, 빨강·노랑 신호의 정지선 중 가까운 것. 양보할 교차 차량이 있으면 기다리는 게 맞으므로 감점 없음.
         # 막힘 감점(수업 코드)은 앞차 20 m 안에서만 붙어서 멀리 떨어져 서 있으면 피할 수 있었다 (11/18 정차 분석)
