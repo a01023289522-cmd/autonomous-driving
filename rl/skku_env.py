@@ -40,9 +40,11 @@ class SkkuEnv(SumoHighwayEnv):
         ego = {"depart_lane": "best", "depart_speed": 0, "accel": scenario["accel"], "decel": scenario["decel"]}
         super().__init__(os.path.join(MAP, "skku.sumocfg"), road, ego, mdp_sim, mdp_obs, action, reward, gui=gui)
         self.v1 = bool(scenario.get("obs_v1", False))
-        # 우선도로 접근 차량을 lane.getFoes로 직접 찾아 교차 차량 관측에 더한다 (11/18 충돌 분석: 율전로98번길 좌회전에서
-        # getJunctionFoes가 우선도로 직진 차를 늦게 돌려줌). 관측 차원은 그대로. userdoc/TraCI/Lane_Value_Retrieval.html "foes"
-        self.foe_lanes = bool(scenario.get("obs_foe_lanes", False))
+        # 교차 차량 관측 보완 (11/18 충돌 분석). 관측 차원은 그대로
+        #  1) 교차로 안에서도 다음 교차로 기준으로 거리·양보 여부 계산 (연속 교차로에서 0으로 나오던 문제)
+        #  2) 우선도로 접근 차량을 lane.getFoes로 직접 찾아 더함 (getJunctionFoes가 빠뜨림). userdoc/TraCI/Lane_Value_Retrieval.html "foes"
+        #  3) 충돌 지점을 이미 빠져나간 차(foeExitDist < 0)는 뺌. 가장 가까운 차로 뽑혀 다가오는 차를 가리던 문제
+        self.foe_lanes = bool(scenario.get("obs_foe_fix", False))
         if self.v1:
             self.obs_dim += self.V1_DIM
             self.observation_space = gym.spaces.Box(-1.0, 1.0, shape=(self.obs_dim,), dtype=np.float32)
@@ -243,6 +245,8 @@ class SkkuEnv(SumoHighwayEnv):
                 jd += traci.lane.getLength(lane_id) - traci.vehicle.getLanePosition(e)
             yld = float(links[0][5] in "mswg=")    # 소문자 m/g, 정지(s), 전방향 정지(w): 다른 차에 양보하는 연결
         foes = [x for x in traci.vehicle.getJunctionFoes(e, self.FOE_RANGE) if x[7]]   # egoResponse: 내가 양보할 차
+        if self.foe_lanes:
+            foes = [x for x in foes if x[4] > 0]   # foeExitDist: 충돌 지점을 빠져나가기까지 거리 (traci/_vehicle.py)
         if self.foe_lanes and yld and jd <= self.FOE_RANGE:
             seen = {x[0] for x in foes}
             for fl in traci.lane.getFoes(from_lane, links[0][0]):       # 내 연결보다 우선권이 있는 연결의 출발 차로
