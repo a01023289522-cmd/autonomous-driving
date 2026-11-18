@@ -8,7 +8,7 @@
   신호 정상 위치       : 정지선까지 1–20 m
   신호 대기열          : 앞차 15 m 안이고 앞에 빨강·노랑 신호
   신호 멀리서          : 정지선까지 20 m 넘고 앞차도 15 m 넘게 떨어짐
-  정류장 버스 뒤       : 앞차(15 m 안)가 정류장에 선 버스
+  정류장 버스 뒤       : 앞차(40 m 안)가 정류장에 선 버스 (신호보다 먼저 본다)
   정류장 근처 이유 없음 : 정류장 30 m 안, 앞차 없거나 15 m 넘음, 신호·양보 상대 없음
   앞차 대기열          : 앞차 15 m 안 (신호 아님)
   양보 대기            : 양보할 교차 차량 있음
@@ -93,11 +93,12 @@ def worker(model, cfgname, seeds, out):
                 red = t[0] if t and t[0][3] in "rRyYu" and t[0][2] < 120 else None
                 foes = [x for x in traci.vehicle.getJunctionFoes(e, 60) if x[7] and x[4] > 0 and x[2] < 60]
                 near_stop = [s for s in stops_xml.get(lane, []) if s[0] - 30 <= pos <= s[1] + 30]
-                lead_bus = lead and lead[1] < 15 and "bus" in traci.vehicle.getTypeID(lead[0]).lower() and \
-                    traci.vehicle.getSpeed(lead[0]) < 0.1 and traci.vehicle.getStops(lead[0], 1) is not None and \
-                    any(s for s in stops_xml.get(traci.vehicle.getLaneID(lead[0]), [])
-                        if s[0] - 5 <= traci.vehicle.getLanePosition(lead[0]) <= s[1] + 5)
-                if lane.startswith(":"):
+                # 앞차가 정류장에 선 버스이고 40 m 안 (stop state의 atBusStop). 11/18: AV는 버스 17–24 m 뒤에 서서 15 m 기준으로는
+                # "신호 멀리서"로 잘못 셌다. 그래서 신호보다 먼저 본다
+                lead_bus = bool(lead and lead[1] < 40 and traci.vehicle.isAtBusStop(lead[0]))
+                if lead_bus and not lane.startswith(":"):
+                    kind = "정류장 버스 뒤"
+                elif lane.startswith(":"):
                     j = lane[1:].rsplit("_", 2)[0]
                     kind = "교차로 안 (신호)" if j in tls_junctions else "교차로 안 (무신호)"
                 elif red and red[2] < 1:
@@ -108,8 +109,6 @@ def worker(model, cfgname, seeds, out):
                     kind = "신호 대기열"
                 elif red:
                     kind = "신호 멀리서"
-                elif lead_bus:
-                    kind = "정류장 버스 뒤"
                 elif near_stop and not (lead and lead[1] < 15) and not foes:
                     kind = "정류장 근처 이유 없음"
                 elif lead and lead[1] < 15:
