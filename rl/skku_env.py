@@ -161,6 +161,7 @@ class SkkuEnv(SumoHighwayEnv):
             traci.gui.trackVehicle(view, self.ego_id)
             traci.gui.setZoom(view, 800)
         self.step_count = 0
+        self._prev_accel = None
         return self._get_obs(), {}
 
     @staticmethod
@@ -381,14 +382,32 @@ class SkkuEnv(SumoHighwayEnv):
                 free = lead[1] if lead else 100.0
                 if after and after[3] in "rRyYu":
                     free = min(free, after[2])
-                if any(f[7] for f in traci.vehicle.getJunctionFoes(e, 60)):
+                fix = self.rw.get("idle_fix", False)
+                # idle_fix: 면제는 실제 양보 상대만 (아직 충돌 지점을 안 빠져나갔고 60 m 안). 고치기 전에는 이미 지나간 차·먼 차도
+                # 면제 사유가 됐다 (getJunctionFoes 특성, 11/18 관측 점검과 같은 문제)
+                foes = [f for f in traci.vehicle.getJunctionFoes(e, 60) if f[7] and (not fix or (f[4] > 0 and f[2] < 60))]
+                if foes:
                     free = 0.0
                 gap = self.rw.get("idle_gap", 15.0)
                 if free > gap:
                     info["idle"] = True
                     # idle_scaled: 빈 공간에 비례 (15 m에서 0, 100 m에서 idle). 계단형이면 16 m든 80 m든 같은 감점이라
                     # 조금 다가가도 이득이 없어서 정지선 40–80 m 앞에 선다 (11/18 r_idle_s500 측정)
-                    reward -= idle * ((min(free, 100.0) - gap) / (100.0 - gap) if self.rw.get("idle_scaled", False) else 1.0)
+                    scale = (min(free, 100.0) - gap) / (100.0 - gap) if self.rw.get("idle_scaled", False) else 1.0
+                    # idle_fix: 교차로 안에서 서 있으면 빈 거리와 상관없이 최대 감점 (교차로를 막고 섬. 11/18 측정: 정지 71회 중
+                    # 11회가 서부로 합류 교차로 등 무신호 교차로 안, 멀리 있는 빨간불을 보고 그 자리에 섬)
+                    if fix and traci.vehicle.getLaneID(e).startswith(":"):
+                        scale = 1.0
+                    reward -= idle * scale
+        # 승차감: jerk_penalty × max(0, |Δa| − jerk_deadzone)², a는 −1~1 가속 명령. 11/18 측정: 급제동(≤−3 m/s²) 5.4회/km,
+        # 가속↔감속 전환 19회/km, 명령 변화량 중앙값 0.01, 0.5 넘게 급변하는 스텝 4.3%.
+        # 문턱을 두는 이유: 문턱 없이 Δa²로 하면 학습 노이즈(std 0.28)만으로 감점이 속도 보상의 27%가 되어(실측) 정책이
+        # 매끄럽게 달리는 법보다 탐색 노이즈를 줄이는 법을 먼저 배운다
+        jp = float(self.rw.get("jerk_penalty", 0.0))
+        a_now = float(np.clip(info["accel_raw"], -1.0, 1.0)) if info.get("accel_raw") is not None else None
+        if jp > 0 and a_now is not None and self._prev_accel is not None and not terminated:
+            reward -= jp * max(0.0, abs(a_now - self._prev_accel) - float(self.rw.get("jerk_deadzone", 0.5))) ** 2
+        self._prev_accel = a_now
         info["tls_state"], info["tls_distance_m"] = (after[3], after[2]) if after else ("none", -1.0)
         info["arrived"] = info["arrived"] and not info["collided"]   # 충돌하면 차가 제거되어 도착으로도 잡힌다
         if info["lane_after"] is None:                               # 종료로 차가 사라진 스텝은 마지막 차로로 기록
