@@ -1,0 +1,1249 @@
+diff --git a/rl/skku_env.py b/rl/skku_env.py
+index 6160c0d..d04b278 100644
+--- a/rl/skku_env.py
++++ b/rl/skku_env.py
+@@ -41,13 +41,14 @@ class SkkuEnv(SumoHighwayEnv):
+         ego = {"depart_lane": "best", "depart_speed": 0, "accel": scenario["accel"], "decel": scenario["decel"]}
+         super().__init__(os.path.join(MAP, "skku.sumocfg"), road, ego, mdp_sim, mdp_obs, action, reward, gui=gui)
+         self.v1 = bool(scenario.get("obs_v1", False))
++        self.stop_line_observation = self.v1 and bool(scenario.get("obs_stop_line", False))
+         # 교차 차량 관측 보완 (11/18 충돌 분석). 관측 차원은 그대로
+         #  1) 교차로 안에서도 다음 교차로 기준으로 거리·양보 여부 계산 (연속 교차로에서 0으로 나오던 문제)
+         #  2) 우선도로 접근 차량을 lane.getFoes로 직접 찾아 더함 (getJunctionFoes가 빠뜨림). userdoc/TraCI/Lane_Value_Retrieval.html "foes"
+         #  3) 충돌 지점을 이미 빠져나간 차(foeExitDist < 0)는 뺌. 가장 가까운 차로 뽑혀 다가오는 차를 가리던 문제
+         self.foe_lanes = bool(scenario.get("obs_foe_fix", False))
+         if self.v1:
+-            self.obs_dim += self.V1_DIM
++            self.obs_dim += self.V1_DIM + (3 if self.stop_line_observation else 0)
+             self.observation_space = gym.spaces.Box(-1.0, 1.0, shape=(self.obs_dim,), dtype=np.float32)
+         self.edges = route_edges(scenario["start_edge"], scenario["goal_edge"])
+         self.warmup_seconds = float(scenario["warmup_seconds"])
+@@ -292,6 +293,13 @@ class SkkuEnv(SumoHighwayEnv):
+         else:
+             f += [min(jd, 100) / 100, yld, 1.0, 0.0, 0.0]
+         f.append(traci.lane.getMaxSpeed(lane_id) / self.vmax)
++        if self.stop_line_observation:
++            if tls and tls[0][2] <= 100 and tls[0][3] in "rRu":
++                remaining = tls[0][2] - 3.5
++                speed = traci.vehicle.getSpeed(e)
++                f.extend((remaining / 25.0, (remaining - speed ** 2 / 4.0) / 25.0, speed / 6.0))
++            else:
++                f.extend((0.0, 0.0, 0.0))
+         return f
+ 
+     def _get_obs(self):
+@@ -309,6 +317,47 @@ class SkkuEnv(SumoHighwayEnv):
+                 return tls[0][0], tls[0][1], float(tls[0][2]), tls[0][3]
+         return None
+ 
++    def _red_stop_is_clear(self, distance):
++        """정지선까지 앞차가 없고 현재 교차로에 걸쳐 있거나 양보 중이지 않은가."""
++        ego = self.ego_id
++        if traci.vehicle.getLaneID(ego).startswith(":"):
++            return False
++        leader = traci.vehicle.getLeader(ego, 100.0)
++        # getLeader 거리에 ego의 minGap을 더해야 앞차 뒤 범퍼까지의 실제 거리다.
++        if leader and leader[0] and leader[1] + traci.vehicle.getMinGap(ego) < distance:
++            return False
++        return not any(foe[7] and foe[4] > 0 and foe[2] < self.FOE_RANGE
++                       for foe in traci.vehicle.getJunctionFoes(ego, self.FOE_RANGE))
++
++    def _far_red_stop_cost(self, tls, speed):
++        """앞차와 양보 상대가 없는데 빨간불 정지선 5 m 밖에서 정차하면 감점한다."""
++        weight = float(self.rw.get("far_red_stop_penalty", 0.0))
++        if weight <= 0.0 or tls is None or speed is None or speed >= 0.5:
++            return 0.0
++        _, _, distance, state = tls
++        if state not in ("r", "R") or not 5.0 < distance <= 100.0 or not self._red_stop_is_clear(distance):
++            return 0.0
++        return weight * min((distance - 5.0) / 50.0, 1.0)
++
++    def _red_stop_approach_cost(self, tls, speed):
++        """학습 보상에서 정지선 3.5 m 앞의 저속 접근과 정차를 유도한다."""
++        weight = float(self.rw.get("red_stop_approach_penalty", 0.0))
++        if weight <= 0.0 or tls is None or speed is None:
++            return 0.0
++        _, _, distance, state = tls
++        if state not in ("r", "R") or not 0.0 <= distance <= 100.0:
++            return 0.0
++        ego = self.ego_id
++        if traci.vehicle.getRoadID(ego) != self.rw.get("red_stop_approach_edge"):
++            return 0.0
++        if not self._red_stop_is_clear(distance):
++            return 0.0
++
++        lane_limit = traci.lane.getMaxSpeed(traci.vehicle.getLaneID(ego))
++        # 남은 거리로 1 m/s² 감속할 때 3.5 m 앞에서 0이 되는 속도. 접근 속도는 최대 6 m/s.
++        target_speed = min(6.0, lane_limit, (2.0 * max(distance - 3.5, 0.0)) ** 0.5)
++        return weight * min(abs(speed - target_speed) / 6.0, 1.0)
++
+     YIELD_TTC = 3.0
+ 
+     def _yield_risk(self):
+@@ -426,6 +475,8 @@ class SkkuEnv(SumoHighwayEnv):
+                     if fix and traci.vehicle.getLaneID(e).startswith(":"):
+                         scale = 1.0
+                     reward -= idle * scale
++        reward -= self._far_red_stop_cost(after, info["speed"])
++        reward -= self._red_stop_approach_cost(after, info["speed"])
+         # 승차감: jerk_penalty × max(0, |Δa| − jerk_deadzone)², a는 −1~1 가속 명령. 11/18 측정: 급제동(≤−3 m/s²) 5.4회/km,
+         # 가속↔감속 전환 19회/km, 명령 변화량 중앙값 0.01, 0.5 넘게 급변하는 스텝 4.3%.
+         # 문턱을 두는 이유: 문턱 없이 Δa²로 하면 학습 노이즈(std 0.28)만으로 감점이 속도 보상의 27%가 되어(실측) 정책이
+diff --git a/rl/configs/r_c25_red25.py b/rl/configs/r_c25_red25.py
+new file mode 100644
+index 0000000..fbc3312
+--- /dev/null
++++ b/rl/configs/r_c25_red25.py
+@@ -0,0 +1,3 @@
++"""충돌과 적색신호 진입의 일회성 감점을 기본값의 절반으로 줄인다."""
++
++REWARD = {"collision_penalty": 2.5, "red_light_penalty": 2.5}
+diff --git a/rl/configs/r_idle_base.py b/rl/configs/r_idle_base.py
+new file mode 100644
+index 0000000..90fed3a
+--- /dev/null
++++ b/rl/configs/r_idle_base.py
+@@ -0,0 +1,3 @@
++"""base에서 앞이 비어 있는데 저속으로 주행하거나 정차할 때의 감점만 추가한다."""
++
++REWARD = {"idle_penalty": 0.02, "idle_scaled": True}
+diff --git a/rl/configs/r_red25.py b/rl/configs/r_red25.py
+new file mode 100644
+index 0000000..9a6ec93
+--- /dev/null
++++ b/rl/configs/r_red25.py
+@@ -0,0 +1,3 @@
++"""적색신호 진입 감점만 기본값의 절반으로 줄인다."""
++
++REWARD = {"red_light_penalty": 2.5}
+diff --git a/rl/configs/r_red25_idle.py b/rl/configs/r_red25_idle.py
+new file mode 100644
+index 0000000..5d7a706
+--- /dev/null
++++ b/rl/configs/r_red25_idle.py
+@@ -0,0 +1,3 @@
++"""r_red25에 여유 거리에 비례하는 저속·정차 감점을 추가한다."""
++
++REWARD = {"red_light_penalty": 2.5, "idle_penalty": 0.02, "idle_scaled": True}
+diff --git a/rl/configs/r_s3y_red_stop.py b/rl/configs/r_s3y_red_stop.py
+new file mode 100644
+index 0000000..485c3b4
+--- /dev/null
++++ b/rl/configs/r_s3y_red_stop.py
+@@ -0,0 +1,6 @@
++"""r_s3y에 빨간불 정지선에서 멀리 정차할 때의 추가 감점을 켠다."""
++
++from configs.r_s3y import HPARAMS, SCENARIO  # noqa: F401
++from configs.r_s3y import REWARD as _R
++
++REWARD = dict(_R, far_red_stop_penalty=0.01)
+diff --git a/rl/configs/r_s3y_red_stop6.py b/rl/configs/r_s3y_red_stop6.py
+new file mode 100644
+index 0000000..8113c46
+--- /dev/null
++++ b/rl/configs/r_s3y_red_stop6.py
+@@ -0,0 +1,6 @@
++"""정지선 거리 감점을 유지하고 적색신호 진입 감점만 5에서 6으로 높인다."""
++
++from configs.r_s3y_red_stop import HPARAMS, SCENARIO  # noqa: F401
++from configs.r_s3y_red_stop import REWARD as _R
++
++REWARD = dict(_R, red_light_penalty=6.0)
+diff --git a/rl/stop_curriculum.py b/rl/stop_curriculum.py
+new file mode 100644
+index 0000000..fa7ff36
+--- /dev/null
++++ b/rl/stop_curriculum.py
+@@ -0,0 +1,322 @@
++"""PPO curriculum for the Ilwol-ro stop line using SUMO training scenes."""
++
++import argparse
++import json
++import math
++import random
++from dataclasses import asdict, dataclass
++from pathlib import Path
++
++import course
++import config
++import gymnasium as gym
++import torch
++from sumolib import checkBinary
++
++from ppo_fix import PPOFixed
++from skku_env import MAP, ROUTE_ID, SkkuEnv, traci
++from utils.buffer import RolloutBuffer
++from utils.logger import RunLogger
++
++
++EDGE = "5612296410"
++LANE = f"{EDGE}_2"
++SIGNAL = "520991292"
++LINK = 10
++TARGET = 3.5
++
++
++@dataclass(frozen=True)
++class Stage:
++    distance: tuple[float, float]
++    speed: tuple[float, float]
++    red_seconds: tuple[float, float]
++
++
++STAGES = {
++    "near": Stage((10, 20), (0, 3), (10, 17)),
++    "middle": Stage((25, 60), (2, 7), (15, 24)),
++    "far": Stage((75, 100), (4, 11), (21, 30)),
++}
++TRAINING_NEAR = Stage((8, 20), (0, 5.0), (10, 17))
++TRAINING_HOLD = Stage((4.5, 8), (0, 2.5), (8, 14))
++
++
++@dataclass(frozen=True)
++class Case:
++    distance: float
++    speed: float
++    red_seconds: float
++
++
++def sample_case(stage, rng):
++    return Case(rng.uniform(*stage.distance), rng.uniform(*stage.speed), rng.uniform(*stage.red_seconds))
++
++
++def stop_shaping(previous_distance, distance, speed):
++    error = abs(distance - TARGET)
++    progress = abs(previous_distance - TARGET) - error
++    desired_speed = min(6.0, math.sqrt(2 * max(distance - TARGET, 0)))
++    reward = 0.15 * progress - 0.10 * min(abs(speed - desired_speed) / 6.0, 1.0)
++    reward -= 0.05 * min(error / 12.0, 1.0)
++    if 2 <= distance <= 5:
++        reward += 0.15 * max(1.0 - speed / 0.45, 0.0)
++    return reward
++
++
++def load_checkpoint(agent, path):
++    state = torch.load(path, map_location=agent.device, weights_only=True)
++    first = "trunk.0.weight"
++    difference = agent.policy.state_dict()[first].shape[1] - state[first].shape[1]
++    if difference == 3:
++        state[first] = torch.nn.functional.pad(state[first], (0, 3))
++    agent.policy.load_state_dict(state)
++
++
++def preserve_reference(agent, bank_path, reference, folder, cfg, coefficient, seed):
++    anchors = torch.load(bank_path, map_location="cpu", weights_only=True)
++    if cfg["scenario"].get("obs_stop_line") and anchors.shape[1] + 3 == agent.policy.trunk[0].in_features:
++        speed = anchors[:, 0] * cfg["scenario"]["speed_limit"]
++        remaining = 100 * anchors[:, 31] - TARGET
++        red = anchors[:, 32:33]
++        features = torch.stack((remaining / 25, (remaining - speed ** 2 / 4) / 25, speed / 6), dim=1)
++        anchors = torch.cat((anchors, features.clamp(-1, 1) * red), dim=1)
++        state = torch.load(reference, map_location="cpu", weights_only=True)
++        state["trunk.0.weight"] = torch.nn.functional.pad(state["trunk.0.weight"], (0, 3))
++        reference = str(folder / "expanded_reference.pt")
++        torch.save(state, reference)
++    agent.set_anchor_bank(anchors, reference, coefficient=coefficient, seed=seed)
++
++
++class StopScene(SkkuEnv):
++    """Use the same observations and model actions, with short, repeatable red approaches."""
++
++    def __init__(self, cfg, seed):
++        super().__init__(cfg["scenario"], cfg["simulation"], cfg["observation"], cfg["action"], cfg["reward"], gui=False)
++        self.approach_edges = self._full_edges[self._full_edges.index(EDGE):]
++        self.rng = random.Random(seed)
++        self.training_stages = [STAGES["near"]]
++        self.evaluation_cases = iter(())
++        self.evaluating = False
++        self.scene_number = 0
++        self.held_steps = 0
++        self.distance = 0.0
++        self.single_lane_training = False
++
++    def _open_empty_network(self):
++        network = str(Path(MAP) / "skku.net.xml")
++        traci.start([checkBinary("sumo"), "-n", network, "--step-length", str(self.step_length),
++                     "--end", "10000000", "--no-warnings", "true", "--no-step-log", "true",
++                     "--collision.action", "remove", "--collision.check-junctions", "true"])
++        self._started = True
++        self.edges = self.approach_edges
++        traci.route.add(ROUTE_ID, self.edges)
++        traci.vehicletype.copy("DEFAULT_VEHTYPE", "ego_type")
++
++    def reset(self, seed=None, options=None):
++        gym.Env.reset(self, seed=seed)
++        if self.evaluating:
++            case = next(self.evaluation_cases)
++        else:
++            weights = [1] * (len(self.training_stages) - 1) + [4]
++            case = sample_case(self.rng.choices(self.training_stages, weights=weights)[0], self.rng)
++        if not self._started:
++            self._open_empty_network()
++        elif self.ego_id in traci.vehicle.getIDList():
++            traci.vehicle.remove(self.ego_id)
++
++        # The original phases are red at index 0, followed by a three-second transition
++        # and then green for the left-turn connection. Only shorten the initial red phase.
++        traci.trafficlight.setPhase(SIGNAL, 0)
++        traci.trafficlight.setPhaseDuration(SIGNAL, case.red_seconds)
++        self.scene_number += 1
++        self.ego_id = f"stop_ego_{self.scene_number}"
++        position = traci.lane.getLength(LANE) - case.distance
++        traci.vehicle.add(self.ego_id, ROUTE_ID, typeID="ego_type", depart="now", departLane="2",
++                          departPos=str(position), departSpeed=str(case.speed))
++        traci.vehicle.setSpeedMode(self.ego_id, 0)
++        traci.vehicle.setLaneChangeMode(self.ego_id, 0)
++        traci.simulationStep()
++        signal = self._tls_ahead()
++        assert signal and signal[:2] == (SIGNAL, LINK) and signal[3] in ("r", "R"), (case, signal)
++        self.step_count = self.held_steps = 0
++        self._prev_accel = None
++        self.distance = signal[2]
++        return self._get_obs(), {"case": asdict(case), "initial_distance": self.distance}
++
++    def _apply_lane_change(self, direction):
++        if self.single_lane_training and not self.evaluating:
++            direction = 0
++        return super()._apply_lane_change(direction)
++
++    def step(self, action):
++        obs, _, terminated, truncated, info = super().step(action)
++        info["stop_success"] = False
++        signal = self._tls_ahead() if info["speed"] is not None else None
++        if info.get("collided") or info.get("red_light"):
++            return obs, -12.0, True, False, info
++        if terminated or truncated or signal is None or signal[:2] != (SIGNAL, LINK):
++            return obs, -8.0, True, False, info
++
++        speed, distance, state = info["speed"], signal[2], signal[3]
++        error = abs(distance - TARGET)
++        if state in ("G", "g"):
++            info["stop_success"] = self.held_steps >= 4 and 2 <= distance <= 5
++            info["release_distance"] = distance
++            return obs, 5.0 if info["stop_success"] else -1.0 - min(error / 12.0, 3.0), True, False, info
++
++        reward = stop_shaping(self.distance, distance, speed)
++        self.distance = distance
++        within_window = 2 <= distance <= 5
++        self.held_steps = self.held_steps + 1 if within_window and speed < 0.1 else 0
++        return obs, reward, False, False, info
++
++
++def evaluate_scene(env, agent, stage, seed, count=20):
++    rng = random.Random(seed)
++    cases = [sample_case(stage, rng) for _ in range(count)]
++    env.evaluation_cases = iter(cases)
++    env.evaluating = True
++    rows = []
++    try:
++        for case in cases:
++            obs, reset = env.reset()
++            while True:
++                obs, _, done, truncated, info = env.step(agent.predict(obs, deterministic=True))
++                if done or truncated:
++                    break
++            rows.append(dict(case=asdict(case), initial_distance=reset["initial_distance"], steps=env.step_count,
++                             stopped=bool(info["stop_success"]), red=bool(info["red_light"]),
++                             collision=bool(info["collided"]), release_distance=info.get("release_distance"),
++                             speed_at_release=info["speed"], held_steps=env.held_steps))
++    finally:
++        env.evaluating = False
++    return dict(successes=sum(row["stopped"] for row in rows), red_entries=sum(row["red"] for row in rows),
++                collisions=sum(row["collision"] for row in rows), episodes=rows)
++
++
++def train_stages(env, agent, folder, stage_names, block_steps, budget, logger, evaluator=evaluate_scene):
++    passed = []
++    for stage_name in stage_names:
++        stage_index = list(STAGES).index(stage_name)
++        env.training_stages = [TRAINING_HOLD, TRAINING_NEAR, *(STAGES[name] for name in list(STAGES)[1:stage_index + 1])]
++        stage = STAGES[stage_name]
++        stage_start = agent.num_timesteps
++        while True:
++            steps = agent.num_timesteps
++            metric = evaluator(env, agent, stage, seed=200000 + stage_index)
++            print(f"GATE {stage_name} {steps} success={metric['successes']}/20 red={metric['red_entries']}"
++                  f" collisions={metric['collisions']}", flush=True)
++            (folder / f"{stage_name}_{steps}_gate.json").write_text(json.dumps(metric, indent=2) + "\n", encoding="utf-8")
++            agent.save(str(folder / f"{stage_name}_{steps}.pt"))
++            if metric["successes"] >= 18 and metric["red_entries"] == metric["collisions"] == 0:
++                audit = evaluator(env, agent, stage, seed=300000 + stage_index)
++                (folder / f"{stage_name}_{steps}_audit.json").write_text(json.dumps(audit, indent=2) + "\n", encoding="utf-8")
++                print(f"AUDIT {stage_name} {steps} success={audit['successes']}/20 red={audit['red_entries']}"
++                      f" collisions={audit['collisions']}", flush=True)
++                if audit["successes"] >= 18 and audit["red_entries"] == audit["collisions"] == 0:
++                    agent.save(str(folder / f"{stage_name}_passed.pt"))
++                    passed.append(stage_name)
++                    break
++            if steps - stage_start >= budget:
++                print(f"STAGE_BUDGET {stage_name} {steps}", flush=True)
++                return passed
++            agent.learn(env, total_timesteps=steps + block_steps, logger=logger, log_interval=4)
++    return passed
++
++
++def main():
++    ap = argparse.ArgumentParser(description=__doc__)
++    ap.add_argument("--init", required=True)
++    ap.add_argument("--output", required=True, type=Path)
++    ap.add_argument("--stages", default="near,middle,far")
++    ap.add_argument("--block", default=4096, type=int)
++    ap.add_argument("--budget", default=32768, type=int)
++    ap.add_argument("--lr", default=0.00025, type=float)
++    ap.add_argument("--seed", default=21, type=int)
++    ap.add_argument("--freeze-trunk", action="store_true")
++    ap.add_argument("--accel-bias", default=0.0, type=float)
++    ap.add_argument("--exploration", default=0.30, type=float)
++    ap.add_argument("--single-lane-training", action="store_true")
++    ap.add_argument("--stop-line-observation", action="store_true")
++    ap.add_argument("--value-coef", default=0.5, type=float)
++    ap.add_argument("--stop-inputs-only", action="store_true")
++    ap.add_argument("--distance-initialization", default=0.0, type=float)
++    ap.add_argument("--traffic", action="store_true")
++    ap.add_argument("--traffic-cache", type=Path)
++    ap.add_argument("--traffic-max-wait", default=500, type=float)
++    ap.add_argument("--anchors", type=Path)
++    ap.add_argument("--anchor-coef", default=0.2, type=float)
++    ap.add_argument("--probe", action="store_true")
++    args = ap.parse_args()
++    if args.stop_inputs_only and not args.stop_line_observation:
++        ap.error("--stop-inputs-only requires --stop-line-observation")
++    args.output.mkdir(parents=True, exist_ok=True)
++    cfg = config.load("r_s3y")
++    if args.stop_line_observation:
++        cfg["scenario"] = dict(cfg["scenario"], obs_stop_line=True)
++    evaluator = evaluate_scene
++    if args.traffic:
++        from stop_curriculum_traffic import TrafficStopScene, evaluate_traffic
++
++        env = TrafficStopScene(cfg, args.seed, args.traffic_cache or args.output / "traffic_cache",
++                               max_wait_seconds=args.traffic_max_wait)
++
++        def evaluator(scene, policy, stage, seed, count=20):
++            scene.traffic_evaluation_seeds = tuple(range(1020, 1040) if seed >= 300000 else range(1040, 1060))
++            return evaluate_traffic(scene, policy, stage, seed, count)
++    else:
++        env = StopScene(cfg, args.seed)
++    env.single_lane_training = args.single_lane_training
++    hparams = dict(cfg["hparams"], seed=args.seed, lr=args.lr, n_steps=512, minibatch_size=64,
++                   lane_entropy_coef=0.0, clip_eps=0.16, value_coef=args.value_coef)
++    algorithm = PPOFixed
++    if args.anchors:
++        from stop_curriculum_ppo import PPOAnchored
++
++        algorithm = PPOAnchored
++    agent = algorithm(obs_dim=env.observation_space.shape[0], act_dim=env.action_space.shape[0],
++                      buffer=RolloutBuffer(), **hparams)
++    load_checkpoint(agent, args.init)
++    if args.anchors:
++        preserve_reference(agent, args.anchors, "models/best_1119_soupA.pt", args.output, cfg,
++                           args.anchor_coef, args.seed)
++    agent.policy.lane_head.requires_grad_(False)
++    if args.freeze_trunk:
++        agent.policy.trunk.requires_grad_(False)
++    if args.stop_inputs_only:
++        agent.policy.requires_grad_(False)
++        first = agent.policy.trunk[0].weight
++        first.requires_grad_(True)
++        agent.policy.v_head.requires_grad_(True)
++        agent.policy.log_std.requires_grad_(True)
++        mask = torch.zeros_like(first)
++        mask[:, -3:] = 1
++        first.register_hook(lambda gradient: gradient * mask)
++        if args.distance_initialization:
++            with torch.no_grad():
++                first[:, -3].copy_(first[:, 31] * args.distance_initialization)
++    with torch.no_grad():
++        agent.policy.log_std.clamp_(max=math.log(args.exploration))
++        agent.policy.mu_head.bias.add_(args.accel_bias)
++    cfg.update(init=str(Path(args.init).resolve()), hparams=hparams)
++    (args.output / "config.json").write_text(json.dumps(cfg, indent=2) + "\n", encoding="utf-8")
++    if args.probe:
++        try:
++            for name in args.stages.split(","):
++                result = evaluator(env, agent, STAGES[name], seed=19000, count=4)
++                print(name, json.dumps(result), flush=True)
++        finally:
++            env.close()
++        return
++    logger = RunLogger(str(args.output))
++    try:
++        passed = train_stages(env, agent, args.output, args.stages.split(","), args.block, args.budget, logger, evaluator)
++        (args.output / "stages.json").write_text(json.dumps(passed) + "\n", encoding="utf-8")
++    finally:
++        env.close()
++        logger.close()
++
++
++if __name__ == "__main__":
++    main()
+diff --git a/rl/stop_curriculum_eval.py b/rl/stop_curriculum_eval.py
+new file mode 100644
+index 0000000..3ce92cf
+--- /dev/null
++++ b/rl/stop_curriculum_eval.py
+@@ -0,0 +1,255 @@
++"""Evaluate learned stop-line behavior on the unchanged SUMO route."""
++
++import argparse
++import json
++import math
++import statistics
++import subprocess
++import sys
++from concurrent.futures import ThreadPoolExecutor
++from dataclasses import dataclass, field
++from pathlib import Path
++
++
++ILWOL_EDGE = "5612296410"
++ILWOL_SIGNAL = ("520991292", 10)
++RED = ("r", "R")
++WAITING = (*RED, "u")
++GREEN = ("g", "G")
++STOP_DISTANCE = (2.0, 5.0)
++STOP_SPEED = 0.1
++MIN_WAIT_SECONDS = 2.0
++MIN_OPPORTUNITY_SECONDS = 5.0
++
++
++@dataclass
++class Approach:
++    initial_m: float
++    started_step: int
++    step_length: float
++    clear_steps: int = 0
++    waiting_steps: int = 0
++    reached_window: bool = False
++    closest_stop_m: float | None = None
++    trace: list | None = field(default=None, repr=False)
++
++    def sample(self, step, distance, speed, clear, state):
++        if self.trace is not None:
++            self.trace.append(dict(step=step, distance_m=round(distance, 3), speed_mps=round(speed, 3),
++                                   clear=clear, signal=state))
++        if clear:
++            self.clear_steps += 1
++            if speed < STOP_SPEED and (self.closest_stop_m is None or distance < self.closest_stop_m):
++                self.closest_stop_m = distance
++        in_window = clear and speed < STOP_SPEED and STOP_DISTANCE[0] <= distance <= STOP_DISTANCE[1]
++        self.waiting_steps = self.waiting_steps + 1 if in_window else 0
++        self.reached_window |= self.waiting_steps >= math.ceil(MIN_WAIT_SECONDS / self.step_length)
++
++    def finish(self, reason):
++        waited = self.waiting_steps * self.step_length
++        clear_time = self.clear_steps * self.step_length
++        result = dict(
++            signal=ILWOL_SIGNAL[0],
++            link=ILWOL_SIGNAL[1],
++            initial_m=round(self.initial_m, 3),
++            started_step=self.started_step,
++            eligible=clear_time >= MIN_OPPORTUNITY_SECONDS or reason == "red_entry",
++            reached_window=self.reached_window,
++            held_to_green=reason == "green" and waited >= MIN_WAIT_SECONDS,
++            closest_stop_m=round(self.closest_stop_m, 3) if self.closest_stop_m is not None else None,
++            clear_red_seconds=round(clear_time, 3),
++            final_wait_seconds=round(waited, 3),
++            end=reason,
++        )
++        if self.trace is not None:
++            result["trace"] = self.trace
++        return result
++
++
++class IlwolTracker:
++    """Track signal approaches without changing the model's observations or actions."""
++
++    def __init__(self, env, traci, trace=False):
++        self.env = env
++        self.vehicle = traci.vehicle
++        self.trace = trace
++        self.reset()
++
++    def reset(self):
++        self.approach = None
++        self.events = []
++        self.red_entries = 0
++
++    def close(self, reason):
++        if self.approach is not None:
++            self.events.append(self.approach.finish(reason))
++            self.approach = None
++
++    def observe(self, info):
++        # The environment can mark the disappearance of a collided ego as a red entry.
++        red_entry = bool(info.get("red_light")) and not info.get("collided")
++        self.red_entries += red_entry
++        speed = info.get("speed")
++        distance = info.get("tls_distance_m", -1)
++        state = info.get("tls_state")
++        if self.approach is None and (state not in RED or not 0 <= distance <= 100):
++            return
++        ego = self.env.ego_id
++        if speed is None or not 0 <= distance <= 100 or self.vehicle.getRoadID(ego) != ILWOL_EDGE:
++            self.close("red_entry" if red_entry else "left_approach")
++            return
++        tls = self.env._tls_ahead()
++        if tls is None or tls[:2] != ILWOL_SIGNAL:
++            self.close("red_entry" if red_entry else "signal_changed")
++            return
++        if state in GREEN:
++            self.close("green")
++            return
++        if state not in WAITING:
++            self.close("other_signal_state")
++            return
++
++        leader = self.vehicle.getLeader(ego, 100)
++        # TraCI measures the leader distance from ego's front bumper plus its minGap.
++        clear = not (leader and leader[0] and leader[1] + self.vehicle.getMinGap(ego) < distance)
++        if self.approach is None and state in RED and clear:
++            self.approach = Approach(distance, self.env.step_count, float(self.env.step_length),
++                                     trace=[] if self.trace else None)
++        if self.approach is not None:
++            self.approach.sample(self.env.step_count, distance, speed, clear, state)
++
++
++def _run_episodes(model_path, config, seeds, trace):
++    import test_skku
++    from skku_env import traci
++
++    path = Path(config)
++    cfg = json.loads(path.read_text(encoding="utf-8")) if path.is_file() else test_skku.config.load(config)
++    # A requested seed can overlap a training seed. Always use the default route and traffic.
++    cfg["scenario"] = dict(cfg["scenario"], train_seeds=[])
++    env = test_skku.config.make_env(cfg, gui=False)
++    tracker = IlwolTracker(env, traci, trace)
++    step = env.step
++
++    def observed_step(action):
++        result = step(action)
++        tracker.observe(result[4])
++        return result
++
++    env.step = observed_step
++    try:
++        agent = test_skku.course_load_agent()(str(model_path), env.observation_space.shape[0], env.action_space.shape[0])
++        if isinstance(agent, tuple):
++            agent = agent[0]
++        for seed in seeds:
++            env.use_seeds([seed])
++            tracker.reset()
++            metrics = test_skku.evaluate_policy(agent, env, n_episodes=1, deterministic=True)
++            tracker.close("episode_ended")
++            if env.seed_now != seed:
++                raise RuntimeError(f"Expected seed {seed}, but SUMO used {env.seed_now}.")
++            outcome = "collision" if metrics.collision_rate else "finish" if metrics.success_rate else "timeout"
++            yield dict(seed=seed, outcome=outcome, red_entries=tracker.red_entries, approaches=tracker.events,
++                       metrics=metrics.as_dict())
++    finally:
++        env.close()
++
++
++def summarize(episodes):
++    events = [item for row in episodes for item in row["approaches"] if item["eligible"]]
++    distances = [item["closest_stop_m"] for item in events if item["closest_stop_m"] is not None]
++    held = sum(item["held_to_green"] for item in events)
++    return dict(
++        episodes=len(episodes),
++        finishes=sum(row["outcome"] == "finish" for row in episodes),
++        collisions=sum(row["outcome"] == "collision" for row in episodes),
++        timeouts=sum(row["outcome"] == "timeout" for row in episodes),
++        red_entries=sum(row["red_entries"] for row in episodes),
++        eligible_approaches=len(events),
++        window_reached=sum(item["reached_window"] for item in events),
++        held_to_green=held,
++        held_to_green_rate=held / len(events) if events else None,
++        stop_distance_samples=len(distances),
++        closest_stop_median_m=statistics.median(distances) if distances else None,
++    )
++
++
++def evaluate_full(model_path, seeds, config="r_s3y", *, workers=1, trace=False):
++    """Run a fixed set of full-route seeds, optionally in separate SUMO processes."""
++    model_path = Path(model_path).resolve(strict=True)
++    seeds = list(seeds)
++    if not seeds or len(seeds) != len(set(seeds)):
++        raise ValueError("Provide at least one seed, with no duplicates.")
++    if workers < 1:
++        raise ValueError("workers must be positive.")
++    config = str(config)
++    config_path = Path(config)
++    if config_path.is_file():
++        config = str(config_path.resolve())
++    worker_count = min(workers, len(seeds))
++    if worker_count == 1:
++        episodes = list(_run_episodes(model_path, config, seeds, trace))
++    else:
++        def run(chunk):
++            command = [sys.executable, "-X", "utf8", "-u", str(Path(__file__).resolve()), str(model_path),
++                       "--config", config, "--worker", *map(str, chunk)]
++            if trace:
++                command.append("--trace")
++            result = subprocess.run(command, capture_output=True, encoding="utf-8", errors="replace")
++            if result.returncode:
++                raise RuntimeError(f"Evaluation worker failed for seeds {chunk}:\n{result.stderr}{result.stdout}")
++            return [json.loads(line.removeprefix("EPISODE ")) for line in result.stdout.splitlines()
++                    if line.startswith("EPISODE ")]
++
++        with ThreadPoolExecutor(max_workers=worker_count) as pool:
++            chunks = [seeds[i::worker_count] for i in range(worker_count)]
++            rows = {row["seed"]: row for group in pool.map(run, chunks) for row in group}
++        if set(rows) != set(seeds):
++            raise RuntimeError(f"Missing evaluation seeds: {sorted(set(seeds) - rows.keys())}.")
++        episodes = [rows[seed] for seed in seeds]
++    return dict(model=str(model_path), config=config, summary=summarize(episodes), episodes=episodes)
++
++
++def parse_seeds(value):
++    seeds = []
++    try:
++        for item in value.split(","):
++            parts = item.split("-")
++            if len(parts) == 1:
++                seeds.append(int(item))
++            elif len(parts) == 2:
++                first, last = map(int, parts)
++                if last < first:
++                    raise ValueError("range end is smaller than its start")
++                seeds.extend(range(first, last + 1))
++            else:
++                raise ValueError("invalid seed range")
++    except ValueError as error:
++        raise argparse.ArgumentTypeError("Use seeds such as 1040-1059 or 1040,1044,1050-1059.") from error
++    return seeds
++
++
++def main():
++    parser = argparse.ArgumentParser(description=__doc__)
++    parser.add_argument("model")
++    parser.add_argument("--config", default="r_s3y", help="Experiment name or saved config.json.")
++    parser.add_argument("--seeds", type=parse_seeds, default="1040-1059")
++    parser.add_argument("--workers", type=int, default=1)
++    parser.add_argument("--output", type=Path)
++    parser.add_argument("--trace", action="store_true", help="Record per-step diagnostics for each Ilwol approach.")
++    parser.add_argument("--worker", type=int, nargs="+", help=argparse.SUPPRESS)
++    args = parser.parse_args()
++    if args.worker is not None:
++        for row in _run_episodes(args.model, args.config, args.worker, args.trace):
++            print("EPISODE " + json.dumps(row), flush=True)
++        return
++
++    report = evaluate_full(args.model, args.seeds, args.config, workers=args.workers, trace=args.trace)
++    if args.output:
++        args.output.parent.mkdir(parents=True, exist_ok=True)
++        args.output.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
++    print(json.dumps(report["summary"], indent=2))
++
++
++if __name__ == "__main__":
++    main()
+diff --git a/rl/stop_curriculum_ppo.py b/rl/stop_curriculum_ppo.py
+new file mode 100644
+index 0000000..e7b3371
+--- /dev/null
++++ b/rl/stop_curriculum_ppo.py
+@@ -0,0 +1,89 @@
++"""PPO with an optional policy-drift constraint on saved route observations."""
++
++import copy
++import math
++
++import torch
++from torch.distributions import Categorical, Normal, kl_divergence
++
++from ppo_fix import PPOFixed
++
++
++class PPOAnchored(PPOFixed):
++    """Preserve the original acceleration and lane distributions off the target approach."""
++
++    def __init__(self, *args, **kwargs):
++        super().__init__(*args, **kwargs)
++        self.anchor_kl_coef = 0.0
++        self._anchor_observations = None
++        self._anchor_reference = None
++        self._anchor_rng = torch.Generator(device="cpu")
++
++    def set_anchor_bank(self, observations, reference_checkpoint, *, coefficient, seed=0):
++        """Cache a frozen reference's predictions on the non-target route observations."""
++        coefficient = float(coefficient)
++        if not math.isfinite(coefficient) or coefficient < 0:
++            raise ValueError("Anchor KL coefficient must be finite and nonnegative.")
++        if coefficient == 0:
++            self.anchor_kl_coef = 0.0
++            self._anchor_observations = None
++            self._anchor_reference = None
++            return
++        if observations is None or reference_checkpoint is None:
++            raise ValueError("A positive anchor KL coefficient requires observations and a reference checkpoint.")
++        if self.policy_type != "hybrid":
++            raise ValueError("The anchor KL supports the hybrid acceleration and lane policy.")
++
++        dtype = next(self.policy.parameters()).dtype
++        bank = torch.as_tensor(observations, dtype=dtype, device=self.device).detach().clone()
++        if bank.ndim != 2 or len(bank) == 0 or not torch.isfinite(bank).all():
++            raise ValueError("The anchor bank must be a nonempty matrix of finite observations.")
++
++        reference = copy.deepcopy(self.policy).eval()
++        reference.load_state_dict(torch.load(reference_checkpoint, map_location=self.device, weights_only=True))
++        with torch.no_grad():
++            reference_mu, reference_std, reference_lanes, _ = reference(bank)
++        self._anchor_observations = bank
++        self._anchor_reference = (reference_mu, reference_std, reference_lanes)
++        self._anchor_rng.manual_seed(seed)
++        self.anchor_kl_coef = coefficient
++
++    def _sample_anchor_kl(self, batch_size):
++        indices = torch.randint(len(self._anchor_observations), (batch_size,), generator=self._anchor_rng)
++        indices = indices.to(self.device)
++        mu, std, lanes, _ = self.policy(self._anchor_observations[indices])
++        reference_mu, reference_std, reference_lanes = self._anchor_reference
++        acceleration_kl = kl_divergence(Normal(reference_mu[indices], reference_std), Normal(mu, std)).sum(-1)
++        lane_kl = kl_divergence(Categorical(logits=reference_lanes[indices]), Categorical(logits=lanes))
++        return (acceleration_kl + lane_kl).mean()
++
++    def update(self, advantages, returns):
++        if self.anchor_kl_coef == 0:
++            return super().update(advantages, returns)
++
++        buffer_size = len(self.buffer)
++        batches_per_epoch = math.ceil(buffer_size / self.minibatch_size)
++        gradient_limit = self.max_grad_norm
++        batch_count = 0
++        total_kl = 0.0
++
++        def add_anchor_gradient(_optimizer, _args, _kwargs):
++            nonlocal batch_count, total_kl
++            offset = (batch_count % batches_per_epoch) * self.minibatch_size
++            batch_size = min(self.minibatch_size, buffer_size - offset)
++            anchor_kl = self._sample_anchor_kl(batch_size)
++            (self.anchor_kl_coef * anchor_kl).backward()
++            torch.nn.utils.clip_grad_norm_(self.policy.parameters(), gradient_limit)
++            total_kl += anchor_kl.detach().item()
++            batch_count += 1
++
++        # Add the KL gradient after PPO backpropagates. Do the real clipping once on the sum.
++        hook = self.optimizer.register_step_pre_hook(add_anchor_gradient)
++        self.max_grad_norm = float("inf")
++        try:
++            stats = super().update(advantages, returns)
++        finally:
++            self.max_grad_norm = gradient_limit
++            hook.remove()
++        stats["anchor_kl"] = total_kl / max(batch_count, 1)
++        return stats
+diff --git a/rl/stop_curriculum_traffic.py b/rl/stop_curriculum_traffic.py
+new file mode 100644
+index 0000000..6e81e9b
+--- /dev/null
++++ b/rl/stop_curriculum_traffic.py
+@@ -0,0 +1,307 @@
++"""Place curriculum episodes on the Ilwol-ro approach using ordinary SUMO traffic."""
++
++import hashlib
++import json
++import math
++import os
++import random
++from dataclasses import asdict, dataclass
++from pathlib import Path
++
++import gymnasium as gym
++import numpy as np
++
++from skku_env import MAP, ROUTE_ID, TRAFFIC_FILES, SkkuEnv, route_edges, traci
++from stop_curriculum import STAGES, StopScene, sample_case
++
++
++ILWOL_EDGE = "5612296410"
++ILWOL_LANE = f"{ILWOL_EDGE}_2"
++ILWOL_SIGNAL = "520991292"
++ILWOL_LINK = 10
++
++
++@dataclass(frozen=True)
++class TrafficScene:
++    observation: np.ndarray
++    seed: int
++    distance_m: float
++    speed_mps: float
++    red_seconds: float
++
++
++class TrafficSceneUnavailable(RuntimeError):
++    """The requested scene could not be formed within the allotted SUMO time."""
++
++
++def _start_seed(env, seed):
++    prior_seeds, prior_next = env.seeds, env._next
++    env.use_seeds([seed])
++    try:
++        SkkuEnv._start_sumo(env)
++    finally:
++        env.seeds, env._next = prior_seeds, prior_next
++
++
++def _reset_tracking(env):
++    env.step_count = 0
++    env._prev_accel = None
++
++
++def _seconds_to_green(phases):
++    tls = traci.trafficlight
++    if tls.getRedYellowGreenState(ILWOL_SIGNAL)[ILWOL_LINK] not in "rR":
++        return 0.0
++    phase_index = tls.getPhase(ILWOL_SIGNAL)
++    remaining = tls.getNextSwitch(ILWOL_SIGNAL) - traci.simulation.getTime()
++    for offset in range(1, len(phases) + 1):
++        phase = phases[(phase_index + offset) % len(phases)]
++        if phase.state[ILWOL_LINK] in "gG":
++            return remaining
++        remaining += phase.duration
++    raise RuntimeError("일월로 학습 신호 프로그램에 통행 가능한 현시가 없습니다.")
++
++
++def _has_insertion_space(position, speed, ego_length, min_gap, clear_ahead):
++    vehicle = traci.vehicle
++    for vehicle_id in traci.lane.getLastStepVehicleIDs(ILWOL_LANE):
++        front = vehicle.getLanePosition(vehicle_id)
++        vehicle_speed = vehicle.getSpeed(vehicle_id)
++        if front >= position:
++            gap = front - vehicle.getLength(vehicle_id) - position
++            if clear_ahead or gap < min_gap + max(speed - vehicle_speed, 0.0) * 2.0:
++                return False
++        elif position - ego_length - front < min_gap + max(vehicle_speed - speed, 0.0) * 2.0:
++            return False
++    return True
++
++
++def reset_traffic_scene(env, *, distance_m, speed_mps, seed, min_red_seconds=15.0,
++                        max_red_seconds=None, max_wait_seconds=180.0, clear_ahead=True):
++    """Start one real-traffic scene from the given seed, with no signal overrides.
++
++    A scene is returned only when the ego has entered lane 2, the goal connection
++    shows red, and the requested initial distance and speed were realized. The
++    caller owns the seed sequence and decides how to use unavailable scenes.
++    """
++    if not all(math.isfinite(value) for value in (distance_m, speed_mps, min_red_seconds, max_wait_seconds)):
++        raise ValueError("학습 장면의 거리, 속도, 대기 시간은 유한한 값이어야 합니다.")
++    if distance_m <= 0 or speed_mps < 0 or min_red_seconds <= 0 or max_wait_seconds <= 0:
++        raise ValueError("학습 장면의 거리와 대기 시간은 양수, 속도는 0 이상이어야 합니다.")
++    if max_red_seconds is not None and (
++        not math.isfinite(max_red_seconds) or max_red_seconds - min_red_seconds < env.step_length
++    ):
++        raise ValueError("신호 시간 범위는 한 스텝 이상이어야 합니다.")
++    if env.gui:
++        raise ValueError("교통 커리큘럼 초기화는 학습용 GUI 없는 환경에만 적용됩니다.")
++    upper_red_seconds = math.inf if max_red_seconds is None else max_red_seconds
++
++    env.close()
++    gym.Env.reset(env, seed=seed)
++    _start_seed(env, seed)
++
++    try:
++        env.edges = route_edges(ILWOL_EDGE, env._full_edges[-1])
++        traci.route.add(ROUTE_ID, env.edges)
++        traci.vehicletype.copy("DEFAULT_VEHTYPE", "ego_type")
++        ego_length = traci.vehicletype.getLength("ego_type")
++        min_gap = traci.vehicletype.getMinGap("ego_type")
++        position = traci.lane.getLength(ILWOL_LANE) - distance_m
++        if position < ego_length or speed_mps > traci.lane.getMaxSpeed(ILWOL_LANE):
++            raise ValueError("지정한 일월로 투입 위치나 속도가 차로 범위를 벗어났습니다.")
++
++        tls = traci.trafficlight
++        program = tls.getProgram(ILWOL_SIGNAL)
++        logic = next((logic for logic in tls.getAllProgramLogics(ILWOL_SIGNAL) if logic.programID == program), None)
++        if logic is None or logic.type != 0 or any(phase.next for phase in logic.phases):
++            raise RuntimeError("일월로 정차 실험에는 순차적으로 전환되는 고정 신호 프로그램이 필요합니다.")
++        phases = logic.phases
++        deadline = traci.simulation.getTime() + max_wait_seconds
++        while traci.simulation.getTime() < deadline:
++            predicted_red = _seconds_to_green(phases) - env.step_length
++            desired_red = min_red_seconds <= predicted_red <= upper_red_seconds
++            if desired_red and _has_insertion_space(position, speed_mps, ego_length, min_gap, clear_ahead):
++                traci.vehicle.add(env.ego_id, ROUTE_ID, typeID="ego_type", departLane="2",
++                                  departPos=str(position), departSpeed=str(speed_mps))
++                traci.vehicle.setSpeedMode(env.ego_id, 0)
++                traci.vehicle.setLaneChangeMode(env.ego_id, 0)
++                traci.simulationStep()
++                if env.ego_id not in traci.vehicle.getIDList():
++                    traci.vehicle.remove(env.ego_id)
++                    continue
++                signal = env._tls_ahead()
++                speed = traci.vehicle.getSpeed(env.ego_id)
++                red_seconds = _seconds_to_green(phases)
++                leader = traci.vehicle.getLeader(env.ego_id, distance_m) if clear_ahead else None
++                obstruction = leader and leader[0] and leader[1] + min_gap < distance_m
++                if (signal and signal[:2] == (ILWOL_SIGNAL, ILWOL_LINK) and signal[3] in "rR"
++                    and traci.vehicle.getLaneID(env.ego_id) == ILWOL_LANE and not obstruction
++                    and min_red_seconds <= red_seconds <= upper_red_seconds
++                    and abs(signal[2] - distance_m) <= 0.2 and abs(speed - speed_mps) <= 0.2):
++                    _reset_tracking(env)
++                    return TrafficScene(env._get_obs(), env.seed_now, float(signal[2]), float(speed), red_seconds)
++                traci.vehicle.remove(env.ego_id)
++                continue
++            traci.simulationStep()
++    except BaseException:
++        env.close()
++        raise
++
++    env.close()
++    raise TrafficSceneUnavailable(f"시드 {seed}에서 {max_wait_seconds:g}초 안에 일월로 학습 장면을 만들지 못했습니다.")
++
++
++class TrafficStopScene(StopScene):
++    """Reuse a small fixed library of training cases and independent traffic seeds."""
++
++    def __init__(self, cfg, seed, cache_dir, *, stage=None, training_seeds=range(24),
++                 evaluation_seeds=range(1040, 1060), red_slack_seconds=18.0, max_wait_seconds=180.0):
++        super().__init__(cfg, seed)
++        self.cache_dir = Path(cache_dir)
++        self.cache_dir.mkdir(parents=True, exist_ok=True)
++        training_seeds = tuple(training_seeds)
++        self.traffic_evaluation_seeds = tuple(evaluation_seeds)
++        if not training_seeds or not self.traffic_evaluation_seeds:
++            raise ValueError("교통 커리큘럼 학습·평가 시드가 모두 필요합니다.")
++        if set(training_seeds) & set(self.traffic_evaluation_seeds):
++            raise ValueError("교통 커리큘럼 학습·평가 시드는 겹치면 안 됩니다.")
++        if not math.isfinite(red_slack_seconds) or red_slack_seconds < self.step_length:
++            raise ValueError("신호 시간 허용 오차는 한 스텝 이상이어야 합니다.")
++        if not math.isfinite(max_wait_seconds) or max_wait_seconds <= 0:
++            raise ValueError("투입 가능 상황을 기다리는 시간은 양수이어야 합니다.")
++        files = {*TRAFFIC_FILES, "skku.add.xml", "vtypes.add.xml", "bus.stops.xml", *cfg["scenario"].get("extra_routes", ())}
++        files.update(file for setting in self.mix for file in setting.get("extra_routes", ()))
++        signatures = [(name, (Path(MAP) / name).stat().st_mtime_ns) for name in sorted(files)]
++        settings = (cfg["scenario"], cfg["simulation"]["step_length"], signatures, red_slack_seconds)
++        if max_wait_seconds != 180.0:
++            settings += (max_wait_seconds,)
++        self.cache_key = json.dumps(settings, sort_keys=True)
++        self.red_slack_seconds = float(red_slack_seconds)
++        self.max_wait_seconds = float(max_wait_seconds)
++        stage = STAGES["far"] if stage is None else stage
++        library_rng = random.Random(seed)
++        self.traffic_training_cases = [(traffic_seed, sample_case(stage, library_rng)) for traffic_seed in training_seeds]
++        self.unavailable_cases = set()
++        self._unavailable_snapshots = {}
++        self._snapshot_file = None
++        self._run_evaluation_seeds = iter(())
++
++    def _state_file(self, seed):
++        return super()._state_file(seed) if self._snapshot_file is None else str(self._snapshot_file)
++
++    def _snapshot_paths(self, traffic_seed, case):
++        definition = (self.cache_key, traffic_seed, case.distance, case.speed, case.red_seconds)
++        identifier = hashlib.sha256(json.dumps(definition).encode("utf-8")).hexdigest()[:20]
++        return (self.cache_dir / f"stop-{identifier}.xml.gz", self.cache_dir / f"stop-{identifier}.json")
++
++    def _prepare_snapshot(self, traffic_seed, case, path, metadata_path):
++        scene = reset_traffic_scene(
++            self, distance_m=case.distance, speed_mps=case.speed, seed=traffic_seed,
++            min_red_seconds=case.red_seconds, max_red_seconds=case.red_seconds + self.red_slack_seconds,
++            max_wait_seconds=self.max_wait_seconds,
++        )
++        metadata = dict(time_s=traci.simulation.getTime(), seed=scene.seed, distance_m=scene.distance_m,
++                        speed_mps=scene.speed_mps, red_seconds=scene.red_seconds)
++        temp = path.with_name(f"{path.stem}-{os.getpid()}.xml.gz")
++        traci.simulation.saveState(str(temp))
++        temp.replace(path)
++        temp_metadata = metadata_path.with_suffix(f".{os.getpid()}.tmp")
++        temp_metadata.write_text(json.dumps(metadata), encoding="utf-8")
++        temp_metadata.replace(metadata_path)
++        return metadata
++
++    def _load_snapshot(self, traffic_seed, case):
++        path, metadata_path = self._snapshot_paths(traffic_seed, case)
++        if path.is_file() and metadata_path.is_file():
++            metadata = json.loads(metadata_path.read_text(encoding="utf-8"))
++        else:
++            if path in self._unavailable_snapshots:
++                raise TrafficSceneUnavailable(self._unavailable_snapshots[path])
++            try:
++                metadata = self._prepare_snapshot(traffic_seed, case, path, metadata_path)
++            except TrafficSceneUnavailable as error:
++                self._unavailable_snapshots[path] = str(error)
++                raise
++
++        self.close()
++        warmup = self.warmup_seconds
++        self.warmup_seconds = float(metadata["time_s"])
++        self._snapshot_file = path
++        try:
++            _start_seed(self, traffic_seed)
++        finally:
++            self.warmup_seconds = warmup
++            self._snapshot_file = None
++
++        try:
++            self.edges = self.approach_edges
++            signal = self._tls_ahead()
++            if (self.seed_now != metadata["seed"] or not signal or signal[:2] != (ILWOL_SIGNAL, ILWOL_LINK)
++                or signal[3] not in "rR" or abs(signal[2] - metadata["distance_m"]) > 0.2
++                or abs(traci.vehicle.getSpeed(self.ego_id) - metadata["speed_mps"]) > 0.2
++                or traci.vehicle.getLaneID(self.ego_id) != ILWOL_LANE):
++                raise RuntimeError(f"일월로 저장 장면의 초기 위치 또는 신호가 달라졌습니다: {path}")
++            traci.vehicle.setSpeedMode(self.ego_id, 0)
++            traci.vehicle.setLaneChangeMode(self.ego_id, 0)
++            _reset_tracking(self)
++            self.held_steps = 0
++            self.distance = signal[2]
++            return self._get_obs(), {"initial_distance": signal[2], "traffic_seed": traffic_seed,
++                                    "initial_speed": metadata["speed_mps"], "red_seconds": metadata["red_seconds"]}
++        except BaseException:
++            self.close()
++            raise
++
++    def reset(self, seed=None, options=None):
++        gym.Env.reset(self, seed=seed)
++        if self.evaluating:
++            return self._load_snapshot(next(self._run_evaluation_seeds), next(self.evaluation_cases))
++
++        available = [scene for scene in self.traffic_training_cases if scene[0] not in self.unavailable_cases]
++        self.rng.shuffle(available)
++        for traffic_seed, case in available:
++            try:
++                return self._load_snapshot(traffic_seed, case)
++            except TrafficSceneUnavailable:
++                self.unavailable_cases.add(traffic_seed)
++        raise TrafficSceneUnavailable("일월로 교통 커리큘럼 학습 시드에서 사용할 수 있는 장면이 없습니다.")
++
++
++def evaluate_traffic(env, agent, stage, seed, count=20):
++    """Test the same sampled cases on the same held-out traffic seeds at each gate."""
++    if count > len(env.traffic_evaluation_seeds):
++        raise ValueError("요청한 교통 평가 횟수보다 평가 시드가 적습니다.")
++    env.evaluating = True
++    rows = []
++    try:
++        for traffic_seed in env.traffic_evaluation_seeds[:count]:
++            # Pick cases by whether the scene can be formed, before the policy takes any action.
++            rng = random.Random(f"ilwol-eval:{seed}:{traffic_seed}")
++            reasons = []
++            for attempt in range(1, 5):
++                case = sample_case(stage, rng)
++                env.evaluation_cases = iter((case,))
++                env._run_evaluation_seeds = iter((traffic_seed,))
++                try:
++                    observation, initial = env.reset()
++                except TrafficSceneUnavailable as error:
++                    reasons.append(str(error))
++                else:
++                    break
++            else:
++                rows.append(dict(traffic_seed=traffic_seed, attempts=4, stopped=False, red=False, collision=False,
++                                 unavailable=reasons))
++                continue
++            while True:
++                observation, _, done, truncated, info = env.step(agent.predict(observation, deterministic=True))
++                if done or truncated:
++                    break
++            rows.append(dict(**initial, case=asdict(case), attempts=attempt, steps=env.step_count, stopped=bool(info["stop_success"]),
++                             red=bool(info["red_light"]), collision=bool(info["collided"]),
++                             release_distance=info.get("release_distance"), speed_at_release=info["speed"],
++                             held_steps=env.held_steps))
++    finally:
++        env.evaluating = False
++    return dict(successes=sum(row["stopped"] for row in rows), red_entries=sum(row["red"] for row in rows),
++                collisions=sum(row["collision"] for row in rows), unavailable=sum("unavailable" in row for row in rows),
++                episodes=rows)
+diff --git a/rl/train_stop_transfer.py b/rl/train_stop_transfer.py
+new file mode 100644
+index 0000000..dca248d
+--- /dev/null
++++ b/rl/train_stop_transfer.py
+@@ -0,0 +1,95 @@
++"""Continue PPO on the full SUMO route, keeping the staged stop objective during training."""
++
++import argparse
++import json
++from pathlib import Path
++
++from stop_curriculum import EDGE, LINK, SIGNAL, preserve_reference, stop_shaping
++from stop_curriculum_ppo import PPOAnchored
++from skku_env import SkkuEnv, traci
++import config
++from utils.buffer import RolloutBuffer
++from utils.logger import RunLogger
++
++
++class RouteStopTraining(SkkuEnv):
++    """Score the learned stop under moving traffic without replacing policy actions."""
++
++    def reset(self, seed=None, options=None):
++        self.stop_distance = None
++        self.held_steps = 0
++        return super().reset(seed=seed, options=options)
++
++    def step(self, action):
++        obs, reward, terminated, truncated, info = super().step(action)
++        speed = info["speed"]
++        state = info.get("tls_state")
++        distance = info.get("tls_distance_m", -1)
++        ego = self.ego_id
++        if speed is not None and 0 <= distance <= 100 and traci.vehicle.getRoadID(ego) == EDGE:
++            signal = self._tls_ahead()
++            if signal is not None and signal[:2] == (SIGNAL, LINK):
++                if state in ("g", "G") and self.stop_distance is not None:
++                    if self.held_steps * self.step_length >= 2.0 and 2 <= distance <= 5:
++                        reward += 5.0
++                elif state in ("r", "R", "u"):
++                    leader = traci.vehicle.getLeader(ego, 100)
++                    clear = not (leader and leader[0] and leader[1] + traci.vehicle.getMinGap(ego) < distance)
++                    if clear:
++                        previous = distance if self.stop_distance is None else self.stop_distance
++                        reward += 0.6 * stop_shaping(previous, distance, speed)
++                        self.stop_distance = distance
++                        self.held_steps = self.held_steps + 1 if 2 <= distance <= 5 and speed < 0.1 else 0
++                        return obs, reward, terminated, truncated, info
++        if self.stop_distance is not None and info.get("red_light"):
++            reward -= 6.0
++        self.stop_distance = None
++        self.held_steps = 0
++        return obs, reward, terminated, truncated, info
++
++
++def main():
++    parser = argparse.ArgumentParser(description=__doc__)
++    parser.add_argument("--init", required=True)
++    parser.add_argument("--output", required=True, type=Path)
++    parser.add_argument("--steps", type=int, default=51200)
++    parser.add_argument("--reference", default="models/best_1119_soupA.pt")
++    parser.add_argument("--config", type=Path)
++    parser.add_argument("--anchors", type=Path)
++    parser.add_argument("--anchor-coef", type=float, default=0.35)
++    parser.add_argument("--lr", type=float, default=0.00005)
++    parser.add_argument("--checkpoint-every", type=int, default=8192)
++    parser.add_argument("--seed", type=int, default=23)
++    args = parser.parse_args()
++    args.output.mkdir(parents=True, exist_ok=True)
++    cfg = json.loads(args.config.read_text(encoding="utf-8")) if args.config else config.load("r_s3y")
++    cfg["scenario"] = dict(cfg["scenario"], start_mix=[cfg["scenario"]["start_edge"]] * 3 + [EDGE])
++    cfg["reward"] = dict(cfg["reward"], red_light_penalty=6.0)
++    cfg["hparams"] = dict(cfg["hparams"], lr=args.lr, seed=args.seed)
++    env = RouteStopTraining(cfg["scenario"], cfg["simulation"], cfg["observation"], cfg["action"], cfg["reward"])
++    agent = PPOAnchored(obs_dim=env.observation_space.shape[0], act_dim=env.action_space.shape[0],
++                        buffer=RolloutBuffer(), **cfg["hparams"])
++    agent.load(args.init)
++    if args.anchors is not None:
++        preserve_reference(agent, args.anchors, args.reference, args.output, cfg, args.anchor_coef, args.seed)
++    cfg.update(init=str(Path(args.init).resolve()), transfer_steps=args.steps, anchor_coefficient=agent.anchor_kl_coef)
++    (args.output / "config.json").write_text(json.dumps(cfg, indent=2) + "\n", encoding="utf-8")
++    logger = RunLogger(str(args.output))
++    log_train = logger.log_train
++
++    def save_log(step, metrics, verbose=True):
++        log_train(step, metrics, verbose=verbose)
++        if step % args.checkpoint_every == 0:
++            agent.save(str(args.output / f"model_{step}.pt"))
++
++    logger.log_train = save_log
++    try:
++        agent.learn(env, total_timesteps=args.steps, logger=logger)
++        agent.save(str(args.output / "model.pt"))
++    finally:
++        env.close()
++        logger.close()
++
++
++if __name__ == "__main__":
++    main()
