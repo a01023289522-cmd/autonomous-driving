@@ -161,6 +161,7 @@ class SkkuEnv(SumoHighwayEnv):
             traci.gui.trackVehicle(view, self.ego_id)
             traci.gui.setZoom(view, 800)
         self.step_count = 0
+        self._prev_accel = None
         return self._get_obs(), {}
 
     @staticmethod
@@ -368,6 +369,33 @@ class SkkuEnv(SumoHighwayEnv):
         if hw > 0 and info["gap"] is not None and info["speed"] is not None:
             if float(self.rw["close_gap_threshold"]) <= info["gap"] < info["speed"] * hw:
                 reward -= float(self.rw["close_gap_penalty"])
+        # 앞차 TTC: 같은 차로 앞차에 다가가는 중이고 TTC(간격 / 접근 속도)가 ttc_s 미만이면 ttc_penalty × (ttc_s − TTC)/ttc_s.
+        # 11/18 측정(r_q2 10만, 12 시드): 정상 에피소드에서 TTC<3초는 앞차 있는 스텝의 0.57%(그중 59%는 이미 감속 중),
+        # 충돌 3건(초록불 직후 회전하며 느려지는 앞차 추돌)은 충돌 약 3초 전부터 계속 3초 미만. 시간 간격 감점은 저속에서
+        # 기준 거리가 짧아(4 m/s → 8 m) 충돌 2초 전에야 붙었다. 교차로 양보 상대에는 쓰지 않는다 (같은 차로 앞차만)
+        tp = float(self.rw.get("ttc_penalty", 0.0))
+        if tp > 0 and not terminated and info["gap"] is not None and self.ego_id in traci.vehicle.getIDList():
+            lead = traci.vehicle.getLeader(self.ego_id, self.visibility)
+            if lead:
+                closing = info["speed"] - traci.vehicle.getSpeed(lead[0])
+                ts = float(self.rw.get("ttc_s", 3.0))
+                if closing > 0.1 and lead[1] / closing < ts:
+                    reward -= tp * (ts - lead[1] / closing) / ts
+        # queue_fix: 앞차가 서 있으면(신호 대기열 등) 수업 코드의 막힘 감점을 되돌리고, 나도 서 있으면 6 m 간격 감점도 되돌린다.
+        # 11/18 측정(r_idle_scaled 5 시드): AV와 앞차가 둘 다 서 있던 1045스텝 모두 간격 15 m 이상(중앙값 41 m). 막힘 감점(앞차 20 m 안,
+        # 느림)과 6 m 간격 감점(정상 대기 간격 2.5 m에서 80초 대기 −16, 충돌 −5보다 큼)이 대기열에 붙어 서는 것을 벌하고,
+        # 정차 감점은 앞으로 밀어서 그 사이(약 40 m)에서 섰다. 달리는 중에는 두 감점 그대로 (꼬리물기 방지, 느린 차 추월)
+        if self.rw.get("queue_fix", False) and not terminated and info["gap"] is not None and self.ego_id in traci.vehicle.getIDList():
+            lead = traci.vehicle.getLeader(self.ego_id, self.visibility)
+            # 정류장에 선 버스도 대기열과 같이 본다: 율전성당·성균관대역 정류장 바로 뒤(약 60 m)는 0번 차로로만 경로가 이어져서
+            # 추월하면 돌아오지 못하고 갇힌다 (11/18 r_safe_mix: 5552317710#2 왼쪽 차로 끝 시간초과 15/20). 버스 뒤에 붙어서 기다리게 한다.
+            # 이전 모델은 정류장 버스 17–24 m 뒤에 섰다(버스 20 m 안 막힘 감점 회피)
+            if lead and traci.vehicle.getSpeed(lead[0]) < 0.5:
+                g, v = info["gap"], info["speed"]
+                if g < float(self.rw.get("blocked_gap", 20.0)) and v < float(self.rw.get("blocked_speed_frac", 0.7)) * self.vmax:
+                    reward += float(self.rw.get("blocked_penalty", 0.0))
+                if g < float(self.rw["close_gap_threshold"]) and v < 0.5:
+                    reward += float(self.rw["close_gap_penalty"])
         # 정차 감점: 거의 서 있는데 앞이 비어 있으면 감점 (갈 수 있는데 안 가는 것).
         # 앞 = 같은 차로 앞차, 빨강·노랑 신호의 정지선 중 가까운 것. 양보할 교차 차량이 있으면 기다리는 게 맞으므로 감점 없음.
         # 막힘 감점(수업 코드)은 앞차 20 m 안에서만 붙어서 멀리 떨어져 서 있으면 피할 수 있었다 (11/18 정차 분석)
@@ -381,14 +409,32 @@ class SkkuEnv(SumoHighwayEnv):
                 free = lead[1] if lead else 100.0
                 if after and after[3] in "rRyYu":
                     free = min(free, after[2])
-                if any(f[7] for f in traci.vehicle.getJunctionFoes(e, 60)):
+                fix = self.rw.get("idle_fix", False)
+                # idle_fix: 면제는 실제 양보 상대만 (아직 충돌 지점을 안 빠져나갔고 60 m 안). 고치기 전에는 이미 지나간 차·먼 차도
+                # 면제 사유가 됐다 (getJunctionFoes 특성, 11/18 관측 점검과 같은 문제)
+                foes = [f for f in traci.vehicle.getJunctionFoes(e, 60) if f[7] and (not fix or (f[4] > 0 and f[2] < 60))]
+                if foes:
                     free = 0.0
                 gap = self.rw.get("idle_gap", 15.0)
                 if free > gap:
                     info["idle"] = True
                     # idle_scaled: 빈 공간에 비례 (15 m에서 0, 100 m에서 idle). 계단형이면 16 m든 80 m든 같은 감점이라
                     # 조금 다가가도 이득이 없어서 정지선 40–80 m 앞에 선다 (11/18 r_idle_s500 측정)
-                    reward -= idle * ((min(free, 100.0) - gap) / (100.0 - gap) if self.rw.get("idle_scaled", False) else 1.0)
+                    scale = (min(free, 100.0) - gap) / (100.0 - gap) if self.rw.get("idle_scaled", False) else 1.0
+                    # idle_fix: 교차로 안에서 서 있으면 빈 거리와 상관없이 최대 감점 (교차로를 막고 섬. 11/18 측정: 정지 71회 중
+                    # 11회가 서부로 합류 교차로 등 무신호 교차로 안, 멀리 있는 빨간불을 보고 그 자리에 섬)
+                    if fix and traci.vehicle.getLaneID(e).startswith(":"):
+                        scale = 1.0
+                    reward -= idle * scale
+        # 승차감: jerk_penalty × max(0, |Δa| − jerk_deadzone)², a는 −1~1 가속 명령. 11/18 측정: 급제동(≤−3 m/s²) 5.4회/km,
+        # 가속↔감속 전환 19회/km, 명령 변화량 중앙값 0.01, 0.5 넘게 급변하는 스텝 4.3%.
+        # 문턱을 두는 이유: 문턱 없이 Δa²로 하면 학습 노이즈(std 0.28)만으로 감점이 속도 보상의 27%가 되어(실측) 정책이
+        # 매끄럽게 달리는 법보다 탐색 노이즈를 줄이는 법을 먼저 배운다
+        jp = float(self.rw.get("jerk_penalty", 0.0))
+        a_now = float(np.clip(info["accel_raw"], -1.0, 1.0)) if info.get("accel_raw") is not None else None
+        if jp > 0 and a_now is not None and self._prev_accel is not None and not terminated:
+            reward -= jp * max(0.0, abs(a_now - self._prev_accel) - float(self.rw.get("jerk_deadzone", 0.5))) ** 2
+        self._prev_accel = a_now
         info["tls_state"], info["tls_distance_m"] = (after[3], after[2]) if after else ("none", -1.0)
         info["arrived"] = info["arrived"] and not info["collided"]   # 충돌하면 차가 제거되어 도착으로도 잡힌다
         if info["lane_after"] is None:                               # 종료로 차가 사라진 스텝은 마지막 차로로 기록
