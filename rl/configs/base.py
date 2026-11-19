@@ -18,7 +18,7 @@ SCENARIO = {
     "obs_v1": True,                  # 환경 v1 관측 12개 추가 (신호, 경로 차로, 교차 차량, 제한속도. rl/skku_env.py)
 }
 
-SIMULATION = {"max_steps": 1600}     # 800초. 경로 평균 약 8분 + 여유
+SIMULATION = {"max_steps": 2400}     # 1200초 (11/19 사용자 결정: 800초 → 1200초. 평가 기준에 시간 제한 없음, 교통이 많은 시드에서 800초는 갇힘이 아닌데도 시간초과)
 
 OBSERVATION = {}
 
