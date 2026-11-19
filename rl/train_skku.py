@@ -7,7 +7,11 @@
 import argparse
 import json
 import os
+import random
 from datetime import datetime
+
+import numpy as np
+import torch
 
 import course
 import config
@@ -23,6 +27,8 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--config", default="base")
     ap.add_argument("--timesteps", type=int)
+    ap.add_argument("--run-dir", help="실험 러너가 지정하는 새 결과 폴더")
+    ap.add_argument("--seed", type=int, help="학습 초기화·정책 샘플링 난수 시드")
     ap.add_argument("--init", help="이어서 학습할 model.pt (커리큘럼·추가 학습). 관측 차원이 같아야 한다")
     ap.add_argument("--ckpt-every", type=int, default=50000, help="이 스텝마다 중간 모델 model_<k>k.pt 저장 (0이면 안 함). quick_eval.py로 중간 판단")
     ap.add_argument("--ppo-fix", action="store_true", help="수업 PPO의 시간초과 GAE 버그를 고친 rl/ppo_fix.py PPOFixed를 쓴다")
@@ -30,8 +36,12 @@ def main():
     ap.add_argument("--no-train-eval", action="store_true",
                     help="학습 중 3 에피소드 평가를 끈다 (판단에 쓰기엔 적고 시뮬레이션 시간의 약 15%%를 쓴다)")
     a = ap.parse_args()
+    if a.seed is not None:
+        random.seed(a.seed)
+        np.random.seed(a.seed)
+        torch.manual_seed(a.seed)
     cfg = config.load(a.config)
-    run_dir = os.path.join(course.TEAM, "results", f"{a.config}{'_init' if a.init else ''}_{datetime.now():%m%d_%H%M%S}")
+    run_dir = a.run_dir or os.path.join(course.TEAM, "results", f"{a.config}{'_init' if a.init else ''}_{datetime.now():%m%d_%H%M%S}")
     os.makedirs(run_dir)
     with open(os.path.join(run_dir, "config.json"), "w", encoding="utf-8") as f:
         json.dump(cfg, f, ensure_ascii=False, indent=1)
