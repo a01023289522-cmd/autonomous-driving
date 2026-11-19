@@ -19,6 +19,13 @@ js_traf와 이 설정의 차이는 difficulty_mix의 구성 하나뿐이다 (작
 
     python -X utf8 rl/train_skku.py --config js_traf3 --init models/best_1119_soupA.pt \
         --ppo-fix --lr-end 2.5e-5 --no-train-eval --ckpt-every 10000
+
+결과 (11/19): 시드 1000~1199 200 에피소드에서 3만 92.5/3.5/4.0, 4만 92.0/5.5/2.5다.
+급제동은 3.2에서 3.1로 0.1만 내려갔고 완주는 96.0%에서 92.5%로 3.5%p 떨어졌다.
+40k는 충돌 5.5%로 통과선마저 넘겼다.
+
+어려운 교통이 거칠기의 원인이 아니라 성능의 원인이었다. 붐비는 상황을 겪어야 양보와
+끼어들기를 배우고 그 대가가 거친 주행이다. 비중을 줄이면 둘 다 같이 내려간다.
 """
 from configs.js_traf import REWARD, HPARAMS, TOTAL_TIMESTEPS  # noqa: F401
 from configs.js_traf import SCENARIO as _S
