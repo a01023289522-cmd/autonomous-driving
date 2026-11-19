@@ -12,6 +12,7 @@
 import json
 import os
 import random
+import subprocess
 
 import course
 from env import sumo_env
@@ -117,12 +118,14 @@ class SkkuEnv(SumoHighwayEnv):
         """배경 교통을 warmup_seconds만큼 채운 상태를 파일로 만든다. 주행은 항상 이 파일을 불러와 시작한다.
         차로 변경 모델 내부 상태 등은 상태 파일에 저장되지 않으므로(SaveAndLoad.html Known Issues), 처음 만든 실행에서 바로
         주행하면 저장된 상태를 불러온 실행과 결과가 달라진다. 그래서 만드는 실행과 주행하는 실행을 나눈다."""
-        traci.start(cmd + ["-a", self._additional(False)])
-        traci.simulationStep(self.warmup_seconds)
+        # TraCI가 아니라 sumo 실행 파일을 직접 돌려 저장한다 (--save-state.times, userdoc/Simulation/SaveAndLoad.html).
+        # 11/19 확인: libsumo로 만든 상태 파일은 난수 상태(rngState)가 TraCI로 만든 것과 달라서, 캐시가 없는 PC에서 libsumo로
+        # 처음 평가하면 같은 시드라도 교통이 달라졌다. 실행 파일로 만들면 TraCI로 만든 기존 캐시와 내용이 같다(직접 비교).
         os.makedirs(STATES, exist_ok=True)
         tmp = f"{state}.{os.getpid()}.xml.gz"
-        traci.simulation.saveState(tmp)
-        traci.close()
+        subprocess.run([checkBinary("sumo"), *cmd[1:], "-a", self._additional(False), "--end", str(self.warmup_seconds + 1),
+                        "--save-state.times", str(self.warmup_seconds), "--save-state.files", tmp],
+                       check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         try:
             os.replace(tmp, state)            # 여러 학습을 동시에 돌려도 반쯤 쓴 파일을 읽지 않게
         except PermissionError:               # Windows: 다른 학습이 같은 파일을 먼저 만들어 읽는 중이면 그 파일을 쓴다
