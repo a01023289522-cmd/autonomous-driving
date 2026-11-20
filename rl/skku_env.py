@@ -518,7 +518,11 @@ class SkkuEnv(SumoHighwayEnv):
                 # 가속 명령 −0.01~−0.05(거의 안 멈춤)로 추돌 3건 → 다가갈 수 있는 간격·속도를 좁히는 값
                 qmin = float(self.rw.get("queue_min_gap", 0.0)); qmax = float(self.rw.get("queue_max_speed", 3.0))
                 creep = self.rw.get("queue_approach", False) and g >= qmin and v <= min(qmax, (2 * 2.0 * (g - qmin)) ** 0.5)
-                if g < float(self.rw["close_gap_threshold"]) and (v < 0.5 or creep):
+                # queue_strict: 아직 움직이는데(0.1 m/s 이상) 서 있는 앞차까지 1.5 m 안이면 되돌리지 않는다. 11/19 새 시드 재생(r_s21,
+                # 회전교차로 진입로 충돌 3건 1210·1272·1282): 대기열에서 0.2~1.8 m/s로 기어가 앞차에 닿음, 가속 명령 −0.01~+0.12.
+                # 0.5 m/s 미만이면 간격 감점을 되돌려 줘서 0.2~0.4 m/s로 앞차 1 m 안까지 기어가는 것이 감점 없이 가능했다
+                stopped_ok = v < 0.5 and not (self.rw.get("queue_strict", False) and v >= 0.1 and g < 1.5)
+                if g < float(self.rw["close_gap_threshold"]) and (stopped_ok or creep):
                     reward += float(self.rw["close_gap_penalty"])
         # 정차 감점: 거의 서 있는데 앞이 비어 있으면 감점 (갈 수 있는데 안 가는 것).
         # 앞 = 같은 차로 앞차, 빨강·노랑 신호의 정지선 중 가까운 것. 양보할 교차 차량이 있으면 기다리는 게 맞으므로 감점 없음.
