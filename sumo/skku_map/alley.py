@@ -19,11 +19,10 @@ import sys
 # (AV 진행 방향 엣지들, 반대 방향 엣지들). 엣지 순서는 각 방향의 진행 순서
 BLOCKS = (
     # 서부로2123번길 입구(서부로 ~ 플렁드 오거리)는 양방향 2차로라 구간이 아니다 (11/22 거리뷰: 노란 중앙선)
-    (("4694200410",), ("-4694200410",)),                                       # 율전로98번길: 오거리 ~ 오거리
-    # 율전로98번길 오거리 ~ 율전로: 가운데 교차로(cluster_4493735396_4637441266)로 옆 골목 차가 들어오므로 두 구간으로 나눈다.
-    # 한 구간으로 두면 옆 골목에서 들어온 차가 입구를 안 거쳐 마주 보고 멈췄다 (11/22 시드 1216·1207)
-    (("-4526039590#2",), ("4526039590#2",)),                                   # 율전로98번길: 오거리 ~ 가운데 교차로
-    (("-4526039590#0",), ("4526039590#0",)),                                   # 율전로98번길: 가운데 교차로 ~ 율전로
+    # 한 대 폭 율전로98번길 전체(플렁드 오거리 ~ 율전로)를 한 구간으로 둔다. 중간 교차로 두 곳으로 옆 골목 차가 들어오므로 구간의
+    # 모든 엣지를 입구로 본다. 11/22: 교차로마다 구간을 나눴더니 AV가 앞 구간을 나와 교차로에 있는 동안 반대 방향 차가 다음 구간에
+    # 들어와 서로 기다림(시드 1080·1029 등 시간초과 5건). bidi 차로는 교차로 안에서도 겹쳐서 교차로가 비켜 설 곳이 되지 못한다
+    (("4694200410", "-4526039590#2", "-4526039590#0"), ("4526039590#0", "4526039590#2", "-4694200410")),
 )
 LOOKAHEAD = 60.0      # 입구까지 이 거리 안의 차만 본다 (m)
 STOP_DECEL = 4.0      # 입구 앞에서 멈출 때 감속도 (m/s², 승용차 decel 4.5보다 조금 작게)
@@ -45,28 +44,53 @@ class AlleyGate:
         self.stopped = {}                       # 정식 정지(stop)로 세운 차 → (엣지, 위치, 차로)
         self.granted = {}                       # 세웠다가 출발시킨 차 → 출발시킨 시각. GRANT_S초 동안 통행권을 요구하는 것으로 본다
 
-    def _approaching(self, entry, horizon):
-        """입구 엣지 entry로 곧 들어갈 차: (입구까지 거리, id). horizon=0이면 교차로 안(내부 차로)에 있는 차만."""
-        t, res = self.t, []
-        for src in (self._junction[entry] if horizon == 0.0 else self._upstream[entry]):
-            for v in t.edge.getLastStepVehicleIDs(src):
-                r, i = t.vehicle.getRoute(v), t.vehicle.getRouteIndex(v)
-                if entry not in r[i + 1:i + 5]:
-                    continue
-                if t.vehicle.getRoadID(v).startswith(":") and r[i + 1] == entry:
-                    res.append((0.0, v))
-                    continue
-                if horizon > 0.0:
-                    # 거리는 골목 입구가 아니라 그 앞 교차로의 정지선(입구 바로 앞 엣지의 끝)까지. 11/21: 입구까지로 재면
-                    # 교차로 길이(약 20 m)만큼 늦게 서려다 교차로 안으로 들어가 버렸다
-                    k = r.index(entry, i + 1)
-                    d = t.vehicle.getDrivingDistance(v, r[k - 1], t.lane.getLength(f"{r[k - 1]}_0")) if k - 1 >= i else 0.0
-                    if 0 <= d <= horizon:
-                        res.append((max(d, 0.01), v))
+    def _approaching(self, side, horizon):
+        """구간의 한 방향(side: 엣지 목록)으로 곧 들어갈 차: (들어가기 전 교차로 정지선까지 거리, id).
+        horizon=0이면 교차로 안(내부 차로)에서 들어가는 중인 차만. 이미 그 방향 엣지 위에 있거나, 그 방향 엣지에서 나와 다음 엣지로
+        가는 교차로 안의 차는 '구간 안'이라 빼고 _inside에서 센다."""
+        t, res, seen = self.t, [], set()
+        members = set(side)
+        for e in side:
+            for src in (self._junction[e] if horizon == 0.0 else self._upstream[e]):
+                for v in t.edge.getLastStepVehicleIDs(src):
+                    if v in seen:
+                        continue
+                    seen.add(v)
+                    r, i = t.vehicle.getRoute(v), t.vehicle.getRouteIndex(v)
+                    if not (0 <= i < len(r)) or r[i] in members:
+                        continue
+                    nxt = [k for k in range(i + 1, min(i + 5, len(r))) if r[k] in members]
+                    if not nxt:
+                        continue
+                    k = nxt[0]
+                    if t.vehicle.getRoadID(v).startswith(":") and k == i + 1:
+                        res.append((0.0, v))
+                        continue
+                    if horizon > 0.0:
+                        # 거리는 들어가기 전 교차로의 정지선(바로 앞 엣지의 끝)까지. 11/21: 입구까지로 재면 교차로 길이만큼 늦게 서려다
+                        # 교차로 안으로 들어가 버렸다
+                        d = t.vehicle.getDrivingDistance(v, r[k - 1], t.lane.getLength(f"{r[k - 1]}_0"))
+                        if 0 <= d <= horizon:
+                            res.append((max(d, 0.01), v))
         return res
 
+    def _inside(self, side):
+        """그 방향 엣지 위의 차 + 그 방향 엣지에서 나와 아직 교차로 안에 있는 차 (11/22 시드 1076·1018: AV가 구간을 나와 교차로 안에
+        있을 때 반대 방향 차가 들어가 교차로 안에서 정면충돌. bidi 구간 끝 교차로의 내부 차로도 두 방향이 겹친다)"""
+        t, out = self.t, []
+        members = set(side)
+        for e in side:
+            out += t.edge.getLastStepVehicleIDs(e)
+            for lane_e in self._exit_lanes[e]:
+                for x in t.edge.getLastStepVehicleIDs(lane_e):
+                    r_, i_ = t.vehicle.getRoute(x), t.vehicle.getRouteIndex(x)
+                    if 0 <= i_ < len(r_) and r_[i_] in members and x not in out:
+                        out.append(x)
+        return out
+
     def setup(self):
-        """입구 엣지마다 (1) 그 앞 교차로 내부 차로, (2) 입구까지 LOOKAHEAD 안의 위쪽 엣지(내부 차로 포함)를 미리 찾아 둔다.
+        """엣지마다 (1) 그 앞 교차로 내부 차로, (2) 그 교차로까지 LOOKAHEAD 안의 위쪽 엣지(내부 차로 포함, 구간 엣지 제외),
+        (3) 그 엣지 끝 교차로의 내부 차로를 미리 찾아 둔다.
         11/21: 서부로 쪽 입구 앞 엣지가 12 m뿐이라 바로 앞 엣지만 보면 서부로 차를 너무 늦게 봐서 '못 서는 거리'로 들여보냈다."""
         t = self.t
         self._junction, self._upstream, self._exit_lanes = {}, {}, {}
@@ -74,25 +98,24 @@ class AlleyGate:
         def node_internal(node):
             return {e for e in internal if e.rsplit("_", 1)[0] == f":{node}"}
         for fwd, rev in BLOCKS:
-            for entry in (fwd[0], rev[0]):
-                node = t.edge.getFromJunction(entry)
-                self._junction[entry] = sorted(node_internal(node))
-                # 구간 끝 교차로(나가는 쪽)의 내부 차로: 구간을 막 빠져나와 아직 교차로 안에 있는 차도 구간 안으로 센다
-                last = fwd[-1] if entry == fwd[0] else rev[-1]
-                self._exit_lanes[last] = sorted(node_internal(t.edge.getToJunction(last)))
-                seen, frontier = set(self._junction[entry]), [(node, 0.0)]
+            block = set(fwd) | set(rev)
+            for e in (*fwd, *rev):
+                node = t.edge.getFromJunction(e)
+                self._junction[e] = sorted(node_internal(node))
+                self._exit_lanes[e] = sorted(node_internal(t.edge.getToJunction(e)))
+                seen, frontier = set(self._junction[e]), [(node, 0.0)]
                 while frontier:
                     n, dist = frontier.pop()
-                    for e in t.junction.getIncomingEdges(n):
-                        if e.startswith(":") or e in seen:
+                    for x in t.junction.getIncomingEdges(n):
+                        if x.startswith(":") or x in seen or x in block:
                             continue
-                        seen.add(e)
-                        length = t.lane.getLength(f"{e}_0")
-                        up = t.edge.getFromJunction(e)
+                        seen.add(x)
+                        length = t.lane.getLength(f"{x}_0")
+                        up = t.edge.getFromJunction(x)
                         seen |= node_internal(up)
                         if dist + length < LOOKAHEAD:
                             frontier.append((up, dist + length))
-                self._upstream[entry] = sorted(seen)
+                self._upstream[e] = sorted(seen)
         return self
 
     def step(self):
@@ -110,15 +133,8 @@ class AlleyGate:
             yielding = self.owner[b] is not None and self.wait_since[b] is not None and now - self.wait_since[b] > MAX_WAIT_S
             near, committed, physical = [], [], []
             for k, d in enumerate((fwd, rev)):
-                inside = sum(len(t.edge.getLastStepVehicleIDs(e)) for e in d)
-                # 구간을 막 빠져나와 끝 교차로 안에 있는 차 (11/22 시드 1076·1018: AV가 구간을 나와 오거리 안에 있을 때 반대 방향 차가
-                # 그 구간으로 들어가며 오거리 안에서 정면충돌. bidi 구간 끝 교차로의 내부 차로도 두 방향이 겹친다)
-                for lane_e in self._exit_lanes.get(d[-1], ()):
-                    for x in t.edge.getLastStepVehicleIDs(lane_e):
-                        r_, i_ = t.vehicle.getRoute(x), t.vehicle.getRouteIndex(x)
-                        if 0 <= i_ < len(r_) and r_[i_] == d[-1]:
-                            inside += 1
-                cand = sorted(self._approaching(d[0], LOOKAHEAD))
+                inside = len(self._inside(d))
+                cand = sorted(self._approaching(d, LOOKAHEAD))
                 reserve = not (yielding and k == self.owner[b])
                 phys = [v for dist, v in cand if self._claims(dist, v, False)]
                 claim = [v for dist, v in cand if self._claims(dist, v, reserve)]
@@ -221,17 +237,14 @@ class AlleyGate:
         해당 없으면 None. AV 관측(교차로 양보 상대 칸)과 양보 위반 판정에 쓴다 (rl/skku_env.py obs_alley)."""
         t = self.t
         for fwd, rev in BLOCKS:
-            for d, v in self._approaching(fwd[0], LOOKAHEAD):
+            for d, v in self._approaching(fwd, LOOKAHEAD):
                 if v != ego:
                     continue
-                cars, length = [], 0.0
-                for e in reversed(rev):           # 반대 방향 진행 순서의 끝(= 내 입구)부터 거꾸로 길이를 쌓는다
-                    for x in t.edge.getLastStepVehicleIDs(e):
-                        cars.append((x, length + t.lane.getLength(f"{e}_0") - t.vehicle.getLanePosition(x)))
-                    length += t.lane.getLength(f"{e}_0")
-                for dist, x in self._approaching(rev[0], LOOKAHEAD):
-                    if self._claims(dist, x, True):
-                        cars.append((x, length + dist))
+                # 거리는 직선 거리 (골목이 거의 곧아서 충분). 구간 안 반대 방향 차 + 통행권을 요구하며 들어오는 반대 방향 차
+                px, py = t.vehicle.getPosition(ego)
+                dist_to = lambda x: ((t.vehicle.getPosition(x)[0] - px) ** 2 + (t.vehicle.getPosition(x)[1] - py) ** 2) ** 0.5
+                cars = [(x, dist_to(x)) for x in self._inside(rev)]
+                cars += [(x, dist_to(x)) for dd, x in self._approaching(rev, LOOKAHEAD) if self._claims(dd, x, True)]
                 return d, cars
         return None
 
