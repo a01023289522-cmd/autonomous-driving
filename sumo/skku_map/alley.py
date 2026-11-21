@@ -240,11 +240,11 @@ class AlleyGate:
             for d, v in self._approaching(fwd, LOOKAHEAD):
                 if v != ego:
                     continue
-                # 거리는 직선 거리 (골목이 거의 곧아서 충분). 구간 안 반대 방향 차 + 통행권을 요구하며 들어오는 반대 방향 차
-                px, py = t.vehicle.getPosition(ego)
-                dist_to = lambda x: ((t.vehicle.getPosition(x)[0] - px) ** 2 + (t.vehicle.getPosition(x)[1] - py) ** 2) ** 0.5
-                cars = [(x, dist_to(x)) for x in self._inside(rev)]
-                cars += [(x, dist_to(x)) for dd, x in self._approaching(rev, LOOKAHEAD) if self._claims(dd, x, True)]
+                # 거리 = 그 차가 충돌 구역(한 대 폭 구간)까지 남은 거리. 구간 안에 있는 차는 0 (이미 충돌 구역 안. 교차로 관측에서 교차로
+                # 안의 차를 0으로 넣는 것과 같은 뜻). 11/22: 직선 거리로 넣었더니 120 m 골목 반대편 끝의 차가 77~121 m로 관측 범위(50 m)
+                # 밖이라 '양보 상대 없음'과 같아 보였고, r_s8이 시속 25 km로 들어가 골목 가운데서 정면충돌 (시드 1551·1287)
+                cars = [(x, 0.0) for x in self._inside(rev)]
+                cars += [(x, dd) for dd, x in self._approaching(rev, LOOKAHEAD) if self._claims(dd, x, True)]
                 return d, cars
         return None
 
