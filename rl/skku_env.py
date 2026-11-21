@@ -55,7 +55,8 @@ class SkkuEnv(SumoHighwayEnv):
         self._prev_lane, self._entry_yield = "", 0.0
         self.turn_obs = bool(scenario.get("obs_turn", False))
         if self.v1:
-            self.obs_dim += self.V1_DIM + (3 if self.turn_obs else 0)
+            self.near_obs = bool(scenario.get("obs_near", False))
+            self.obs_dim += self.V1_DIM + (3 if self.turn_obs else 0) + (2 if self.near_obs else 0)
             self.observation_space = gym.spaces.Box(-1.0, 1.0, shape=(self.obs_dim,), dtype=np.float32)
         self.edges = route_edges(scenario["start_edge"], scenario["goal_edge"])
         self.warmup_seconds = float(scenario["warmup_seconds"])
@@ -375,6 +376,20 @@ class SkkuEnv(SumoHighwayEnv):
             # getNextLinks의 direction: s 직진, l/L 좌, r/R 우, t 유턴 (userdoc/TraCI/Vehicle_Value_Retrieval.html next links)
             d = links[0][6] if links and len(links[0]) > 6 else "s"
             f += [float(d in "lLt"), float(d == "s"), float(d in "rR")]
+        if getattr(self, "near_obs", False):
+            # obs_near: 앞차 근거리 관측 2개 (관측 뒤에 붙임, 기존 모델은 rl/expand_obs.py로 0 열 추가).
+            # 11/20 측정(docs/lessons.md 문제 1): 앞차 거리 입력은 거리/50 m라 0~5 m가 0~0.1, r_s8은 1 m당 가속 명령이 0.02만 변해
+            # 0 m와 2 m를 거의 구분 못 함 → 대기열 저속 추돌(앞차 0~1.5 m에서 가속 0~+0.3)과 495951447 추돌(거리 0.00인데 +0.1)
+            #  [1] 근접도 = clip(1 − 실제 간격/10 m, 0, 1): 10 m 안을 0~1로 펼침
+            #  [2] 필요 감속 = (v² − v앞²) / (2 × max(간격 − 2 m, 0.2)) / 4.5 m/s², 0~1 (다가가는 중일 때만). 앞차 2 m 뒤에 서려면 필요한 제동
+            lead = traci.vehicle.getLeader(e, self.visibility)
+            if lead and lead[0]:
+                g = lead[1] + traci.vehicle.getMinGap(e)
+                v, vl = traci.vehicle.getSpeed(e), traci.vehicle.getSpeed(lead[0])
+                req = (v * v - vl * vl) / (2 * max(g - 2.0, 0.2)) / 4.5 if v > vl else 0.0
+                f += [min(max(1 - g / 10.0, 0.0), 1.0), min(max(req, 0.0), 1.0)]
+            else:
+                f += [0.0, 0.0]
         return f
 
     def _get_obs(self):
