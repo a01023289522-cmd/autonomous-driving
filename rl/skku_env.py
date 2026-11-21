@@ -51,6 +51,7 @@ class SkkuEnv(SumoHighwayEnv):
         self.close_fix = bool(scenario.get("obs_close_fix", False))
         self.close_signed = bool(scenario.get("obs_close_signed", False))
         self.inside_fix = bool(scenario.get("obs_inside_fix", False))
+        self.first_foe = bool(scenario.get("obs_first_foe", False))
         self._prev_lane, self._entry_yield = "", 0.0
         self.turn_obs = bool(scenario.get("obs_turn", False))
         if self.v1:
@@ -308,7 +309,8 @@ class SkkuEnv(SumoHighwayEnv):
             if from_lane != lane_id:
                 jd += traci.lane.getLength(lane_id) - traci.vehicle.getLanePosition(e)
             yld = float(links[0][5] in "mswg=")    # 소문자 m/g, 정지(s), 전방향 정지(w): 다른 차에 양보하는 연결
-        foes = [x for x in traci.vehicle.getJunctionFoes(e, self.FOE_RANGE) if x[7]]   # egoResponse: 내가 양보할 차
+        jfoes = traci.vehicle.getJunctionFoes(e, self.FOE_RANGE)
+        foes = [x for x in jfoes if x[7]]   # egoResponse: 내가 양보할 차
         if self.foe_lanes:
             foes = [x for x in foes if x[4] > 0]   # foeExitDist: 충돌 지점을 빠져나가기까지 거리 (traci/_vehicle.py)
         if self.foe_lanes and yld and jd <= self.FOE_RANGE:
@@ -339,6 +341,16 @@ class SkkuEnv(SumoHighwayEnv):
                         if v not in seen and v != e:
                             foes.append((v, jd, max(0.0, length - traci.vehicle.getLanePosition(v))))
                             seen.add(v)
+        # obs_first_foe: 양보 연결(yld) 앞에서, SUMO가 '내가 양보할 차'로 표시하지 않았어도 충돌 지점에 나보다 먼저 닿는 차는 넣는다.
+        # 11/22 골목 환경 재생(r_s8, 시드 1237·1320): 플렁드 오거리(4493735400)에서 교차 차량이 충돌 지점 3 m 앞인데 egoResponse=False라
+        # 양보 상대 칸이 비고, AV가 시속 27 km로 들어가 그 차와 충돌. 두 연결이 모두 양보(m)인 오거리에서 SUMO의 우선 판정과 실제 도착 순서가 다름
+        if self.first_foe and yld and jd <= self.FOE_RANGE:
+            ve = max(traci.vehicle.getSpeed(e), 0.1)
+            seen = {x[0] for x in foes}
+            for x in jfoes:
+                if x[0] not in seen and x[4] > 0 and x[2] < self.FOE_RANGE and                         max(x[2], 0.0) / max(traci.vehicle.getSpeed(x[0]), 0.1) < max(x[1], 0.0) / ve:
+                    foes.append((x[0], jd, max(x[2], 0.0)))
+                    seen.add(x[0])
         if self.inside_fix:
             ins = self._inside_foes(e, lane_id)
             if ins is not None:                    # 양보 연결로 들어온 교차로 안: 그 교차로 기준으로 바꿔 준다
