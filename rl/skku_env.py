@@ -13,6 +13,7 @@ import json
 import os
 import random
 import subprocess
+import sys
 
 import course
 from env import sumo_env
@@ -71,6 +72,10 @@ class SkkuEnv(SumoHighwayEnv):
         # 섞기 두 가지 모두 학습 시드(train_seeds)에만 적용한다. 평가 시드는 항상 기본 출발·기본 교통
         self.start_mix = list(scenario.get("start_mix", []))
         self.start_delay_max = float(scenario.get("start_delay_max", 0.0))
+        # alley_gate: 한 대 폭 골목(bidi)에서 일반 차량은 반대 방향 차가 있으면 입구에서 기다린다 (sumo/skku_map/alley.py).
+        # AV에는 적용하지 않는다 (양보는 학습). 워밍업 상태 파일도 이 규칙으로 만든다 (파일 이름 끝 _ag)
+        self.alley_gate = bool(scenario.get("alley_gate", False))
+        self._gate = None
         self.mid_depart_speed = str(scenario.get("mid_depart_speed", "max"))
         self._full_edges = list(self.edges)
         self._train_seeds = set(scenario.get("train_seeds", []))
@@ -82,7 +87,8 @@ class SkkuEnv(SumoHighwayEnv):
 
     def _state_file(self, seed):
         return os.path.join(STATES, f"s{seed}_w{self.warmup_seconds:.0f}_dt{self.step_length}_x{self.traffic_scale:g}"
-                            + "".join(f"_{os.path.splitext(os.path.splitext(f)[0])[0]}" for f in self.extra_routes) + "_rng.xml.gz")
+                            + "".join(f"_{os.path.splitext(os.path.splitext(f)[0])[0]}" for f in self.extra_routes)
+                            + ("_ag" if self.alley_gate else "") + "_rng.xml.gz")
 
     def _state_ready(self, path):
         """저장한 상태가 있고 도로·교통 파일이 그 뒤로 바뀌지 않았는가."""
@@ -114,13 +120,23 @@ class SkkuEnv(SumoHighwayEnv):
         else:                                 # 화면이 없으면 배경 도형은 읽지 않는다
             cmd += ["-a", self._additional(False)]
         traci.start(cmd + ["--load-state", state, "--begin", str(self.warmup_seconds)])
+        self._gate = None
+        if self.alley_gate:
+            sys.path.insert(0, MAP) if MAP not in sys.path else None
+            from alley import AlleyGate
+            self._gate = AlleyGate(traci, self.ego_id).setup()
         # start_delay_max: 경로 중간 출발(start_mix)일 때 AV 투입을 0~start_delay_max초 무작위로 늦춘다 (학습 시드만, 시드별 고정).
         # 11/19 측정: 정문 앞 출발 에피소드 8개가 모두 t≈621초, 빨간불 남은 17~18초에 정문에 닿음 (신호 주기 87초 고정, 투입 시각 고정)
         #   → 학습 중 정문 빨간불은 늘 곧 끝나는 빨간불이라 멀리 서도 손해가 몇 초뿐 (갈래 비교 이득 평균 +0.6에 그침)
         dmax = self.start_delay_max
         if dmax > 0 and self.start_mix and train and self.edges is not self._full_edges:
             delay = random.Random(f"delay{seed}").uniform(0.0, dmax)
-            traci.simulationStep(self.warmup_seconds + round(delay / self.step_length) * self.step_length)
+            target = self.warmup_seconds + round(delay / self.step_length) * self.step_length
+            if self._gate is None:
+                traci.simulationStep(target)
+            while self._gate is not None and traci.simulation.getTime() < target - 1e-6:
+                self._gate.step()
+                traci.simulationStep()
         self._started = True
 
     def _additional(self, gui):
@@ -136,9 +152,14 @@ class SkkuEnv(SumoHighwayEnv):
         # 처음 평가하면 같은 시드라도 교통이 달라졌다. 실행 파일로 만들면 TraCI로 만든 기존 캐시와 내용이 같다(직접 비교).
         os.makedirs(STATES, exist_ok=True)
         tmp = f"{state}.{os.getpid()}.xml.gz"
-        subprocess.run([checkBinary("sumo"), *cmd[1:], "-a", self._additional(False), "--end", str(self.warmup_seconds + 1),
-                        "--save-state.times", str(self.warmup_seconds), "--save-state.files", tmp],
-                       check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        if self.alley_gate:                   # 골목 규칙을 지키며 채운다: TraCI 소켓 + sumo 실행 파일 (아래 방식과 같은 난수 상태)
+            subprocess.run([sys.executable, os.path.join(MAP, "alley.py"), "warmup", str(self.warmup_seconds + 1),
+                            str(self.warmup_seconds), tmp, checkBinary("sumo"), *cmd[1:], "-a", self._additional(False)],
+                           check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        else:
+            subprocess.run([checkBinary("sumo"), *cmd[1:], "-a", self._additional(False), "--end", str(self.warmup_seconds + 1),
+                            "--save-state.times", str(self.warmup_seconds), "--save-state.files", tmp],
+                           check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         try:
             os.replace(tmp, state)            # 여러 학습을 동시에 돌려도 반쯤 쓴 파일을 읽지 않게
         except PermissionError:               # Windows: 다른 학습이 같은 파일을 먼저 만들어 읽는 중이면 그 파일을 쓴다
@@ -322,6 +343,13 @@ class SkkuEnv(SumoHighwayEnv):
             ins = self._inside_foes(e, lane_id)
             if ins is not None:                    # 양보 연결로 들어온 교차로 안: 그 교차로 기준으로 바꿔 준다
                 jd, yld, foes = 0.0, 1.0, ins
+        # 한 대 폭 골목 입구 (alley_gate, 11/21): 골목 안에 반대 방향 차가 있거나 들어오는 중이면 입구를 '양보할 교차로'로 보고
+        # 그 차를 양보 상대 칸에 넣는다 (거리 = 그 차가 내 입구까지 남은 거리). 관측 개수는 그대로. 골목 안에 들어선 뒤에는
+        # 마주 오는 차가 앞차 관측으로 보인다 (getLeader가 bidi 차로의 반대 방향 차를 돌려줌, 11/21 확인)
+        onc = self._gate.oncoming(e) if self._gate is not None else None
+        if onc is not None and onc[1]:
+            jd, yld = onc[0], 1.0
+            foes = [(v, onc[0], dist) for v, dist in onc[1]]
         if foes:
             near = min(foes, key=lambda x: x[2])
             f += [min(jd, 100) / 100, yld, min(near[2], self.FOE_RANGE) / self.FOE_RANGE,
@@ -434,12 +462,23 @@ class SkkuEnv(SumoHighwayEnv):
         before = self._tls_ahead()
         ywt = float(self.rw.get("yield_penalty", 0.0))
         yrisk = self._yield_risk() if ywt > 0 else None
+        # 골목 입구 직전(아직 교차로 밖)에서만 본다: 교차로 안에서 계속 보면 들어선 뒤 스텝마다 감점된다
+        alley_before = self._gate.oncoming(self.ego_id) if (self._gate is not None and ywt > 0
+                                                            and self.ego_id in traci.vehicle.getIDList()
+                                                            and not traci.vehicle.getLaneID(self.ego_id).startswith(":")) else None
+        if self._gate is not None:
+            self._gate.step()
         obs, reward, terminated, truncated, info = super().step(action)
         # 양보 위반: 양보해야 하는 연결 앞에서, 우선 차량이 YIELD_TTC초 안에 오는데 교차로에 들어갔으면 1회 감점.
         # 충돌 감점은 실제로 부딪힐 때만 붙어 드물다 (11/18 임재성: 충돌 감점 크기로는 양보 실패가 안 줄어듦).
         # 신호 위반 감점(red_light_penalty)을 무신호 교차로·회전교차로에 적용한 것
         info["yield_violation"] = False
-        if yrisk and self.ego_id in traci.vehicle.getIDList():
+        # 골목: 반대 방향 차가 골목 안에 있거나 들어오는 중인데 입구 교차로에 들어서면 양보 위반 (같은 감점)
+        if ywt > 0 and alley_before and alley_before[1] and self.ego_id in traci.vehicle.getIDList():
+            if traci.vehicle.getLaneID(self.ego_id).startswith(":") and alley_before[0] < 15.0:
+                info["yield_violation"] = True
+                reward -= ywt
+        if yrisk and not info["yield_violation"] and self.ego_id in traci.vehicle.getIDList():
             now = traci.vehicle.getLaneID(self.ego_id)
             if now != yrisk[0] and now.startswith(":") and yrisk[1] < self.rw.get("yield_ttc", self.YIELD_TTC):
                 info["yield_violation"] = True

@@ -230,6 +230,23 @@ def patch_gates(net, pt):
 
 
 
+# 한 대 폭 골목 (2026-11-21 사용자 확인: 플렁드(서부로2123번길 17)부터 성대곱창(율전로 96) 앞까지 차선 없는 한 대 폭, 양쪽 주차).
+#   OSM에서는 방향마다 3.2 m 차로가 따로 있어 마주 오는 차와 만나지 않았다. 두 방향 엣지를 bidi 쌍으로 묶고 가운데선에
+#   겹쳐(spreadType center) 한 차로를 함께 쓰게 한다. userdoc/Networks/PlainXML.html 엣지 속성 bidi,
+#   SUMO 1.27.0 "Cars no longer enter a bidi-edge if it is occupied or already being approached from a higher-priority road"
+ALLEY = (("4526039540#0", "-4526039540#0"),      # 서부로2123번길 (서부로 우회전 직후 ~ 첫 오거리)
+         ("4694200410", "-4694200410"),          # 율전로98번길 (오거리 ~ 오거리)
+         ("-4526039590#2", "4526039590#2"),      # 율전로98번길
+         ("-4526039590#0", "4526039590#0"))      # 율전로98번길 (~ 율전로 좌회전 교차로 495951808)
+
+
+def patch_alley(net, pt):
+    for a, b in ALLEY:
+        if not (net.hasEdge(a) and net.hasEdge(b)):
+            raise RuntimeError(f"골목 엣지 없음: {a}, {b}")
+        pt.edg += [f'<edge id="{a}" spreadType="center" bidi="{b}"/>', f'<edge id="{b}" spreadType="center" bidi="{a}"/>']
+
+
 def write_patches(net):
     pt = Patch()
     sg_id = patch_signals(net, pt)
@@ -245,6 +262,7 @@ def write_patches(net):
     patch_heights(net, pt)
     pt.edg += parallel_fixes(net)
     patch_gates(net, pt)
+    patch_alley(net, pt)
     pt.write()
     return sg_id
 
