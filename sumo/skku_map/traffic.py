@@ -206,12 +206,24 @@ def write_routes(net, groups):
                    capture_output=True, text=True, check=True)
     root = ET.parse(W("random.trips.xml")).getroot()
     bad = lambda e: e.startswith(("hw_", "P1_", "P2_", "P3_"))
+    # 한 대 폭 골목(build.py ALLEY)을 지름길로 지나가기만 하는 차는 뺀다 (골목에서 출발·도착하는 차는 남김).
+    # 11/22 측정(시드 1200, 1시간): 골목 → 서부로 방향 62대 중 41대가 서부로~화산로233번길 지름길 통과 차량. 이 차들이 서부로
+    #   좌회전을 기다리며 골목을 차지해, 서부로에서 들어가려는 차(주로 버스)가 서부로 1차로 구간에 서고 줄이 AV 출발 구간까지 밀렸다.
+    #   실제 주택가 골목은 통과 차량이 적다. trips의 경로는 --validate로 만든 random.validated.rou.xml 기준 (같은 라우터)
+    from build import ALLEY
+    alley = {e for pair in ALLEY for e in pair}
+    routed = {v.get("id"): v.find("route").get("edges").split()
+              for v in ET.parse(W("random.validated.rou.xml")).getroot() if v.find("route") is not None}
     for t in list(root):
         if t.tag not in ("vehicle", "trip"):
             continue
         r = t.find("route")
         edges = (r.get("edges") if r is not None else f'{t.get("from")} {t.get("to")}').split()
         if bad(edges[0]) or bad(edges[-1]):
+            root.remove(t)
+            continue
+        path = routed.get(t.get("id"), edges)
+        if alley & set(path) and path[0] not in alley and path[-1] not in alley:
             root.remove(t)
     ET.ElementTree(root).write(P("random.rou.xml"), encoding="utf-8", xml_declaration=True)
     return ends

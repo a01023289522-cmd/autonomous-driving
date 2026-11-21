@@ -40,8 +40,6 @@
     <trip id="r37" depart="71.15" from="-4691100280#1" to="4720447770#5" type="car" departLane="best" />
     <trip id="r38" depart="73.07" from="928788680#0" to="4878820020" type="car" departLane="best" />
     <trip id="r39" depart="75.00" from="708509520#0" to="586716280#2" type="car" departLane="best" />
-    <trip id="r40" depart="76.92" from="-6003175210#2" to="4868927750#0" type="car" departLane="best" />
-    <trip id="r41" depart="78.84" from="4953325810" to="700812840#1" type="car" departLane="best" />
     <trip id="r42" depart="80.77" from="6003175030" to="3921272550#0" type="car" departLane="best" />
     <trip id="r43" depart="82.69" from="4953325810" to="1024410190#2" type="car" departLane="best" />
     <trip id="r44" depart="84.61" from="708509520#0" to="6003174950" type="car" departLane="best" />
@@ -52,7 +50,6 @@
     <trip id="r49" depart="94.23" from="6003175030" to="5552317690#1" type="car" departLane="best" />
     <trip id="r50" depart="96.15" from="4720447770#0" to="-4526039580#4" type="car" departLane="best" />
     <trip id="r51" depart="98.07" from="6003175030" to="6003175150#0" type="car" departLane="best" />
-    <trip id="r52" depart="100.00" from="-5039133870#7" to="4878820020" type="car" departLane="best" />
     <trip id="r53" depart="101.92" from="-4713665760" to="4953325790" type="car" departLane="best" />
     <trip id="r54" depart="103.84" from="5477873690#0" to="-707253150#1" type="car" departLane="best" />
     <trip id="r55" depart="105.77" from="4953325810" to="4878820020" type="car" departLane="best" />
@@ -68,8 +65,6 @@
     <trip id="r65" depart="125.00" from="4416386060#0" to="4953325790" type="car" departLane="best" />
     <trip id="r66" depart="126.92" from="4416386060#0" to="-707253230#1" type="car" departLane="best" />
     <trip id="r67" depart="128.84" from="708509520#0" to="4878820020" type="car" departLane="best" />
-    <trip id="r68" depart="130.76" from="5899587190#0" to="1024410190#2" type="car" departLane="best" />
-    <trip id="r69" depart="132.69" from="-586716220#0" to="4868927750#0" type="car" departLane="best" />
     <trip id="r70" depart="134.61" from="4953325810" to="4878820020" type="car" departLane="best" />
     <trip id="r71" depart="136.53" from="5477873690#0" to="4953325790" type="car" departLane="best" />
     <trip id="r72" depart="138.46" from="7754668960" to="-5612296410" type="car" departLane="best" />
@@ -84,7 +79,6 @@
     <trip id="r81" depart="155.76" from="708509520#0" to="6003175020" type="car" departLane="best" />
     <trip id="r82" depart="157.69" from="6003175030" to="1024410190#2" type="car" departLane="best" />
     <trip id="r83" depart="159.61" from="4953325810" to="1024410190#2" type="car" departLane="best" />
-    <trip id="r84" depart="161.53" from="4953325810" to="-4526039610#0" type="car" departLane="best" />
     <trip id="r85" depart="163.46" from="4953325810" to="7754717130#0" type="car" departLane="best" />
     <trip id="r86" depart="165.38" from="4416386060#0" to="4953325790" type="car" departLane="best" />
     <trip id="r87" depart="167.30" from="4953325810" to="4868927730#1" type="car" departLane="best" />
@@ -92,7 +86,6 @@
     <trip id="r89" depart="171.15" from="3718967780#1" to="4525977220#2" type="car" departLane="best" />
     <trip id="r90" depart="173.07" from="708509520#0" to="4878820020" type="car" departLane="best" />
     <trip id="r91" depart="174.99" from="-4526039670" to="4878820020" type="car" departLane="best" />
-    <trip id="r92" depart="176.92" from="4953325810" to="5685982230#0" type="car" departLane="best" />
     <trip id="r93" depart="178.84" from="3718967780#2" to="707253180#1" type="car" departLane="best" />
     <trip id="r94" depart="180.76" from="5477873690#0" to="4953325790" type="car" departLane="best" />
     <trip id="r95" depart="182.69" from="4416386060#0" to="-6003175230" type="car" departLane="best" />
@@ -111,10 +104,8 @@
     <trip id="r108" depart="207.68" from="6003175030" to="4953325790" type="car" departLane="best" />
     <trip id="r109" depart="209.61" from="5477873690#0" to="7755484360" type="car" departLane="best" />
     <trip id="r110" depart="211.53" from="5477873690#0" to="-3171340970" type="car" departLane="best" />
-    <trip id="r111" depart="213.45" from="6003175030" to="4526039540#1" type="car" departLane="best" />
     <trip id="r112" depart="215.38" from="5477873690#0" to="6003175020" type="car" departLane="best" />
     <trip id="r113" depart="217.30" from="-9669057410#0" to="-5899587190#1" type="car" departLane="best" />
-    <trip id="r114" depart="219.22" from="-5899587190#1" to="4878820020" type="car" departLane="best" />
     <trip id="r115" depart="221.15" from="5477873690#0" to="3921272550#0" type="car" departLane="best" />
     <trip id="r116" depart="223.07" from="4953325810" to="6003175020" type="car" departLane="best" />
     <trip id="r117" depart="224.99" from="6003175030" to="-5039133870#8" type="car" departLane="best" />
@@ -138,7 +129,6 @@
     <trip id="r135" depart="259.61" from="-407917400#1" to="4953325790" type="car" departLane="best" />
     <trip id="r136" depart="261.53" from="4868927730#1" to="6003175020" type="car" departLane="best" />
     <trip id="r137" depart="263.45" from="586716250#0" to="5899587190#0" type="car" departLane="best" />
-    <trip id="r138" depart="265.37" from="5899587190#2" to="3921272550#1" type="car" departLane="best" />
     <trip id="r139" depart="267.30" from="5612296380#1" to="-586716270#0" type="car" departLane="best" />
     <trip id="r140" depart="269.22" from="6003175030" to="586716250#2" type="car" departLane="best" />
     <trip id="r141" depart="271.14" from="4416386060#0" to="4953325790" type="car" departLane="best" />
@@ -151,7 +141,6 @@
     <trip id="r148" depart="284.60" from="708509520#0" to="-5899587190#1" type="car" departLane="best" />
     <trip id="r149" depart="286.53" from="708509520#0" to="1024410190#2" type="car" departLane="best" />
     <trip id="r150" depart="288.45" from="708509520#0" to="3921272550#0" type="car" departLane="best" />
-    <trip id="r151" depart="290.37" from="-5899587190#2" to="4868927750#0" type="car" departLane="best" />
     <trip id="r152" depart="292.30" from="5477873690#0" to="4691100210" type="car" departLane="best" />
     <trip id="r153" depart="294.22" from="4953325810" to="4878820020" type="car" departLane="best" />
     <trip id="r154" depart="296.14" from="4416386060#0" to="4953325790" type="car" departLane="best" />
@@ -180,7 +169,6 @@
     <trip id="r177" depart="340.00" from="420073680#0" to="4953325790" type="car" departLane="best" />
     <trip id="r178" depart="342.00" from="5477873690#0" to="-15371153830#4" type="car" departLane="best" />
     <trip id="r179" depart="344.00" from="5477873690#0" to="4953325790" type="car" departLane="best" />
-    <trip id="r180" depart="346.00" from="-5899587190#1" to="4868927730#1" type="car" departLane="best" />
     <trip id="r181" depart="348.00" from="4953325810" to="-4255616100#5" type="car" departLane="best" />
     <trip id="r182" depart="350.00" from="4416386060#0" to="5612296410" type="car" departLane="best" />
     <trip id="r183" depart="352.00" from="5477873690#0" to="7755484380#0" type="car" departLane="best" />
@@ -211,7 +199,6 @@
     <trip id="r208" depart="402.00" from="4953325810" to="4878820020" type="car" departLane="best" />
     <trip id="r209" depart="404.00" from="-408392630#1" to="4878820020" type="car" departLane="best" />
     <trip id="r210" depart="406.00" from="1024410150#1" to="4878820020" type="car" departLane="best" />
-    <trip id="r211" depart="408.00" from="-4526039540#1" to="4720447770#5" type="car" departLane="best" />
     <trip id="r212" depart="410.00" from="4416386060#0" to="4716652390" type="car" departLane="best" />
     <trip id="r213" depart="412.00" from="5477873690#0" to="4720447770#5" type="car" departLane="best" />
     <trip id="r214" depart="414.00" from="5477873690#0" to="5552317710#0" type="car" departLane="best" />
@@ -270,8 +257,6 @@
     <trip id="r267" depart="520.00" from="708509520#0" to="4878820020" type="car" departLane="best" />
     <trip id="r268" depart="522.00" from="6003175030" to="4720447770#5" type="car" departLane="best" />
     <trip id="r269" depart="524.00" from="-4716974670" to="4878820020" type="car" departLane="best" />
-    <trip id="r270" depart="526.00" from="-4526039580#3" to="1024410190#2" type="car" departLane="best" />
-    <trip id="r271" depart="528.00" from="5039133830#0" to="4526039590#3" type="car" departLane="best" />
     <trip id="r272" depart="530.00" from="928788620" to="-6003175150#1" type="car" departLane="best" />
     <trip id="r273" depart="532.00" from="5612296400#0" to="1025323300#3" type="car" departLane="best" />
     <trip id="r274" depart="534.00" from="4953325810" to="4878820020" type="car" departLane="best" />
@@ -300,7 +285,6 @@
     <trip id="r297" depart="580.00" from="-4255616100#2" to="4953325790" type="car" departLane="best" />
     <trip id="r298" depart="582.00" from="4953325810" to="4878820020" type="car" departLane="best" />
     <trip id="r299" depart="584.00" from="708509520#0" to="1024410190#2" type="car" departLane="best" />
-    <trip id="r300" depart="586.00" from="4953325810" to="-5039133870#4" type="car" departLane="best" />
     <trip id="r301" depart="588.00" from="4883933170#0" to="4720447770#5" type="car" departLane="best" />
     <trip id="r302" depart="590.00" from="5477873690#0" to="586716240#0" type="car" departLane="best" />
     <trip id="r303" depart="592.00" from="4868927730#1" to="4953325790" type="car" departLane="best" />
@@ -309,7 +293,6 @@
     <trip id="r306" depart="598.00" from="4953325810" to="4691100280#2" type="car" departLane="best" />
     <trip id="r307" depart="600.00" from="4868927720#1" to="708509520#1" type="car" departLane="best" />
     <trip id="r308" depart="602.27" from="4953325810" to="4878820020" type="car" departLane="best" />
-    <trip id="r309" depart="604.55" from="7755484360" to="4878820020" type="car" departLane="best" />
     <trip id="r310" depart="606.82" from="4953325810" to="4868927720#0" type="car" departLane="best" />
     <trip id="r311" depart="609.09" from="408392730#0" to="4720447770#5" type="car" departLane="best" />
     <trip id="r312" depart="611.37" from="4953325810" to="6003175020" type="car" departLane="best" />
@@ -332,7 +315,6 @@
     <trip id="r329" depart="650.01" from="4953325810" to="1024410190#2" type="car" departLane="best" />
     <trip id="r330" depart="652.28" from="4953325810" to="4720447770#5" type="car" departLane="best" />
     <trip id="r331" depart="654.55" from="4953325810" to="4878820020" type="car" departLane="best" />
-    <trip id="r332" depart="656.83" from="4953325810" to="4713685520" type="car" departLane="best" />
     <trip id="r333" depart="659.10" from="420073140#3" to="4953325790" type="car" departLane="best" />
     <trip id="r334" depart="661.37" from="5477873690#0" to="15371153860" type="car" departLane="best" />
     <trip id="r335" depart="663.64" from="5477873690#0" to="-4255616100#2" type="car" departLane="best" />
@@ -352,7 +334,6 @@
     <trip id="r349" depart="695.47" from="6003175030" to="-420073140#7" type="car" departLane="best" />
     <trip id="r350" depart="697.74" from="-4709208800#2" to="4878820020" type="car" departLane="best" />
     <trip id="r351" depart="700.01" from="708509520#0" to="928788710#1" type="car" departLane="best" />
-    <trip id="r352" depart="702.29" from="-586716230#2" to="4878820020" type="car" departLane="best" />
     <trip id="r353" depart="704.56" from="6003175030" to="4878820020" type="car" departLane="best" />
     <trip id="r354" depart="706.83" from="5477873690#0" to="6003175020" type="car" departLane="best" />
     <trip id="r355" depart="709.10" from="-4255616100#3" to="4953325790" type="car" departLane="best" />
@@ -385,7 +366,6 @@
     <trip id="r382" depart="770.48" from="5477873690#0" to="-5039133870#0" type="car" departLane="best" />
     <trip id="r383" depart="772.75" from="4691100310#0" to="4953325790" type="car" departLane="best" />
     <trip id="r384" depart="775.02" from="383167710" to="-707253230#1" type="car" departLane="best" />
-    <trip id="r385" depart="777.29" from="4953325810" to="708509520#1" type="car" departLane="best" />
     <trip id="r386" depart="779.57" from="4953325810" to="6003175020" type="car" departLane="best" />
     <trip id="r387" depart="781.84" from="6003175030" to="383158340" type="car" departLane="best" />
     <trip id="r388" depart="784.11" from="6003175030" to="4878820020" type="car" departLane="best" />
@@ -426,7 +406,6 @@
     <trip id="r423" depart="863.67" from="4416386060#0" to="4716638650" type="car" departLane="best" />
     <trip id="r424" depart="865.94" from="383167710" to="-4525977250#0" type="car" departLane="best" />
     <trip id="r425" depart="868.21" from="5552317710#0" to="4878820020" type="car" departLane="best" />
-    <trip id="r426" depart="870.49" from="-5899587190#2" to="4878820020" type="car" departLane="best" />
     <trip id="r427" depart="872.76" from="708509520#0" to="-4255616100#2" type="car" departLane="best" />
     <trip id="r428" depart="875.03" from="5552317800" to="5899587190#2" type="car" departLane="best" />
     <trip id="r429" depart="877.31" from="4953325810" to="4878820020" type="car" departLane="best" />
@@ -457,7 +436,6 @@
     <trip id="r454" depart="937.50" from="6003175030" to="7754668960" type="car" departLane="best" />
     <trip id="r455" depart="940.00" from="6003175030" to="4878820020" type="car" departLane="best" />
     <trip id="r456" depart="942.50" from="5477873690#0" to="-407917400#0" type="car" departLane="best" />
-    <trip id="r457" depart="945.00" from="708509520#0" to="5039133870#7" type="car" departLane="best" />
     <trip id="r458" depart="947.50" from="5477873690#0" to="4686459270#0" type="car" departLane="best" />
     <trip id="r459" depart="950.00" from="4868927790" to="-15379779810#0" type="car" departLane="best" />
     <trip id="r460" depart="952.50" from="6003175030" to="4878820020" type="car" departLane="best" />
@@ -481,14 +459,12 @@
     <trip id="r478" depart="997.50" from="-4255616100#3" to="-383152640#2" type="car" departLane="best" />
     <trip id="r479" depart="1000.00" from="708509520#0" to="586716290#2" type="car" departLane="best" />
     <trip id="r480" depart="1002.50" from="5477873690#0" to="4868927720#1" type="car" departLane="best" />
-    <trip id="r481" depart="1005.00" from="-6184526930#1" to="-383152640#5" type="car" departLane="best" />
     <trip id="r482" depart="1007.50" from="4868927720#1" to="4953325790" type="car" departLane="best" />
     <trip id="r483" depart="1010.00" from="5477873690#0" to="5552317710#0" type="car" departLane="best" />
     <trip id="r484" depart="1012.50" from="708509520#0" to="-5039133830#2" type="car" departLane="best" />
     <trip id="r485" depart="1015.00" from="6003175030" to="3718967780#2" type="car" departLane="best" />
     <trip id="r486" depart="1017.50" from="4953325810" to="4686459320#2" type="car" departLane="best" />
     <trip id="r487" depart="1020.00" from="4868927790" to="4720447770#5" type="car" departLane="best" />
-    <trip id="r488" depart="1022.50" from="-6184526920" to="4878820020" type="car" departLane="best" />
     <trip id="r489" depart="1025.00" from="5477873690#0" to="4953325800" type="car" departLane="best" />
     <trip id="r490" depart="1027.50" from="15371153830#1" to="1024410190#2" type="car" departLane="best" />
     <trip id="r491" depart="1030.00" from="5477873690#0" to="4953325790" type="car" departLane="best" />
@@ -498,13 +474,10 @@
     <trip id="r495" depart="1040.00" from="5477873690#0" to="5899587190#1" type="car" departLane="best" />
     <trip id="r496" depart="1042.50" from="-4709208800#2" to="4878820020" type="car" departLane="best" />
     <trip id="r497" depart="1045.00" from="4716638650" to="408392730#0" type="car" departLane="best" />
-    <trip id="r498" depart="1047.50" from="-4526039610#2" to="4878820020" type="car" departLane="best" />
-    <trip id="r499" depart="1050.00" from="-4526039630#1" to="5552317690#1" type="car" departLane="best" />
     <trip id="r500" depart="1052.50" from="-4868927770" to="5899587190#1" type="car" departLane="best" />
     <trip id="r501" depart="1055.00" from="6003175030" to="4878820020" type="car" departLane="best" />
     <trip id="r502" depart="1057.50" from="4953325810" to="4878820020" type="car" departLane="best" />
     <trip id="r503" depart="1060.00" from="707253150#1" to="4878820020" type="car" departLane="best" />
-    <trip id="r504" depart="1062.50" from="5899587190#1" to="4878820020" type="car" departLane="best" />
     <trip id="r505" depart="1065.00" from="4868927720#1" to="4878820020" type="car" departLane="best" />
     <trip id="r506" depart="1067.50" from="-586716290#2" to="6003175020" type="car" departLane="best" />
     <trip id="r507" depart="1070.00" from="4953325810" to="1024410190#2" type="car" departLane="best" />
@@ -534,12 +507,10 @@
     <trip id="r531" depart="1130.00" from="5477873690#0" to="-707253190#2" type="car" departLane="best" />
     <trip id="r532" depart="1132.50" from="4953325810" to="1024410190#2" type="car" departLane="best" />
     <trip id="r533" depart="1135.00" from="6003175030" to="4953325790" type="car" departLane="best" />
-    <trip id="r534" depart="1137.50" from="5899587190#1" to="1024410190#2" type="car" departLane="best" />
     <trip id="r535" depart="1140.00" from="4953325810" to="4780192870#0" type="car" departLane="best" />
     <trip id="r536" depart="1142.50" from="5477873690#0" to="15379779760" type="car" departLane="best" />
     <trip id="r537" depart="1145.00" from="4953325810" to="420073680#3" type="car" departLane="best" />
     <trip id="r538" depart="1147.50" from="4953325810" to="4686459320#0" type="car" departLane="best" />
-    <trip id="r539" depart="1150.00" from="5899587190#1" to="4878820020" type="car" departLane="best" />
     <trip id="r540" depart="1152.50" from="6003175030" to="4720447770#5" type="car" departLane="best" />
     <trip id="r541" depart="1155.00" from="708509520#0" to="7754668960" type="car" departLane="best" />
     <trip id="r542" depart="1157.50" from="4953325810" to="420073680#0" type="car" departLane="best" />
@@ -615,7 +586,6 @@
     <trip id="r612" depart="1332.50" from="4416386060#0" to="383167710" type="car" departLane="best" />
     <trip id="r613" depart="1335.00" from="4953325810" to="928788700#0" type="car" departLane="best" />
     <trip id="r614" depart="1337.50" from="4526039630#0" to="6003175020" type="car" departLane="best" />
-    <trip id="r615" depart="1340.00" from="4953325810" to="-6184526930#0" type="car" departLane="best" />
     <trip id="r616" depart="1342.50" from="6003175030" to="4878820020" type="car" departLane="best" />
     <trip id="r617" depart="1345.00" from="707253210#0" to="4878820020" type="car" departLane="best" />
     <trip id="r618" depart="1347.50" from="-5552317850#0" to="4953325790" type="car" departLane="best" />
@@ -629,7 +599,6 @@
     <trip id="r626" depart="1367.50" from="1024410230" to="4953325790" type="car" departLane="best" />
     <trip id="r627" depart="1370.00" from="-408392630#1" to="4878820020" type="car" departLane="best" />
     <trip id="r628" depart="1372.50" from="4953325810" to="4878820020" type="car" departLane="best" />
-    <trip id="r629" depart="1375.00" from="-5039133870#9" to="4686459300#1" type="car" departLane="best" />
     <trip id="r630" depart="1377.50" from="9669057430#0" to="4953325790" type="car" departLane="best" />
     <trip id="r631" depart="1380.00" from="6003175030" to="-4713656070#0" type="car" departLane="best" />
     <trip id="r632" depart="1382.50" from="708509520#1" to="4878820020" type="car" departLane="best" />
@@ -641,7 +610,6 @@
     <trip id="r638" depart="1397.50" from="4868927720#1" to="4953325790" type="car" departLane="best" />
     <trip id="r639" depart="1400.00" from="4883933150#0" to="6003175020" type="car" departLane="best" />
     <trip id="r640" depart="1402.50" from="700813330" to="5612296400#1" type="car" departLane="best" />
-    <trip id="r641" depart="1405.00" from="4953325810" to="-700813240" type="car" departLane="best" />
     <trip id="r642" depart="1407.50" from="4716638650" to="4878820020" type="car" departLane="best" />
     <trip id="r643" depart="1410.00" from="4953325810" to="1024410190#2" type="car" departLane="best" />
     <trip id="r644" depart="1412.50" from="708509520#0" to="1024410190#2" type="car" departLane="best" />
@@ -719,7 +687,6 @@
     <trip id="r716" depart="1597.38" from="708509520#0" to="4953325790" type="car" departLane="best" />
     <trip id="r717" depart="1600.02" from="4686459320#4" to="4255616100#1" type="car" departLane="best" />
     <trip id="r718" depart="1602.65" from="5477873690#0" to="4720447770#5" type="car" departLane="best" />
-    <trip id="r719" depart="1605.28" from="4953325810" to="383158340" type="car" departLane="best" />
     <trip id="r720" depart="1607.91" from="4953325810" to="1024410190#2" type="car" departLane="best" />
     <trip id="r721" depart="1610.54" from="4953325810" to="6003175020" type="car" departLane="best" />
     <trip id="r722" depart="1613.18" from="4416386060#0" to="4953325790" type="car" departLane="best" />
@@ -738,16 +705,13 @@
     <trip id="r735" depart="1647.39" from="6003175030" to="1024410190#2" type="car" departLane="best" />
     <trip id="r736" depart="1650.02" from="708509520#0" to="928788700#3" type="car" departLane="best" />
     <trip id="r737" depart="1652.66" from="4953325810" to="4878820020" type="car" departLane="best" />
-    <trip id="r738" depart="1655.29" from="708509520#0" to="707253210#3" type="car" departLane="best" />
     <trip id="r739" depart="1657.92" from="708509520#0" to="6003175020" type="car" departLane="best" />
     <trip id="r740" depart="1660.55" from="-3718967780#2" to="4878820020" type="car" departLane="best" />
-    <trip id="r741" depart="1663.18" from="-5899587190#1" to="7754668960" type="car" departLane="best" />
     <trip id="r742" depart="1665.82" from="4526039610#1" to="8047719460#1" type="car" departLane="best" />
     <trip id="r743" depart="1668.45" from="4953325810" to="4878820020" type="car" departLane="best" />
     <trip id="r744" depart="1671.08" from="708509520#0" to="564336350#2" type="car" departLane="best" />
     <trip id="r745" depart="1673.71" from="4953325810" to="1024410190#2" type="car" departLane="best" />
     <trip id="r746" depart="1676.34" from="-6003175260" to="1024410190#2" type="car" departLane="best" />
-    <trip id="r747" depart="1678.98" from="4953325810" to="383158340" type="car" departLane="best" />
     <trip id="r748" depart="1681.61" from="408392630#1" to="4953325790" type="car" departLane="best" />
     <trip id="r749" depart="1684.24" from="5612296400#0" to="4878820020" type="car" departLane="best" />
     <trip id="r750" depart="1686.87" from="6003175030" to="4878820020" type="car" departLane="best" />
@@ -773,7 +737,6 @@
     <trip id="r770" depart="1739.51" from="4953325810" to="-5899587190#2" type="car" departLane="best" />
     <trip id="r771" depart="1742.14" from="4255616100#3" to="4878820020" type="car" departLane="best" />
     <trip id="r772" depart="1744.78" from="-5612296400#0" to="4878820020" type="car" departLane="best" />
-    <trip id="r773" depart="1747.41" from="5899587190#1" to="4878820020" type="car" departLane="best" />
     <trip id="r774" depart="1750.04" from="4953325810" to="4878820020" type="car" departLane="best" />
     <trip id="r775" depart="1752.67" from="-4686028260#1" to="4878820020" type="car" departLane="best" />
     <trip id="r776" depart="1755.30" from="5899587190#0" to="4953325790" type="car" departLane="best" />
@@ -791,7 +754,6 @@
     <trip id="r788" depart="1786.89" from="4416386060#0" to="4720447770#5" type="car" departLane="best" />
     <trip id="r789" depart="1789.52" from="4416386060#0" to="6003175020" type="car" departLane="best" />
     <trip id="r790" depart="1792.15" from="5477873690#0" to="-5899587190#0" type="car" departLane="best" />
-    <trip id="r791" depart="1794.78" from="5899587190#1" to="4868927720#1" type="car" departLane="best" />
     <trip id="r792" depart="1797.42" from="5477873690#0" to="6003175020" type="car" departLane="best" />
     <trip id="r793" depart="1800.00" from="-381378220#2" to="1024410190#2" type="car" departLane="best" />
     <trip id="r794" depart="1802.63" from="-586716270#1" to="-420073140#6" type="car" departLane="best" />
@@ -829,7 +791,6 @@
     <trip id="r826" depart="1886.86" from="4953325810" to="4878820020" type="car" departLane="best" />
     <trip id="r827" depart="1889.49" from="4953325810" to="383167710" type="car" departLane="best" />
     <trip id="r828" depart="1892.12" from="4953325810" to="4878820020" type="car" departLane="best" />
-    <trip id="r829" depart="1894.75" from="-586716230#4" to="7754668960" type="car" departLane="best" />
     <trip id="r830" depart="1897.38" from="4953325810" to="5552317850#0" type="car" departLane="best" />
     <trip id="r831" depart="1900.02" from="4953325810" to="4878820020" type="car" departLane="best" />
     <trip id="r832" depart="1902.65" from="4416386060#0" to="1024410150#1" type="car" departLane="best" />
@@ -861,7 +822,6 @@
     <trip id="r858" depart="1971.08" from="6003175030" to="3921433940" type="car" departLane="best" />
     <trip id="r859" depart="1973.71" from="4953325810" to="4720447770#5" type="car" departLane="best" />
     <trip id="r860" depart="1976.34" from="4953325810" to="4878820020" type="car" departLane="best" />
-    <trip id="r861" depart="1978.98" from="8047719460#1" to="1025323300#3" type="car" departLane="best" />
     <trip id="r862" depart="1981.61" from="5477873690#0" to="5612296410" type="car" departLane="best" />
     <trip id="r863" depart="1984.24" from="5477873690#0" to="586716250#1" type="car" departLane="best" />
     <trip id="r864" depart="1986.87" from="5477873690#0" to="-5552317690#1" type="car" departLane="best" />
@@ -870,7 +830,6 @@
     <trip id="r867" depart="1994.77" from="383158340" to="4878820020" type="car" departLane="best" />
     <trip id="r868" depart="1997.40" from="-5612296420" to="4878820020" type="car" departLane="best" />
     <trip id="r869" depart="2000.03" from="4953325810" to="-4255616100#3" type="car" departLane="best" />
-    <trip id="r870" depart="2002.66" from="-4716975080#0" to="6003175020" type="car" departLane="best" />
     <trip id="r871" depart="2005.30" from="707253230#1" to="4878820020" type="car" departLane="best" />
     <trip id="r872" depart="2007.93" from="-420073140#6" to="6003175020" type="car" departLane="best" />
     <trip id="r873" depart="2010.56" from="4741474310" to="707253190#4" type="car" departLane="best" />
@@ -879,7 +838,6 @@
     <trip id="r876" depart="2018.46" from="4416386060#0" to="5552317710#1" type="car" departLane="best" />
     <trip id="r877" depart="2021.09" from="4953325810" to="6003175020" type="car" departLane="best" />
     <trip id="r878" depart="2023.72" from="4868927730#1" to="4953325790" type="car" departLane="best" />
-    <trip id="r879" depart="2026.35" from="1024410240" to="7755484380#1" type="car" departLane="best" />
     <trip id="r880" depart="2028.98" from="7754567510" to="-4526039530#3" type="car" departLane="best" />
     <trip id="r881" depart="2031.62" from="4953325810" to="5552317800" type="car" departLane="best" />
     <trip id="r882" depart="2034.25" from="4868927790" to="4953325790" type="car" departLane="best" />
@@ -887,7 +845,6 @@
     <trip id="r884" depart="2039.51" from="4416386060#0" to="9182995920" type="car" departLane="best" />
     <trip id="r885" depart="2042.14" from="4953325810" to="4720447770#5" type="car" departLane="best" />
     <trip id="r886" depart="2044.78" from="708509520#0" to="4868927750#0" type="car" departLane="best" />
-    <trip id="r887" depart="2047.41" from="-5039133870#7" to="4878820020" type="car" departLane="best" />
     <trip id="r888" depart="2050.04" from="5685982260" to="4953325790" type="car" departLane="best" />
     <trip id="r889" depart="2052.67" from="-5039133830#2" to="1024410190#2" type="car" departLane="best" />
     <trip id="r890" depart="2055.30" from="5477873690#0" to="4691100320" type="car" departLane="best" />
@@ -924,8 +881,6 @@
     <trip id="r921" depart="2136.85" from="4953325810" to="4878820020" type="car" departLane="best" />
     <trip id="r922" depart="2139.48" from="5477873690#0" to="3718967780#2" type="car" departLane="best" />
     <trip id="r923" depart="2142.11" from="5477873690#0" to="4953325790" type="car" departLane="best" />
-    <trip id="r924" depart="2144.74" from="5612296390#2" to="-4713656070#0" type="car" departLane="best" />
-    <trip id="r925" depart="2147.38" from="8047719460#1" to="4878820020" type="car" departLane="best" />
     <trip id="r926" depart="2150.01" from="4953325810" to="4878820020" type="car" departLane="best" />
     <trip id="r927" depart="2152.64" from="708509520#0" to="4953325790" type="car" departLane="best" />
     <trip id="r928" depart="2155.27" from="4953325810" to="6003175020" type="car" departLane="best" />
@@ -981,7 +936,6 @@
     <trip id="r978" depart="2286.87" from="6003175030" to="4878820020" type="car" departLane="best" />
     <trip id="r979" depart="2289.50" from="-5039133830#2" to="-420073140#1" type="car" departLane="best" />
     <trip id="r980" depart="2292.14" from="5477873690#0" to="4953325790" type="car" departLane="best" />
-    <trip id="r981" depart="2294.77" from="4953325810" to="-5899587190#0" type="car" departLane="best" />
     <trip id="r982" depart="2297.40" from="-6184526930#0" to="4953325790" type="car" departLane="best" />
     <trip id="r983" depart="2300.03" from="6003175030" to="4720447770#5" type="car" departLane="best" />
     <trip id="r984" depart="2302.66" from="6003175030" to="-4255616100#0" type="car" departLane="best" />
@@ -1073,7 +1027,6 @@
     <trip id="r1070" depart="2528.97" from="5477873690#0" to="-4691100190#0" type="car" departLane="best" />
     <trip id="r1071" depart="2531.60" from="5477873690#0" to="4953325790" type="car" departLane="best" />
     <trip id="r1072" depart="2534.23" from="6003175030" to="-4526039580#4" type="car" departLane="best" />
-    <trip id="r1073" depart="2536.86" from="-5039133870#9" to="4868927750#0" type="car" departLane="best" />
     <trip id="r1074" depart="2539.50" from="4953325810" to="4878820020" type="car" departLane="best" />
     <trip id="r1075" depart="2542.13" from="4720447770#2" to="4953325790" type="car" departLane="best" />
     <trip id="r1076" depart="2544.76" from="5477873690#0" to="-6003175210#0" type="car" departLane="best" />
@@ -1086,7 +1039,6 @@
     <trip id="r1083" depart="2563.18" from="5477873690#0" to="-4716645400" type="car" departLane="best" />
     <trip id="r1084" depart="2565.82" from="4953325810" to="4720447770#5" type="car" departLane="best" />
     <trip id="r1085" depart="2568.45" from="4953325810" to="4878820020" type="car" departLane="best" />
-    <trip id="r1086" depart="2571.08" from="4953325810" to="383158340" type="car" departLane="best" />
     <trip id="r1087" depart="2573.71" from="-586716290#0" to="4878820020" type="car" departLane="best" />
     <trip id="r1088" depart="2576.34" from="5477873690#0" to="12728331450#0" type="car" departLane="best" />
     <trip id="r1089" depart="2578.98" from="4953325810" to="-4255616100#2" type="car" departLane="best" />
@@ -1095,7 +1047,6 @@
     <trip id="r1092" depart="2586.87" from="15371153870" to="6003175020" type="car" departLane="best" />
     <trip id="r1093" depart="2589.50" from="6003175030" to="4878820020" type="car" departLane="best" />
     <trip id="r1094" depart="2592.14" from="708509520#0" to="4953325790" type="car" departLane="best" />
-    <trip id="r1095" depart="2594.77" from="4953325810" to="4713685520" type="car" departLane="best" />
     <trip id="r1096" depart="2597.40" from="4416386060#0" to="-4716652370" type="car" departLane="best" />
     <trip id="r1097" depart="2600.03" from="4953325810" to="4878820020" type="car" departLane="best" />
     <trip id="r1098" depart="2602.66" from="708121380" to="1024410190#2" type="car" departLane="best" />
@@ -1123,11 +1074,9 @@
     <trip id="r1120" depart="2660.57" from="7754567510" to="-4886417240#0" type="car" departLane="best" />
     <trip id="r1121" depart="2663.20" from="-564336350#0" to="-7755484360" type="car" departLane="best" />
     <trip id="r1122" depart="2665.83" from="6003175030" to="-4713681680" type="car" departLane="best" />
-    <trip id="r1123" depart="2668.46" from="5039133870#4" to="4868927750#1" type="car" departLane="best" />
     <trip id="r1124" depart="2671.10" from="708509520#0" to="15371153930" type="car" departLane="best" />
     <trip id="r1125" depart="2673.73" from="4416386060#0" to="4691100280#2" type="car" departLane="best" />
     <trip id="r1126" depart="2676.36" from="586716230#0" to="4953325790" type="car" departLane="best" />
-    <trip id="r1127" depart="2678.99" from="5477873690#0" to="4694200430" type="car" departLane="best" />
     <trip id="r1128" depart="2681.62" from="4416386060#0" to="-4713665770" type="car" departLane="best" />
     <trip id="r1129" depart="2684.26" from="4255616100#3" to="4953325790" type="car" departLane="best" />
     <trip id="r1130" depart="2686.89" from="383152640#3" to="4878820020" type="car" departLane="best" />
@@ -1158,7 +1107,6 @@
     <trip id="r1155" depart="2752.64" from="408392630#2" to="420073140#6" type="car" departLane="best" />
     <trip id="r1156" depart="2755.27" from="6003175030" to="-420073140#6" type="car" departLane="best" />
     <trip id="r1157" depart="2757.90" from="5477873690#0" to="381378220#1" type="car" departLane="best" />
-    <trip id="r1158" depart="2760.54" from="4953325810" to="-4526039630#1" type="car" departLane="best" />
     <trip id="r1159" depart="2763.17" from="4526039540#1" to="-8137434160" type="car" departLane="best" />
     <trip id="r1160" depart="2765.80" from="4255616100#1" to="6003175020" type="car" departLane="best" />
     <trip id="r1161" depart="2768.43" from="4953325810" to="4878820020" type="car" departLane="best" />
@@ -1169,7 +1117,6 @@
     <trip id="r1166" depart="2781.59" from="4953325810" to="4720447770#5" type="car" departLane="best" />
     <trip id="r1167" depart="2784.22" from="4416386060#0" to="6003175020" type="car" departLane="best" />
     <trip id="r1168" depart="2786.86" from="5552317710#0" to="-4526039600#2" type="car" departLane="best" />
-    <trip id="r1169" depart="2789.49" from="8047719460#1" to="4878820020" type="car" departLane="best" />
     <trip id="r1170" depart="2792.12" from="5477873690#0" to="9669057430#1" type="car" departLane="best" />
     <trip id="r1171" depart="2794.75" from="7754567510" to="-5612296410" type="car" departLane="best" />
     <trip id="r1172" depart="2797.38" from="5477873690#0" to="3921272550#1" type="car" departLane="best" />
@@ -1225,7 +1172,6 @@
     <trip id="r1222" depart="2928.98" from="707253190#0" to="-5039133890" type="car" departLane="best" />
     <trip id="r1223" depart="2931.62" from="4953325810" to="-420073140#1" type="car" departLane="best" />
     <trip id="r1224" depart="2934.25" from="708509520#0" to="1024410190#2" type="car" departLane="best" />
-    <trip id="r1225" depart="2936.88" from="6184526930#1" to="1024410190#2" type="car" departLane="best" />
     <trip id="r1226" depart="2939.51" from="-586716270#1" to="1024410190#2" type="car" departLane="best" />
     <trip id="r1227" depart="2942.14" from="420073140#6" to="4953325790" type="car" departLane="best" />
     <trip id="r1228" depart="2944.78" from="5477873690#0" to="4953325790" type="car" departLane="best" />
@@ -1248,7 +1194,6 @@
     <trip id="r1245" depart="2989.52" from="708509520#0" to="4878820020" type="car" departLane="best" />
     <trip id="r1246" depart="2992.15" from="4953325810" to="5552317850#0" type="car" departLane="best" />
     <trip id="r1247" depart="2994.78" from="6003175030" to="4868927720#1" type="car" departLane="best" />
-    <trip id="r1248" depart="2997.42" from="4953325810" to="5899587190#2" type="car" departLane="best" />
     <trip id="r1249" depart="3000.00" from="4953325810" to="6003175020" type="car" departLane="best" />
     <trip id="r1250" depart="3002.63" from="4953325810" to="-4716652390" type="car" departLane="best" />
     <trip id="r1251" depart="3005.26" from="708509520#0" to="4953325790" type="car" departLane="best" />
@@ -1256,7 +1201,6 @@
     <trip id="r1253" depart="3010.53" from="586716220#5" to="4953325790" type="car" departLane="best" />
     <trip id="r1254" depart="3013.16" from="5477873690#0" to="-6003175250#1" type="car" departLane="best" />
     <trip id="r1255" depart="3015.79" from="5899587190#1" to="-700813330" type="car" departLane="best" />
-    <trip id="r1256" depart="3018.42" from="4953325810" to="7755484380#1" type="car" departLane="best" />
     <trip id="r1257" depart="3021.06" from="4953325810" to="928788710#0" type="car" departLane="best" />
     <trip id="r1258" depart="3023.69" from="5477873690#0" to="5552317710#1" type="car" departLane="best" />
     <trip id="r1259" depart="3026.32" from="4416386060#0" to="6003175020" type="car" departLane="best" />
@@ -1270,7 +1214,6 @@
     <trip id="r1267" depart="3047.38" from="5477873690#0" to="4953325790" type="car" departLane="best" />
     <trip id="r1268" depart="3050.01" from="708509520#0" to="6003175020" type="car" departLane="best" />
     <trip id="r1269" depart="3052.64" from="5039133830#0" to="-5612296410" type="car" departLane="best" />
-    <trip id="r1270" depart="3055.27" from="4526039630#1" to="4878820020" type="car" departLane="best" />
     <trip id="r1271" depart="3057.90" from="4878820130" to="4780192870#0" type="car" departLane="best" />
     <trip id="r1272" depart="3060.54" from="4953325810" to="4878820020" type="car" departLane="best" />
     <trip id="r1273" depart="3063.17" from="5477873690#0" to="-420073680#0" type="car" departLane="best" />
@@ -1280,7 +1223,6 @@
     <trip id="r1277" depart="3073.70" from="4868927730#1" to="15379779810#0" type="car" departLane="best" />
     <trip id="r1278" depart="3076.33" from="5477873690#0" to="6003175020" type="car" departLane="best" />
     <trip id="r1279" depart="3078.96" from="707253180#0" to="-383152640#5" type="car" departLane="best" />
-    <trip id="r1280" depart="3081.59" from="6003175030" to="4526039580#4" type="car" departLane="best" />
     <trip id="r1281" depart="3084.22" from="4526039550#1" to="4878820020" type="car" departLane="best" />
     <trip id="r1282" depart="3086.86" from="5477873690#0" to="-5612296410" type="car" departLane="best" />
     <trip id="r1283" depart="3089.49" from="7754567510" to="4878820020" type="car" departLane="best" />
@@ -1316,7 +1258,6 @@
     <trip id="r1313" depart="3168.45" from="4953325810" to="4720447770#5" type="car" departLane="best" />
     <trip id="r1314" depart="3171.08" from="5477873690#0" to="5039133830#1" type="car" departLane="best" />
     <trip id="r1315" depart="3173.71" from="4953325810" to="-5612296420" type="car" departLane="best" />
-    <trip id="r1316" depart="3176.34" from="4953325810" to="4878820120" type="car" departLane="best" />
     <trip id="r1317" depart="3178.98" from="6003175030" to="4720447770#5" type="car" departLane="best" />
     <trip id="r1318" depart="3181.61" from="4709208800#2" to="-586716270#0" type="car" departLane="best" />
     <trip id="r1319" depart="3184.24" from="-4691100280#2" to="7755484380#1" type="car" departLane="best" />
@@ -1340,10 +1281,8 @@
     <trip id="r1337" depart="3231.62" from="4720447770#0" to="4953325790" type="car" departLane="best" />
     <trip id="r1338" depart="3234.25" from="4868927730#1" to="383167710" type="car" departLane="best" />
     <trip id="r1339" depart="3236.88" from="4691100280#2" to="564336380#2" type="car" departLane="best" />
-    <trip id="r1340" depart="3239.51" from="4953325810" to="5899587190#1" type="car" departLane="best" />
     <trip id="r1341" depart="3242.14" from="5477873690#0" to="6003175020" type="car" departLane="best" />
     <trip id="r1342" depart="3244.78" from="-4713915750" to="6003175020" type="car" departLane="best" />
-    <trip id="r1343" depart="3247.41" from="4953325810" to="5899587190#2" type="car" departLane="best" />
     <trip id="r1344" depart="3250.04" from="4953325810" to="4525977260#0" type="car" departLane="best" />
     <trip id="r1345" depart="3252.67" from="-4526039580#4" to="5747361220" type="car" departLane="best" />
     <trip id="r1346" depart="3255.30" from="4953325810" to="4878820020" type="car" departLane="best" />
@@ -1396,7 +1335,6 @@
     <trip id="r1393" depart="3378.96" from="5477873690#0" to="-5612296410" type="car" departLane="best" />
     <trip id="r1394" depart="3381.59" from="4416386060#0" to="15371153830#1" type="car" departLane="best" />
     <trip id="r1395" depart="3384.22" from="7755484380#0" to="4525977220#0" type="car" departLane="best" />
-    <trip id="r1396" depart="3386.86" from="383167710" to="-420073680#3" type="car" departLane="best" />
     <trip id="r1397" depart="3389.49" from="4686459320#4" to="4953325790" type="car" departLane="best" />
     <trip id="r1398" depart="3392.12" from="4741474310" to="4953325790" type="car" departLane="best" />
     <trip id="r1399" depart="3394.75" from="-5612296420" to="4953325790" type="car" departLane="best" />
@@ -1405,8 +1343,6 @@
     <trip id="r1402" depart="3402.65" from="5477873690#0" to="6003175020" type="car" departLane="best" />
     <trip id="r1403" depart="3405.28" from="-5612296410" to="4953325790" type="car" departLane="best" />
     <trip id="r1404" depart="3407.91" from="708509520#0" to="407917410#0" type="car" departLane="best" />
-    <trip id="r1405" depart="3410.54" from="4953325810" to="564336350#0" type="car" departLane="best" />
-    <trip id="r1406" depart="3413.18" from="586716220#1" to="4878820020" type="car" departLane="best" />
     <trip id="r1407" depart="3415.81" from="5685936680" to="-5899587190#0" type="car" departLane="best" />
     <trip id="r1408" depart="3418.44" from="5477873690#0" to="-4526039610#0" type="car" departLane="best" />
     <trip id="r1409" depart="3421.07" from="708509520#0" to="1024410190#2" type="car" departLane="best" />
@@ -1431,7 +1367,6 @@
     <trip id="r1428" depart="3471.08" from="6003175030" to="-4713681840#1" type="car" departLane="best" />
     <trip id="r1429" depart="3473.71" from="708509520#0" to="-4255616100#5" type="car" departLane="best" />
     <trip id="r1430" depart="3476.34" from="4953325810" to="15371153870" type="car" departLane="best" />
-    <trip id="r1431" depart="3478.98" from="4953325810" to="586716230#0" type="car" departLane="best" />
     <trip id="r1432" depart="3481.61" from="4953325810" to="-6003175180#0" type="car" departLane="best" />
     <trip id="r1433" depart="3484.24" from="4953325810" to="4878820020" type="car" departLane="best" />
     <trip id="r1434" depart="3486.87" from="-586716290#0" to="4868927720#0" type="car" departLane="best" />
@@ -1445,7 +1380,6 @@
     <trip id="r1442" depart="3507.93" from="4953325810" to="4878820020" type="car" departLane="best" />
     <trip id="r1443" depart="3510.56" from="5477873690#0" to="-5899587190#1" type="car" departLane="best" />
     <trip id="r1444" depart="3513.19" from="5477873690#0" to="1024410230" type="car" departLane="best" />
-    <trip id="r1445" depart="3515.82" from="4868927800" to="5039133870#9" type="car" departLane="best" />
     <trip id="r1446" depart="3518.46" from="708509520#0" to="4255616100#3" type="car" departLane="best" />
     <trip id="r1447" depart="3521.09" from="1024410280" to="4953325790" type="car" departLane="best" />
     <trip id="r1448" depart="3523.72" from="5477873690#0" to="-586716250#2" type="car" departLane="best" />
@@ -1453,7 +1387,6 @@
     <trip id="r1450" depart="3528.98" from="4953325810" to="6003175020" type="car" departLane="best" />
     <trip id="r1451" depart="3531.62" from="6003175030" to="4878820020" type="car" departLane="best" />
     <trip id="r1452" depart="3534.25" from="5477873690#0" to="700813240" type="car" departLane="best" />
-    <trip id="r1453" depart="3536.88" from="-9718133180" to="4878820020" type="car" departLane="best" />
     <trip id="r1454" depart="3539.51" from="4953325810" to="-4255616100#3" type="car" departLane="best" />
     <trip id="r1455" depart="3542.14" from="708509520#0" to="5552317800" type="car" departLane="best" />
     <trip id="r1456" depart="3544.78" from="4953325810" to="4878820020" type="car" departLane="best" />
@@ -1465,7 +1398,6 @@
     <trip id="r1462" depart="3560.57" from="7754668960" to="6003175020" type="car" departLane="best" />
     <trip id="r1463" depart="3563.20" from="5477873690#0" to="408392630#1" type="car" departLane="best" />
     <trip id="r1464" depart="3565.83" from="708509520#0" to="708509520#1" type="car" departLane="best" />
-    <trip id="r1465" depart="3568.46" from="4953325810" to="-7755484360" type="car" departLane="best" />
     <trip id="r1466" depart="3571.10" from="5477873690#0" to="4526039530#2" type="car" departLane="best" />
     <trip id="r1467" depart="3573.73" from="5477873690#0" to="586716280#2" type="car" departLane="best" />
     <trip id="r1468" depart="3576.36" from="5477873690#0" to="6003175020" type="car" departLane="best" />

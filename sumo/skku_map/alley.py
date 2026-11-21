@@ -26,7 +26,10 @@ LOOKAHEAD = 60.0      # 입구까지 이 거리 안의 차만 본다 (m)
 STOP_DECEL = 4.0      # 입구 앞에서 멈출 때 감속도 (m/s², 승용차 decel 4.5보다 조금 작게)
 STOP_MARGIN = 0.5     # 교차로 정지선 앞 여유 (m)
 RESERVE_S = 6.0       # 입구 도착 이만큼 전부터 통행권을 예약한다 (s)
-MAX_WAIT_S = 15.0     # 반대쪽이 이만큼 기다리면 통행권을 넘긴다 (s)
+HOLD_DECEL = 2.5      # 세울 때 쓰는 감속도 (m/s²)
+MAX_WAIT_S = 15.0
+GRANT_S = 8.0         # 출발 허가가 유효한 시간 (s)
+GRANT_MAX_S = 40.0    # 정지선 맨 앞에서 교차로 틈을 기다리는 차의 허가 유효 시간 (s)     # 반대쪽이 이만큼 기다리면 통행권을 넘긴다 (s)
 
 
 class AlleyGate:
@@ -36,6 +39,8 @@ class AlleyGate:
         self.held = set()
         self.owner = [None] * len(BLOCKS)     # 구간별 통행권 방향 (0 = AV 방향, 1 = 반대)
         self.wait_since = [None] * len(BLOCKS)  # 통행권 없는 쪽이 기다리기 시작한 시각
+        self.stopped = {}                       # 정식 정지(stop)로 세운 차 → (엣지, 위치, 차로)
+        self.granted = {}                       # 세웠다가 출발시킨 차 → 출발시킨 시각. GRANT_S초 동안 통행권을 요구하는 것으로 본다
 
     def _approaching(self, entry, horizon):
         """입구 엣지 entry로 곧 들어갈 차: (입구까지 거리, id). horizon=0이면 교차로 안(내부 차로)에 있는 차만."""
@@ -94,6 +99,7 @@ class AlleyGate:
         t = self.t
         now = t.simulation.getTime()
         want = {}
+        self._last_near = []
         for b, (fwd, rev) in enumerate(BLOCKS):
             yielding = self.owner[b] is not None and self.wait_since[b] is not None and now - self.wait_since[b] > MAX_WAIT_S
             near, committed, physical = [], [], []
@@ -104,6 +110,7 @@ class AlleyGate:
                 phys = [v for dist, v in cand if self._claims(dist, v, False)]
                 claim = [v for dist, v in cand if self._claims(dist, v, reserve)]
                 near.append(cand)
+                self._last_near += [(v, dist) for dist, v in cand if dist > 0.0]
                 physical.append(inside > 0 or bool(phys))
                 committed.append(inside > 0 or bool(claim))
             if committed[0] != committed[1]:
@@ -115,6 +122,9 @@ class AlleyGate:
                     new = min(eta)[1] if eta else None
                     if yielding and near[1 - self.owner[b]]:
                         new = 1 - self.owner[b]
+                # 넘길 쪽의 반대편에 이미 못 서는 차가 있으면 넘기지 않는다 (11/22 시드 1219: 넘기는 순간 경합으로 교착)
+                if new is not None and new != self.owner[b] and physical[1 - new]:
+                    new = self.owner[b]
             else:
                 new = self.owner[b]           # 양쪽 다 들어갔거나 못 섬(교착 또는 AV가 무시하고 들어옴): 그대로
             if new != self.owner[b]:
@@ -135,17 +145,62 @@ class AlleyGate:
                 for d, v in near[new]:
                     if v != self.ego_id and d > 0.0 and not self._claims(d, v, False):
                         want[v] = d
+        alive_near = {v for v, _ in self._last_near} if hasattr(self, "_last_near") else set()
+        # 구간에 들어갔거나 사라진 차, GRANT_S초가 지나도 못 들어간 차(11/22 시드 1202: 허가받은 버스가 서부로에서 다른 이유로 서 있어
+        # 반대편 3대가 50초 넘게 묶임)는 뺀다
+        # 단, 정지선 맨 앞(3 m 안)에서 교차로 틈을 기다리는 차는 GRANT_MAX_S까지 유지한다 (11/22 시드 1206: 서부로 우회전 틈을 기다리던
+        # 버스가 8초 만에 허가를 잃고 다시 세워지기를 반복해 200초 넘게 갇힘)
+        dist_now = dict(self._last_near) if hasattr(self, "_last_near") else {}
+        def keep(v, t0):
+            if v not in alive_near:
+                return False
+            at_line = dist_now.get(v, 99.0) < 3.0
+            return now - t0 < (GRANT_MAX_S if at_line else GRANT_S)
+        self.granted = {v: t0 for v, t0 in self.granted.items() if keep(v, t0)}
         for v in list(self.held):
             if v not in want:
                 if v in t.vehicle.getIDList():
                     t.vehicle.setSpeed(v, -1)
+                    self._unstop(v)
+                    if v in alive_near:        # 아직 정지선 앞: 출발 허가 (들어갈 때까지 통행권 요구. 느려서 요구 안 하는 것으로 세던 문제)
+                        self.granted[v] = now
                 self.held.discard(v)
         for v, d in want.items():
             spd, room = t.vehicle.getSpeed(v), d - STOP_MARGIN
             if v not in self.held and spd * spd / (2 * STOP_DECEL) > room + 1.0:
                 continue                       # 이미 못 서는 거리: 그대로 들어간다 (다음 스텝부터 그쪽이 통행권)
-            t.vehicle.setSpeed(v, math.sqrt(2 * STOP_DECEL * max(room, 0.0)) if room > 0.3 else 0.0)
+            # 세울 때는 HOLD_DECEL로 완만하게, 한 스텝 늦게 반영되는 것(0.5초)까지 빼고 계산 (11/22 시드 1219: 최대 감속에 딱 맞춘
+            # 곡선이라 정지선을 넘어 교차로로 들어가 교착)
+            room = room - spd * 0.5
+            t.vehicle.setSpeed(v, math.sqrt(2 * HOLD_DECEL * room) if room > 0.3 else 0.0)
             self.held.add(v)
+            # 교차로 바로 앞 엣지에 오면 정식 정지(stop)로 바꾼다. setSpeed로 세운 차는 SUMO가 '교차로로 다가오는 차'로 계속 보아서,
+            # 골목에서 나가는 차가 우선도로에 세워 둔 그 차에 양보하며 서로 기다렸다 (11/22 시드 1222: 율전로 495951808, 300초).
+            # 정지가 있으면 그 앞까지만 보고 교차로 진입을 요청하지 않는다. userdoc/TraCI/Change_Vehicle_State.html stop·resume
+            if v not in self.stopped:
+                lane = t.vehicle.getLaneID(v)
+                if not lane.startswith(":"):
+                    length = t.lane.getLength(lane)
+                    if abs(length - t.vehicle.getLanePosition(v) - d) < 1.0:
+                        edge, idx, pos = t.vehicle.getRoadID(v), t.vehicle.getLaneIndex(v), max(length - STOP_MARGIN, 0.1)
+                        try:
+                            t.vehicle.setStop(v, edge, pos=pos, laneIndex=idx, duration=86400.0)
+                            self.stopped[v] = (edge, pos, idx)
+                        except t.exceptions.TraCIException if hasattr(t, "exceptions") else Exception:
+                            pass
+
+    def _unstop(self, v):
+        st = self.stopped.pop(v, None)
+        if st is None:
+            return
+        t = self.t
+        try:
+            if t.vehicle.isStopped(v):
+                t.vehicle.resume(v)
+            else:
+                t.vehicle.setStop(v, st[0], pos=st[1], laneIndex=st[2], duration=0.0)   # 아직 안 섰으면 정지 취소
+        except Exception:
+            pass
 
     def oncoming(self, ego):
         """AV가 골목 구간 입구에 다가가는 중(구간 밖)이면 (입구 정지선까지 거리, [(반대 방향 차, 그 차가 내 입구까지 남은 거리)]).
@@ -173,7 +228,7 @@ class AlleyGate:
         RESERVE_S 예약 이유: '못 서는 차'만 보면 양쪽 차가 거의 같은 때 각자 교차로에 들어가 둘 다 못 서서 교착."""
         if v in self.held:
             return False
-        if dist <= 0.0:
+        if dist <= 0.0 or v in self.granted:
             return True
         spd = self.t.vehicle.getSpeed(v)
         if spd < 0.5:
