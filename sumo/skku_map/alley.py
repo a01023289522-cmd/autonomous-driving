@@ -69,7 +69,7 @@ class AlleyGate:
         """입구 엣지마다 (1) 그 앞 교차로 내부 차로, (2) 입구까지 LOOKAHEAD 안의 위쪽 엣지(내부 차로 포함)를 미리 찾아 둔다.
         11/21: 서부로 쪽 입구 앞 엣지가 12 m뿐이라 바로 앞 엣지만 보면 서부로 차를 너무 늦게 봐서 '못 서는 거리'로 들여보냈다."""
         t = self.t
-        self._junction, self._upstream = {}, {}
+        self._junction, self._upstream, self._exit_lanes = {}, {}, {}
         internal = [e for e in t.edge.getIDList() if e.startswith(":")]
         def node_internal(node):
             return {e for e in internal if e.rsplit("_", 1)[0] == f":{node}"}
@@ -77,6 +77,9 @@ class AlleyGate:
             for entry in (fwd[0], rev[0]):
                 node = t.edge.getFromJunction(entry)
                 self._junction[entry] = sorted(node_internal(node))
+                # 구간 끝 교차로(나가는 쪽)의 내부 차로: 구간을 막 빠져나와 아직 교차로 안에 있는 차도 구간 안으로 센다
+                last = fwd[-1] if entry == fwd[0] else rev[-1]
+                self._exit_lanes[last] = sorted(node_internal(t.edge.getToJunction(last)))
                 seen, frontier = set(self._junction[entry]), [(node, 0.0)]
                 while frontier:
                     n, dist = frontier.pop()
@@ -108,6 +111,13 @@ class AlleyGate:
             near, committed, physical = [], [], []
             for k, d in enumerate((fwd, rev)):
                 inside = sum(len(t.edge.getLastStepVehicleIDs(e)) for e in d)
+                # 구간을 막 빠져나와 끝 교차로 안에 있는 차 (11/22 시드 1076·1018: AV가 구간을 나와 오거리 안에 있을 때 반대 방향 차가
+                # 그 구간으로 들어가며 오거리 안에서 정면충돌. bidi 구간 끝 교차로의 내부 차로도 두 방향이 겹친다)
+                for lane_e in self._exit_lanes.get(d[-1], ()):
+                    for x in t.edge.getLastStepVehicleIDs(lane_e):
+                        r_, i_ = t.vehicle.getRoute(x), t.vehicle.getRouteIndex(x)
+                        if 0 <= i_ < len(r_) and r_[i_] == d[-1]:
+                            inside += 1
                 cand = sorted(self._approaching(d[0], LOOKAHEAD))
                 reserve = not (yielding and k == self.owner[b])
                 phys = [v for dist, v in cand if self._claims(dist, v, False)]
