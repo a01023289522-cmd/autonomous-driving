@@ -57,7 +57,8 @@ class SkkuEnv(SumoHighwayEnv):
         if self.v1:
             self.near_obs = bool(scenario.get("obs_near", False))
             self.tls_foe_fix = bool(scenario.get("obs_tls_foe", False))
-            self.obs_dim += self.V1_DIM + (3 if self.turn_obs else 0) + (2 if self.near_obs else 0)
+            self.line_obs = bool(scenario.get("obs_line_near", False))
+            self.obs_dim += self.V1_DIM + (3 if self.turn_obs else 0) + (2 if self.near_obs else 0) + (2 if self.line_obs else 0)
             self.observation_space = gym.spaces.Box(-1.0, 1.0, shape=(self.obs_dim,), dtype=np.float32)
         self.edges = route_edges(scenario["start_edge"], scenario["goal_edge"])
         self.warmup_seconds = float(scenario["warmup_seconds"])
@@ -395,6 +396,16 @@ class SkkuEnv(SumoHighwayEnv):
                 v, vl = traci.vehicle.getSpeed(e), traci.vehicle.getSpeed(lead[0])
                 req = (v * v - vl * vl) / (2 * max(g - 2.0, 0.2)) / 4.5 if v > vl else 0.0
                 f += [min(max(1 - g / 10.0, 0.0), 1.0), min(max(req, 0.0), 1.0)]
+            else:
+                f += [0.0, 0.0]
+        if self.line_obs:
+            # obs_line_near (11/23): 빨간불·노란불 정지선 근거리 2개. 정지선 거리 입력은 거리/100이라 1 m와 5 m가 0.01·0.05 —
+            # 서 있을 때 정지선 1 m든 30 m든 가속 명령이 거의 같았다(측정). 앞차 obs_near와 같은 형태
+            #  [1] 근접도 = clip(1 − 거리/10 m), [2] 정지선 1 m 앞에 서는 데 필요한 감속 = v²/(2·max(거리 − 1, 0.2))/4.5, 0~1
+            t = traci.vehicle.getNextTLS(e)
+            if t and t[0][3] in "rRuyY" and t[0][2] <= 100:
+                d, v = t[0][2], traci.vehicle.getSpeed(e)
+                f += [min(max(1 - d / 10.0, 0.0), 1.0), min(v * v / (2 * max(d - 1.0, 0.2)) / 4.5, 1.0)]
             else:
                 f += [0.0, 0.0]
         return f
