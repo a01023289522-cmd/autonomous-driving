@@ -58,6 +58,7 @@ class SkkuEnv(SumoHighwayEnv):
             self.near_obs = bool(scenario.get("obs_near", False))
             self.tls_foe_fix = bool(scenario.get("obs_tls_foe", False))
             self.line_obs = bool(scenario.get("obs_line_near", False))
+            self.red_wall = bool(scenario.get("obs_red_wall", False))
             self.obs_dim += self.V1_DIM + (3 if self.turn_obs else 0) + (2 if self.near_obs else 0) + (2 if self.line_obs else 0)
             self.observation_space = gym.spaces.Box(-1.0, 1.0, shape=(self.obs_dim,), dtype=np.float32)
         self.edges = route_edges(scenario["start_edge"], scenario["goal_edge"])
@@ -418,7 +419,35 @@ class SkkuEnv(SumoHighwayEnv):
             return np.zeros(self.obs_dim, dtype=np.float32)
         if self.close_fix:
             base = self._close_fix(base)
-        return np.clip(np.concatenate([base, np.array(self._v1_obs(), dtype=np.float32)]), -1.0, 1.0)
+        out = np.clip(np.concatenate([base, np.array(self._v1_obs(), dtype=np.float32)]), -1.0, 1.0)
+        if self.red_wall:
+            out = self._red_wall(out)
+        return out
+
+    def _red_wall(self, out):
+        """obs_red_wall (11/23): 빨간불(노란불은 편하게 설 수 있을 때) 정지선을 '정지선에 서 있는 가상의 차'로 앞차 칸에 보여 준다.
+        실제 자율주행 계획기도 빨간불이면 정지선 앞에 정지 지점(가상 벽)을 둔다 (Autoware behavior_velocity traffic_light module).
+        11/23 측정: r_h4가 일월로 진입 빨간불 19번 중 16번 진입. 앞이 비었거나 신호 건너편 차만 달리면 정지선 24 m 앞에서도 가속 −0.08~+0.37,
+        같은 관측에 '정지선에 선 차'를 넣으면 −0.22~−0.75로 섰다 (서 있는 차 앞에서는 서는데 빨간불 표시만으로는 안 섬).
+        멈출지는 정책이 정한다 (관측만 바꿈)"""
+        e = self.ego_id
+        t = traci.vehicle.getNextTLS(e)
+        if not t or t[0][2] > self.visibility:
+            return out
+        d, st, v = t[0][2], t[0][3], traci.vehicle.getSpeed(e)
+        if not (st in "rRu" or (st in "yY" and v * v / (2 * max(d - 1.0, 0.2)) < 3.0)):
+            return out
+        lead = traci.vehicle.getLeader(e, self.visibility)
+        g_lead = lead[1] + traci.vehicle.getMinGap(e) if lead and lead[0] else None
+        if g_lead is not None and g_lead <= d:
+            return out                                   # 실제 앞차가 정지선보다 가깝다
+        i = 1 + 4 * self.obs_offsets.index(0)            # 지금 차로 앞차 칸 [거리/가시거리, 상대속도]
+        out[i], out[i + 1] = min(d / self.visibility, 1.0), max(-v / self.vmax, -1.0)
+        if self.near_obs:
+            k = 31 + self.V1_DIM + (3 if self.turn_obs else 0)
+            out[k] = min(max(1 - d / 10.0, 0.0), 1.0)
+            out[k + 1] = min(v * v / (2 * max(d - 2.0, 0.2)) / 4.5, 1.0)
+        return out
 
     def _inside_foes(self, e, lane_id):
         """obs_inside_fix: 양보해야 하는 연결로 교차로에 들어온 뒤, 그 교차로 안에서 교차하는 차를 관측에 넣는다.
