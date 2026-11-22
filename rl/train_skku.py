@@ -29,7 +29,7 @@ def main():
     ap.add_argument("--lr-end", type=float, help="학습률을 이 값까지 선형으로 낮춘다 (수업 PPO에는 스케줄이 없어 업데이트마다 optimizer에 넣는다)")
     ap.add_argument("--no-train-eval", action="store_true",
                     help="학습 중 3 에피소드 평가를 끈다 (판단에 쓰기엔 적고 시뮬레이션 시간의 약 15%%를 쓴다)")
-    ap.add_argument("--log-std", type=float, help="이어서 학습할 때 가감속 탐험 폭 log σ를 이 값으로 다시 연다 (11/23: 학습된 모델 −1.24, σ 0.29라 "서 있다가 조금 앞으로"를 거의 시도하지 않음)")
+    ap.add_argument("--log-std", type=float, help="이어서 학습할 때 가감속 탐험 폭 log σ를 이 값으로 다시 연다 (11/23: 학습된 모델 −1.24, σ 0.29라 서 있다가 조금 앞으로 가기를 거의 시도하지 않음)")
     ap.add_argument("--new-cols", type=int, default=0,
                     help="관측 뒤 n개(새로 붙인 입력)의 첫 층 가중치와 가치 머리만 학습하고 나머지는 고정 (팀원 local_b 방식: 기존 운전은 그대로, 새 입력 쓰는 법만)")
     a = ap.parse_args()
