@@ -498,7 +498,9 @@ class SkkuEnv(SumoHighwayEnv):
         gap, s_star, vo, kind = best
         if gap < s_star:
             return float(self.rw.get("tg_close", 0.1)) * min((s_star - gap) / max(s_star, 1.0), 1.0), gap, kind
-        if vo < 0.5:
+        # 멀리 섬: 내가 거의 서 있을 때만 (tg_far_speed 미만). 11/22 r_tg3: 속도 조건이 없어 빨간불·서 있는 앞차를 향해 정상 속도로
+        # 다가가는 중에도 감점이 붙어(범위 100 m면 거의 내내) 급하게 달려들다 추돌 — 시드 200개 충돌 5 → 58
+        if vo < 0.5 and v < float(self.rw.get("tg_far_speed", 99.0)):
             return float(self.rw.get("tg_far", 0.05)) * min((gap - s_star) / 30.0, 1.0), gap, kind
         return 0.0, gap, kind
 
