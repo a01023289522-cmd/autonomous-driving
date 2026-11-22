@@ -485,8 +485,14 @@ class SkkuEnv(SumoHighwayEnv):
             return 0.0, None, ""
         T = float(self.rw.get("tg_headway", 1.2))
         best = None
+        bs = float(self.rw.get("tg_static_decel", 0.0))
         for gap, vo, s0, kind in cands:
-            s_star = s0 + v * T + v * max(v - vo, 0.0) / (2 * 1.73)
+            if bs > 0 and vo < 0.5:
+                # 서 있는 대상(정지선·서 있는 앞차): 편안한 제동 거리 v²/(2·bs)만. 11/22 r_tg 30만: 움직이는 앞차용 식(1.2 s·v + IDM 항)을
+                # 정지선에도 써서 시속 29 km면 목표 29 m → 정지선 29 m 안이 '가까움' 감점, 정지선까지 중앙 8.1 → 31.3 m로 더 멀리 섰다
+                s_star = s0 + v * v / (2 * bs)
+            else:
+                s_star = s0 + v * T + v * max(v - vo, 0.0) / (2 * 1.73)
             if best is None or gap - s_star < best[0] - best[1]:
                 best = (gap, s_star, vo, kind)
         gap, s_star, vo, kind = best
