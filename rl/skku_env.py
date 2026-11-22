@@ -553,7 +553,11 @@ class SkkuEnv(SumoHighwayEnv):
                 best = (gap, s_star, vo, kind)
         gap, s_star, vo, kind = best
         if gap < s_star:
-            wc = float(self.rw.get("tg_close_line", self.rw.get("tg_close", 0.1))) if kind == "red" else float(self.rw.get("tg_close", 0.1))
+            wc = float(self.rw.get("tg_close", 0.1))
+            if kind == "red":
+                wc = float(self.rw.get("tg_close_line", wc))
+            elif kind == "car" and vo < 0.5:   # 서 있는 앞차 (11/23 r_h5 시험: 사거리 진입로 대기열에서 0.3 m/s로 추돌, 0.5 m에서도 감점 −0.15뿐)
+                wc = float(self.rw.get("tg_close_stop", wc))
             # tg_close_line (11/23): 빨간불 정지선에 너무 빠르게 다가가면 더 크게. r_h2 10만 시드 1022: 정지선 2 m 앞 3.2 m/s에 감점 −0.04뿐 → 빨간불 진입
             return wc * min((s_star - gap) / max(s_star, 1.0), 1.0), gap, kind
         # 멀리 섬: 내가 거의 서 있을 때만 (tg_far_speed 미만). 11/22 r_tg3: 속도 조건이 없어 빨간불·서 있는 앞차를 향해 정상 속도로
