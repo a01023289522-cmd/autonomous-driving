@@ -530,7 +530,12 @@ class SkkuEnv(SumoHighwayEnv):
         # 멀리 섬: 내가 거의 서 있을 때만 (tg_far_speed 미만). 11/22 r_tg3: 속도 조건이 없어 빨간불·서 있는 앞차를 향해 정상 속도로
         # 다가가는 중에도 감점이 붙어(범위 100 m면 거의 내내) 급하게 달려들다 추돌 — 시드 200개 충돌 5 → 58
         if vo < 0.5 and v < float(self.rw.get("tg_far_speed", 99.0)):
-            return float(self.rw.get("tg_far", 0.05)) * min((gap - s_star) / float(self.rw.get("tg_far_scale", 30.0)), 1.0), gap, kind
+            # tg_band (11/23): 목표 + 이 거리 안에 서 있으면 감점 0 (정지선 1~3 m·앞차 2~3.5 m = 바르게 선 것).
+            #   r_h3: 정지선 3.7 m에 바르게 서 있어도 스텝당 −0.03 → 빨간불 98초 대기 합 −5.5 > 빨간불 진입 −5 → 진입을 배움
+            band = float(self.rw.get("tg_band_line", 0.0)) if kind in ("red", "yield", "box") else float(self.rw.get("tg_band_car", 0.0))
+            if gap - s_star <= band:
+                return 0.0, gap, kind
+            return float(self.rw.get("tg_far", 0.05)) * min((gap - s_star - band) / float(self.rw.get("tg_far_scale", 30.0)), 1.0), gap, kind
         return 0.0, gap, kind
 
     def _yield_risk(self):
