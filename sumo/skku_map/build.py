@@ -126,11 +126,14 @@ class Patch:
 
 
 def patch_signals(net, pt):
-    # 신호 교차로 (사거리 + 고가 밑 갈림목 G1·G2·G3 + 서부로×일월로 + 서부로×하률로: 기존 모델과 동일)
+    # 신호 교차로 (사거리 + 고가 밑 갈림목 G3 + 서부로×일월로 + 서부로×하률로: 기존 모델과 동일)
     #   + 일월로×학교 정문 (125, -1100): 실제 도로에 좌회전 신호 있음 (2026-11-17 거리뷰 확인, 사용자 지적)
+    #   G1·G2는 신호 없음 (11/22 거리뷰, 사용자 지적: 고가 옆으로 빠지는 길에 신호등·정지선 없음) → 우선 도로 교차로
     sg = junction_near(net, SAGEORI)
-    for p in (*GAPS.values(), (-250, -1080), (24, 273), (125, -1100)):
+    for p in (GAPS["G3"], (-250, -1080), (24, 273), (125, -1100)):
         pt.nod.append(f'<node id="{junction_near(net, p).getID()}" type="traffic_light"/>')
+    for g in ("G1", "G2"):
+        pt.nod.append(f'<node id="{junction_near(net, GAPS[g]).getID()}" type="priority"/>')
     pt.nod.append(f'<node id="{sg.getID()}" shape="{fmt(square_shape(sg))}"/>')
     return sg.getID()
 
@@ -285,6 +288,13 @@ def turn_rules(net):
                 if ((i.getID(), o.getID()) not in allowed and not o.getID().endswith("_in")
                         and (hairpin(i, o) or any(c.getDirection() == "t" for c in i.getConnections(o)))):
                     con.append(f'<delete from="{i.getID()}" to="{o.getID()}"/>')
+    # G2(서부로2123번길 갈림목): 신호를 뺀 뒤(11/22) netconvert가 차로 배정을 다시 하면서 남행 2차로에 유턴만 남겨
+    #   (위에서 지워져) 2차로가 막다른 차로가 됐다 → 신호 있을 때와 같은 차로별 연결을 그대로 지정
+    for frm, rows in (("7754668930", ((0, "4526039540#0", 0), (0, "7755484390_a", 0), (1, "15371153830#0", 0), (1, "7755484390_a", 1))),
+                      ("15371153860", ((0, "15371153830#0", 0), (0, "7754668940#0_a", 0), (1, "4526039540#0", 0),
+                                       (1, "7754668940#0_a", 1), (1, "7754668940#0_a", 2), (1, "7755484390_a", 1)))):
+        con.append(f'<connection from="{frm}" reset="true"/>')
+        con += [f'<connection from="{frm}" to="{t}" fromLane="{a}" toLane="{b}"/>' for a, t, b in rows]
     # 공영주차장2 출구: 좌회전(북쪽 방향) 금지 (로드뷰: "좌회전 금지 · 주차장 출구전용" 표지). 지금은 남행 도로에 합류만 해서
     #   갈 곳이 하나뿐이지만, 출구가 교차로로 바뀌어도 지켜지게 둔다
     outs = net.getEdge("P2_out").getOutgoing()
