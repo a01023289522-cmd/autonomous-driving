@@ -542,7 +542,11 @@ class SkkuEnv(SumoHighwayEnv):
         links = traci.vehicle.getNextLinks(e)
         if lane.startswith(":") or not links or links[0][5] not in "mswg=":
             return None
-        ttc = [max(x[2], 0.0) / max(traci.vehicle.getSpeed(x[0]), 0.1)
+        # yield_near_m (11/23): 우선 차량이 충돌 지점·정지선 이 거리 안에 있으면 서 있어도 위험(0초)으로 본다. 서 있는 차는 TTC가
+        #   무한대라 코앞(2.6 m)에 있어도 위반이 아니었고, AV가 들어간 순간 출발해 충돌 (495951808 좌회전, 시드 1031·1149)
+        near = float(self.rw.get("yield_near_m", 0.0))
+        tt = lambda d, v: 0.0 if d < near else max(d, 0.0) / max(v, 0.1)
+        ttc = [tt(x[2], traci.vehicle.getSpeed(x[0]))
                for x in traci.vehicle.getJunctionFoes(e, self.FOE_RANGE) if x[7] and x[4] > 0]
         if self.foe_lanes:   # 관측 보완과 같은 차량 목록: getJunctionFoes가 빠뜨리는 우선도로 접근 차량 (11/18 seed 1024: TTC 99 → 0.4초)
             try:
@@ -551,7 +555,7 @@ class SkkuEnv(SumoHighwayEnv):
                     for v in traci.lane.getLastStepVehicleIDs(fl):
                         d = length - traci.vehicle.getLanePosition(v)
                         if d <= self.FOE_RANGE:
-                            ttc.append(d / max(traci.vehicle.getSpeed(v), 0.1))
+                            ttc.append(tt(d, traci.vehicle.getSpeed(v)))
             except traci.TraCIException:
                 pass
         return lane, min(ttc, default=float("inf"))
