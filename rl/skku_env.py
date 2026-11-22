@@ -460,6 +460,42 @@ class SkkuEnv(SumoHighwayEnv):
 
     YIELD_TTC = 3.0
 
+    def _target_gap_penalty(self, tls_after):
+        """목표 간격 감점: (감점, 간격 m, 대상 종류). 대상이 없으면 (0, None, "")."""
+        e = self.ego_id
+        v = traci.vehicle.getSpeed(e)
+        rng = float(self.rw.get("tg_range", 50.0))
+        cands = []                                   # (간격 m, 대상 속도, 정지 여유 s0, 종류)
+        lead = traci.vehicle.getLeader(e, rng)
+        if lead and lead[0] and lead[1] + traci.vehicle.getMinGap(e) < rng:
+            cands.append((lead[1] + traci.vehicle.getMinGap(e), traci.vehicle.getSpeed(lead[0]), float(self.rw.get("tg_s0_car", 2.0)), "car"))
+        if tls_after and tls_after[3] in "rRu" and tls_after[2] < rng:
+            cands.append((tls_after[2], 0.0, float(self.rw.get("tg_s0_line", 1.0)), "red"))
+        lane = traci.vehicle.getLaneID(e)
+        if not lane.startswith(":"):
+            to_line = traci.lane.getLength(lane) - traci.vehicle.getLanePosition(e)
+            yr = self._yield_risk()
+            if yr and yr[1] < float(self.rw.get("tg_yield_ttc", 4.0)) and to_line < rng:
+                cands.append((to_line, 0.0, float(self.rw.get("tg_s0_line", 1.0)), "yield"))
+            if self._gate is not None:
+                onc = self._gate.oncoming(e)
+                if onc and onc[1] and onc[0] < rng:
+                    cands.append((onc[0], 0.0, float(self.rw.get("tg_s0_line", 1.0)), "alley"))
+        if not cands:
+            return 0.0, None, ""
+        T = float(self.rw.get("tg_headway", 1.2))
+        best = None
+        for gap, vo, s0, kind in cands:
+            s_star = s0 + v * T + v * max(v - vo, 0.0) / (2 * 1.73)
+            if best is None or gap - s_star < best[0] - best[1]:
+                best = (gap, s_star, vo, kind)
+        gap, s_star, vo, kind = best
+        if gap < s_star:
+            return float(self.rw.get("tg_close", 0.1)) * min((s_star - gap) / max(s_star, 1.0), 1.0), gap, kind
+        if vo < 0.5:
+            return float(self.rw.get("tg_far", 0.05)) * min((gap - s_star) / 30.0, 1.0), gap, kind
+        return 0.0, gap, kind
+
     def _yield_risk(self):
         """양보해야 하는 연결 앞이면 (지금 차로, 우선 차량이 충돌 지점에 오기까지 가장 짧은 시간 s), 아니면 None.
         우선 차량 = getJunctionFoes 중 egoResponse(내가 양보)이고 아직 충돌 지점을 빠져나가지 않은 차 (foeExitDist > 0).
@@ -590,12 +626,24 @@ class SkkuEnv(SumoHighwayEnv):
                 stopped_ok = v < 0.5 and not (self.rw.get("queue_strict", False) and v >= 0.1 and g < 1.5)
                 if g < float(self.rw["close_gap_threshold"]) and (stopped_ok or creep):
                     reward += float(self.rw["close_gap_penalty"])
+        # 목표 간격 (target_gap, 11/22): 상황별 땜질 항 대신 하나의 기준. AV 앞의 '멈춰야 할 대상' 중 가장 가까운 것 —
+        # 앞차(골목 마주 오는 차 포함), 빨간불 정지선, 양보할 차가 곧 오는 교차로 입구, 반대 방향 차가 있는 골목 입구 — 까지의 간격을
+        # 목표 간격 s* = s0 + v·T + v·(v − v대상)/(2√(ab)) (IDM 형태)와 비교한다. 가까우면(넘으면) tg_close 비례 감점, 서 있는 대상보다
+        # 멀리 있으면 tg_far 비례 감점 (멀리 서기·찔끔 진입 둘 다). 앞이 비면 0 → 속도 보상만 남아 빈 교차로는 제 속도로.
+        # docs/lessons.md 문제 1·2, 11/22 사용자 지적(신호 앞 멀리 정차, 빈 교차로 느림, 교차로 찔끔 진입 충돌)
+        info["tg_gap"], info["tg_kind"] = None, ""
+        self._tg_obstacle = False
+        if self.rw.get("target_gap", False) and not terminated and self.ego_id in traci.vehicle.getIDList():
+            pen, gap, kind = self._target_gap_penalty(after)
+            reward -= pen
+            info["tg_gap"], info["tg_kind"], info["tg_pen"] = gap, kind, pen
+            self._tg_obstacle = kind != ""
         # 정차 감점: 거의 서 있는데 앞이 비어 있으면 감점 (갈 수 있는데 안 가는 것).
         # 앞 = 같은 차로 앞차, 빨강·노랑 신호의 정지선 중 가까운 것. 양보할 교차 차량이 있으면 기다리는 게 맞으므로 감점 없음.
         # 막힘 감점(수업 코드)은 앞차 20 m 안에서만 붙어서 멀리 떨어져 서 있으면 피할 수 있었다 (11/18 정차 분석)
         idle = float(self.rw.get("idle_penalty", 0.0))
         info["idle"] = False
-        if idle > 0 and info["speed"] is not None and self.ego_id in traci.vehicle.getIDList():
+        if idle > 0 and info["speed"] is not None and self.ego_id in traci.vehicle.getIDList() and not self._tg_obstacle:
             e = self.ego_id
             lim = traci.lane.getMaxSpeed(traci.vehicle.getLaneID(e))
             if info["speed"] < self.rw.get("idle_speed_frac", 0.3) * lim:
