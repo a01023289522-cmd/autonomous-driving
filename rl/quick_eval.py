@@ -64,6 +64,7 @@ def worker(model, cfgname, seeds, out):
                 e = env.ego_id
                 risk = entry_risk(traci, e) if e in traci.vehicle.getIDList() else None
                 obs, r, te, tr, info = env.step(ag.predict(obs, deterministic=True))
+                ep["red"] = ep.get("red", 0) + int(bool(info.get("red_light")) and not info.get("collided"))
                 ep["steps"] += 1
                 if e in traci.vehicle.getIDList():
                     v, lane = traci.vehicle.getSpeed(e), traci.vehicle.getLaneID(e)
@@ -127,8 +128,11 @@ def main():
     if a.worker:
         worker(a.models[0], a.config[0], list(map(int, a.worker[0].split(","))), a.worker[2])
         return
-    lo, hi = map(int, a.seeds.split("-"))
-    seeds = list(range(lo, hi + 1))
+    if "," in a.seeds:                       # 실패 시드 목록 (11/22: 이전 모델 실패 시드부터 먼저 확인)
+        seeds = [int(x) for x in a.seeds.split(",")]
+    else:
+        lo, hi = map(int, a.seeds.split("-"))
+        seeds = list(range(lo, hi + 1))
     cfgs = a.config if len(a.config) == len(a.models) else a.config * len(a.models)
     tmp = tempfile.mkdtemp(prefix="quick_eval_")
     jobs = []
@@ -148,6 +152,8 @@ def main():
             continue
         for k, v in summarize(eps).items():
             print(f"  {k}: {v}")
+        print("  빨간불 진입:", sum(e.get("red", 0) for e in eps), [e["seed"] for e in eps if e.get("red")])
+        print("  실패 시드:", sorted((e["seed"], e["result"], e["edge"]) for e in eps if e["result"] != "도착"))
 
 
 if __name__ == "__main__":

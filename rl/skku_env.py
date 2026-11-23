@@ -13,6 +13,7 @@ import json
 import os
 import random
 import subprocess
+import sys
 
 import course
 from env import sumo_env
@@ -50,13 +51,32 @@ class SkkuEnv(SumoHighwayEnv):
         self.close_fix = bool(scenario.get("obs_close_fix", False))
         self.close_signed = bool(scenario.get("obs_close_signed", False))
         self.inside_fix = bool(scenario.get("obs_inside_fix", False))
+        self.first_foe = bool(scenario.get("obs_first_foe", False))
         self._prev_lane, self._entry_yield = "", 0.0
+        self._no_turn_done = set()
         self.turn_obs = bool(scenario.get("obs_turn", False))
         if self.v1:
-            self.obs_dim += self.V1_DIM + (3 if self.turn_obs else 0)
+            self.near_obs = bool(scenario.get("obs_near", False))
+            self.tls_foe_fix = bool(scenario.get("obs_tls_foe", False))
+            self.line_obs = bool(scenario.get("obs_line_near", False))
+            self.red_wall = bool(scenario.get("obs_red_wall", False))
+            # obs_tls_left_fixed (11/23): [34] 남은 시간 칸을 1.0(신호 없음과 같은 값)으로 고정. 빨강·노랑 표시는 그대로.
+            #   r_h7 10만 시드 1164: 초록 남은 시간 30→5.5초가 되는 순간 23 m 앞 서 있는 버스를 두고 가속(+0.38), 이 칸만 되돌리면 −0.12
+            self.tls_left_fixed = bool(scenario.get("obs_tls_left_fixed", False))
+            self.near_ref_m = float(scenario.get("near_ref_m", 2.0))
+            # obs_merge_lead (11/23): 교차로 안에서 같은 출구로 합류하는 내부 차로의 차를 앞차로 본다(더 가까우면). 관측(앞차 칸·근거리 칸)과
+            #   목표 간격 보상이 같은 차를 쓴다(_lead). r_h11 시드 2021·2355·2360 495951447: getLeader가 합류 차 r326을 놓치고 더 먼 차로 바뀌는
+            #   순간 출발(+0.66~+0.92), 이후 먼 앞차 '멀리' 감점에 찔끔 전진 → 충돌. 출구 :495951447_1 / _4 → 5552317710#2_0
+            self.merge_lead = bool(scenario.get("obs_merge_lead", False))
+            self.jblocker = scenario.get("ignore_junction_blocker", None)
+            self.tls_random = bool(scenario.get("tls_random_offset", False))
+            self.obs_dim += self.V1_DIM + (3 if self.turn_obs else 0) + (2 if self.near_obs else 0) + (2 if self.line_obs else 0)
             self.observation_space = gym.spaces.Box(-1.0, 1.0, shape=(self.obs_dim,), dtype=np.float32)
         self.edges = route_edges(scenario["start_edge"], scenario["goal_edge"])
         self.warmup_seconds = float(scenario["warmup_seconds"])
+        self.drop_broken = bool(scenario.get("drop_broken_flows", True))   # 끊긴 경로로 들어오는 흐름 차량 지움 (_drop_broken_departures)
+        self.hv_no_turn = bool(scenario.get("hv_no_turn", True))   # 골목 합류 차 사거리 좌회전 금지 → 직진으로 경로 변경 (_hv_no_turn)
+        self._no_turn_done = set()
         self.traffic_scale = float(scenario.get("traffic_scale", 1.0))   # 배경 교통량 배율 (난이도). sumo --scale
         self.extra_routes = list(scenario.get("extra_routes", []))         # 추가 교통 파일 (sumo/skku_map/scenarios.py)
         # 난이도 섞기: [{"traffic_scale": 1.4}, {"extra_routes": [...]} ...]. 시드마다 하나를 고정으로 고른다 (seed % 개수).
@@ -71,6 +91,10 @@ class SkkuEnv(SumoHighwayEnv):
         # 섞기 두 가지 모두 학습 시드(train_seeds)에만 적용한다. 평가 시드는 항상 기본 출발·기본 교통
         self.start_mix = list(scenario.get("start_mix", []))
         self.start_delay_max = float(scenario.get("start_delay_max", 0.0))
+        # alley_gate: 한 대 폭 골목(bidi)에서 일반 차량은 반대 방향 차가 있으면 입구에서 기다린다 (sumo/skku_map/alley.py).
+        # AV에는 적용하지 않는다 (양보는 학습). 워밍업 상태 파일도 이 규칙으로 만든다 (파일 이름 끝 _ag)
+        self.alley_gate = bool(scenario.get("alley_gate", False))
+        self._gate = None
         self.mid_depart_speed = str(scenario.get("mid_depart_speed", "max"))
         self._full_edges = list(self.edges)
         self._train_seeds = set(scenario.get("train_seeds", []))
@@ -80,9 +104,31 @@ class SkkuEnv(SumoHighwayEnv):
         """이 목록의 시드를 처음부터 차례로 쓴다. 평가 전에 eval_seeds로 바꾼다."""
         self.seeds, self._next = list(seeds), 0
 
+    def _shift_signals(self, seed):
+        """tls_random_offset (11/23 사용자): 신호마다 주기 안 위치를 시드별로 무작위로 옮긴다. 신호 프로그램은 모두 고정 주기·offset 0이고
+        AV는 늘 같은 시각(warmup_seconds)에 들어가서, 시드가 바뀌어도 AV 출발 순간 모든 신호 단계가 같았다(교통만 달라짐).
+        각 신호: 지금 주기 위치 + 무작위 r(0~주기) 위치의 단계로 바꾸고 그 단계 남은 시간을 맞춘다 (trafficlight.setPhase·setPhaseDuration,
+        userdoc/TraCI/Change_Traffic_Lights_State.html). 이후 단계는 원래 프로그램대로. 시드가 같으면 늘 같은 결과."""
+        rnd = random.Random(f"tls{seed}")
+        t = traci.simulation.getTime()
+        for tid in sorted(traci.trafficlight.getIDList()):
+            logic = traci.trafficlight.getAllProgramLogics(tid)[0]
+            durs = [ph.duration for ph in logic.phases]
+            cyc = sum(durs)
+            if cyc <= 0:
+                continue
+            pos = (t + rnd.uniform(0.0, cyc)) % cyc
+            for i, d in enumerate(durs):
+                if pos < d:
+                    traci.trafficlight.setPhase(tid, i)
+                    traci.trafficlight.setPhaseDuration(tid, d - pos)
+                    break
+                pos -= d
+
     def _state_file(self, seed):
         return os.path.join(STATES, f"s{seed}_w{self.warmup_seconds:.0f}_dt{self.step_length}_x{self.traffic_scale:g}"
-                            + "".join(f"_{os.path.splitext(os.path.splitext(f)[0])[0]}" for f in self.extra_routes) + "_rng.xml.gz")
+                            + "".join(f"_{os.path.splitext(os.path.splitext(f)[0])[0]}" for f in self.extra_routes)
+                            + ("_ag" if self.alley_gate else "") + "_rng.xml.gz")
 
     def _state_ready(self, path):
         """저장한 상태가 있고 도로·교통 파일이 그 뒤로 바뀌지 않았는가."""
@@ -105,6 +151,10 @@ class SkkuEnv(SumoHighwayEnv):
                "--no-warnings", "true", "--no-step-log", "true", "--seed", str(seed),
                "--save-state.rng", "true",   # 난수 상태까지 저장 (userdoc/Simulation/SaveAndLoad.html)
                "--scale", str(self.traffic_scale)]   # 교통량 배율: 차량을 지우거나 복제 (userdoc/sumo.html)
+        # ignore_junction_blocker (11/23 사용자): 교차로를 막고 선 차를 무시하기까지 시간. 지도 설정(skku.sumocfg)은 60초.
+        #   495951447 시드 2017·2360: AV가 대로 위 교차로 안에서 정체로 84~89초 서 있자 골목 합류 차가 AV를 무시하고 들어와 충돌
+        if getattr(self, "jblocker", None) is not None:
+            cmd += ["--ignore-junction-blocker", str(self.jblocker)]
         state = self._state_file(seed)
         if not self._state_ready(state):
             self._make_state(cmd, state)
@@ -114,13 +164,25 @@ class SkkuEnv(SumoHighwayEnv):
         else:                                 # 화면이 없으면 배경 도형은 읽지 않는다
             cmd += ["-a", self._additional(False)]
         traci.start(cmd + ["--load-state", state, "--begin", str(self.warmup_seconds)])
+        if self.tls_random:
+            self._shift_signals(seed)
+        self._gate = None
+        if self.alley_gate:
+            sys.path.insert(0, MAP) if MAP not in sys.path else None
+            from alley import AlleyGate
+            self._gate = AlleyGate(traci, self.ego_id).setup()
         # start_delay_max: 경로 중간 출발(start_mix)일 때 AV 투입을 0~start_delay_max초 무작위로 늦춘다 (학습 시드만, 시드별 고정).
         # 11/19 측정: 정문 앞 출발 에피소드 8개가 모두 t≈621초, 빨간불 남은 17~18초에 정문에 닿음 (신호 주기 87초 고정, 투입 시각 고정)
         #   → 학습 중 정문 빨간불은 늘 곧 끝나는 빨간불이라 멀리 서도 손해가 몇 초뿐 (갈래 비교 이득 평균 +0.6에 그침)
         dmax = self.start_delay_max
         if dmax > 0 and self.start_mix and train and self.edges is not self._full_edges:
             delay = random.Random(f"delay{seed}").uniform(0.0, dmax)
-            traci.simulationStep(self.warmup_seconds + round(delay / self.step_length) * self.step_length)
+            target = self.warmup_seconds + round(delay / self.step_length) * self.step_length
+            if self._gate is None:
+                traci.simulationStep(target)
+            while self._gate is not None and traci.simulation.getTime() < target - 1e-6:
+                self._gate.step()
+                traci.simulationStep()
         self._started = True
 
     def _additional(self, gui):
@@ -136,9 +198,14 @@ class SkkuEnv(SumoHighwayEnv):
         # 처음 평가하면 같은 시드라도 교통이 달라졌다. 실행 파일로 만들면 TraCI로 만든 기존 캐시와 내용이 같다(직접 비교).
         os.makedirs(STATES, exist_ok=True)
         tmp = f"{state}.{os.getpid()}.xml.gz"
-        subprocess.run([checkBinary("sumo"), *cmd[1:], "-a", self._additional(False), "--end", str(self.warmup_seconds + 1),
-                        "--save-state.times", str(self.warmup_seconds), "--save-state.files", tmp],
-                       check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        if self.alley_gate:                   # 골목 규칙을 지키며 채운다: TraCI 소켓 + sumo 실행 파일 (아래 방식과 같은 난수 상태)
+            subprocess.run([sys.executable, os.path.join(MAP, "alley.py"), "warmup", str(self.warmup_seconds + 1),
+                            str(self.warmup_seconds), tmp, checkBinary("sumo"), *cmd[1:], "-a", self._additional(False)],
+                           check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        else:
+            subprocess.run([checkBinary("sumo"), *cmd[1:], "-a", self._additional(False), "--end", str(self.warmup_seconds + 1),
+                            "--save-state.times", str(self.warmup_seconds), "--save-state.files", tmp],
+                           check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         try:
             os.replace(tmp, state)            # 여러 학습을 동시에 돌려도 반쯤 쓴 파일을 읽지 않게
         except PermissionError:               # Windows: 다른 학습이 같은 파일을 먼저 만들어 읽는 중이면 그 파일을 쓴다
@@ -164,6 +231,7 @@ class SkkuEnv(SumoHighwayEnv):
     def reset(self, seed=None, options=None):
         gym.Env.reset(self, seed=seed)
         self._prev_lane, self._entry_yield = "", 0.0
+        self._no_turn_done = set()
         self._box_prev_lane = ""
         for _ in range(3):
             if self._started:
@@ -269,7 +337,7 @@ class SkkuEnv(SumoHighwayEnv):
         if tls and tls[0][2] <= 100:
             tid, _, dist, state = tls[0]
             left = traci.trafficlight.getNextSwitch(tid) - traci.simulation.getTime()
-            f += [dist / 100, float(state in "rRu"), float(state in "yY"), min(left, 30) / 30]
+            f += [dist / 100, float(state in "rRu"), float(state in "yY"), 1.0 if getattr(self, "tls_left_fixed", False) else min(left, 30) / 30]
         else:
             f += [1.0, 0.0, 0.0, 1.0]
         lane_id = traci.vehicle.getLaneID(e)
@@ -287,7 +355,8 @@ class SkkuEnv(SumoHighwayEnv):
             if from_lane != lane_id:
                 jd += traci.lane.getLength(lane_id) - traci.vehicle.getLanePosition(e)
             yld = float(links[0][5] in "mswg=")    # 소문자 m/g, 정지(s), 전방향 정지(w): 다른 차에 양보하는 연결
-        foes = [x for x in traci.vehicle.getJunctionFoes(e, self.FOE_RANGE) if x[7]]   # egoResponse: 내가 양보할 차
+        jfoes = traci.vehicle.getJunctionFoes(e, self.FOE_RANGE)
+        foes = [x for x in jfoes if x[7]]   # egoResponse: 내가 양보할 차
         if self.foe_lanes:
             foes = [x for x in foes if x[4] > 0]   # foeExitDist: 충돌 지점을 빠져나가기까지 거리 (traci/_vehicle.py)
         if self.foe_lanes and yld and jd <= self.FOE_RANGE:
@@ -318,10 +387,32 @@ class SkkuEnv(SumoHighwayEnv):
                         if v not in seen and v != e:
                             foes.append((v, jd, max(0.0, length - traci.vehicle.getLanePosition(v))))
                             seen.add(v)
+        # obs_first_foe: 양보 연결(yld) 앞에서, SUMO가 '내가 양보할 차'로 표시하지 않았어도 충돌 지점에 나보다 먼저 닿는 차는 넣는다.
+        # 11/22 골목 환경 재생(r_s8, 시드 1237·1320): 플렁드 오거리(4493735400)에서 교차 차량이 충돌 지점 3 m 앞인데 egoResponse=False라
+        # 양보 상대 칸이 비고, AV가 시속 27 km로 들어가 그 차와 충돌. 두 연결이 모두 양보(m)인 오거리에서 SUMO의 우선 판정과 실제 도착 순서가 다름
+        if self.first_foe and yld and jd <= self.FOE_RANGE:
+            ve = max(traci.vehicle.getSpeed(e), 0.1)
+            seen = {x[0] for x in foes}
+            for x in jfoes:
+                if x[0] not in seen and x[4] > 0 and x[2] < self.FOE_RANGE and                         max(x[2], 0.0) / max(traci.vehicle.getSpeed(x[0]), 0.1) < max(x[1], 0.0) / ve:
+                    foes.append((x[0], jd, max(x[2], 0.0)))
+                    seen.add(x[0])
         if self.inside_fix:
             ins = self._inside_foes(e, lane_id)
             if ins is not None:                    # 양보 연결로 들어온 교차로 안: 그 교차로 기준으로 바꿔 준다
                 jd, yld, foes = 0.0, 1.0, ins
+        # 한 대 폭 골목 입구 (alley_gate, 11/21): 골목 안에 반대 방향 차가 있거나 들어오는 중이면 입구를 '양보할 교차로'로 보고
+        # 그 차를 양보 상대 칸에 넣는다 (거리 = 그 차가 내 입구까지 남은 거리). 관측 개수는 그대로. 골목 안에 들어선 뒤에는
+        # 마주 오는 차가 앞차 관측으로 보인다 (getLeader가 bidi 차로의 반대 방향 차를 돌려줌, 11/21 확인)
+        onc = self._gate.oncoming(e) if self._gate is not None else None
+        if onc is not None and onc[1]:
+            jd, yld = onc[0], 1.0
+            foes = [(v, onc[0], dist) for v, dist in onc[1]]
+        # obs_tls_foe: 내 연결이 빨간불·노란불이면 교차 차량 칸을 비운다 (11/22 정문 진단: 빨간불에 선 AV에게 SUMO가 초록불로 지나가는
+        #   차를 '양보할 차'로 돌려주고, 정책은 무신호 교차로에서 배운 대로 교차로 60 m 앞(교차 차량이 보이기 시작하는 곳)에서 멈췄다.
+        #   이 칸만 비우면 s8의 가속 명령 −0.65 → +0.1). 초록불 양보(g)는 그대로 본다
+        if self.tls_foe_fix and links and links[0][5] in "rRuyY":
+            foes = []
         if foes:
             near = min(foes, key=lambda x: x[2])
             f += [min(jd, 100) / 100, yld, min(near[2], self.FOE_RANGE) / self.FOE_RANGE,
@@ -335,6 +426,32 @@ class SkkuEnv(SumoHighwayEnv):
             # getNextLinks의 direction: s 직진, l/L 좌, r/R 우, t 유턴 (userdoc/TraCI/Vehicle_Value_Retrieval.html next links)
             d = links[0][6] if links and len(links[0]) > 6 else "s"
             f += [float(d in "lLt"), float(d == "s"), float(d in "rR")]
+        if getattr(self, "near_obs", False):
+            # obs_near: 앞차 근거리 관측 2개 (관측 뒤에 붙임, 기존 모델은 rl/expand_obs.py로 0 열 추가).
+            # 11/20 측정(docs/lessons.md 문제 1): 앞차 거리 입력은 거리/50 m라 0~5 m가 0~0.1, r_s8은 1 m당 가속 명령이 0.02만 변해
+            # 0 m와 2 m를 거의 구분 못 함 → 대기열 저속 추돌(앞차 0~1.5 m에서 가속 0~+0.3)과 495951447 추돌(거리 0.00인데 +0.1)
+            #  [1] 근접도 = clip(1 − 실제 간격/10 m, 0, 1): 10 m 안을 0~1로 펼침
+            #  [2] 필요 감속 = (v² − v앞²) / (2 × max(간격 − 2 m, 0.2)) / 4.5 m/s², 0~1 (다가가는 중일 때만). 앞차 2 m 뒤에 서려면 필요한 제동
+            lead = self._lead(self.visibility)
+            if lead and lead[0]:
+                g = lead[1] + traci.vehicle.getMinGap(e)
+                v, vl = traci.vehicle.getSpeed(e), traci.vehicle.getSpeed(lead[0])
+                # near_ref_m (11/23): 필요 감속 기준 간격. 2.0 m는 SUMO minGap 2.5 m 충돌 판정 안쪽 → 3.5 m로 맞출 수 있게
+                ref = float(getattr(self, "near_ref_m", 2.0))
+                req = (v * v - vl * vl) / (2 * max(g - ref, 0.2)) / 4.5 if v > vl else 0.0
+                f += [min(max(1 - g / 10.0, 0.0), 1.0), min(max(req, 0.0), 1.0)]
+            else:
+                f += [0.0, 0.0]
+        if self.line_obs:
+            # obs_line_near (11/23): 빨간불·노란불 정지선 근거리 2개. 정지선 거리 입력은 거리/100이라 1 m와 5 m가 0.01·0.05 —
+            # 서 있을 때 정지선 1 m든 30 m든 가속 명령이 거의 같았다(측정). 앞차 obs_near와 같은 형태
+            #  [1] 근접도 = clip(1 − 거리/10 m), [2] 정지선 1 m 앞에 서는 데 필요한 감속 = v²/(2·max(거리 − 1, 0.2))/4.5, 0~1
+            t = traci.vehicle.getNextTLS(e)
+            if t and t[0][3] in "rRuyY" and t[0][2] <= 100:
+                d, v = t[0][2], traci.vehicle.getSpeed(e)
+                f += [min(max(1 - d / 10.0, 0.0), 1.0), min(v * v / (2 * max(d - 1.0, 0.2)) / 4.5, 1.0)]
+            else:
+                f += [0.0, 0.0]
         return f
 
     def _get_obs(self):
@@ -345,7 +462,35 @@ class SkkuEnv(SumoHighwayEnv):
             return np.zeros(self.obs_dim, dtype=np.float32)
         if self.close_fix:
             base = self._close_fix(base)
-        return np.clip(np.concatenate([base, np.array(self._v1_obs(), dtype=np.float32)]), -1.0, 1.0)
+        out = np.clip(np.concatenate([base, np.array(self._v1_obs(), dtype=np.float32)]), -1.0, 1.0)
+        if self.red_wall:
+            out = self._red_wall(out)
+        return out
+
+    def _red_wall(self, out):
+        """obs_red_wall (11/23): 빨간불(노란불은 편하게 설 수 있을 때) 정지선을 '정지선에 서 있는 가상의 차'로 앞차 칸에 보여 준다.
+        실제 자율주행 계획기도 빨간불이면 정지선 앞에 정지 지점(가상 벽)을 둔다 (Autoware behavior_velocity traffic_light module).
+        11/23 측정: r_h4가 일월로 진입 빨간불 19번 중 16번 진입. 앞이 비었거나 신호 건너편 차만 달리면 정지선 24 m 앞에서도 가속 −0.08~+0.37,
+        같은 관측에 '정지선에 선 차'를 넣으면 −0.22~−0.75로 섰다 (서 있는 차 앞에서는 서는데 빨간불 표시만으로는 안 섬).
+        멈출지는 정책이 정한다 (관측만 바꿈)"""
+        e = self.ego_id
+        t = traci.vehicle.getNextTLS(e)
+        if not t or t[0][2] > self.visibility:
+            return out
+        d, st, v = t[0][2], t[0][3], traci.vehicle.getSpeed(e)
+        if not (st in "rRu" or (st in "yY" and v * v / (2 * max(d - 1.0, 0.2)) < 3.0)):
+            return out
+        lead = traci.vehicle.getLeader(e, self.visibility)
+        g_lead = lead[1] + traci.vehicle.getMinGap(e) if lead and lead[0] else None
+        if g_lead is not None and g_lead <= d:
+            return out                                   # 실제 앞차가 정지선보다 가깝다
+        i = 1 + 4 * self.obs_offsets.index(0)            # 지금 차로 앞차 칸 [거리/가시거리, 상대속도]
+        out[i], out[i + 1] = min(d / self.visibility, 1.0), max(-v / self.vmax, -1.0)
+        if self.near_obs:
+            k = 31 + self.V1_DIM + (3 if self.turn_obs else 0)
+            out[k] = min(max(1 - d / 10.0, 0.0), 1.0)
+            out[k + 1] = min(v * v / (2 * max(d - 2.0, 0.2)) / 4.5, 1.0)
+        return out
 
     def _inside_foes(self, e, lane_id):
         """obs_inside_fix: 양보해야 하는 연결로 교차로에 들어온 뒤, 그 교차로 안에서 교차하는 차를 관측에 넣는다.
@@ -405,6 +550,84 @@ class SkkuEnv(SumoHighwayEnv):
 
     YIELD_TTC = 3.0
 
+    def _target_gap_penalty(self, tls_after):
+        """목표 간격 감점: (감점, 간격 m, 대상 종류). 대상이 없으면 (0, None, "")."""
+        e = self.ego_id
+        v = traci.vehicle.getSpeed(e)
+        rng = float(self.rw.get("tg_range", 50.0))
+        cands = []                                   # (간격 m, 대상 속도, 정지 여유 s0, 종류)
+        lead = self._lead(rng)
+        if lead and lead[0] and lead[1] + traci.vehicle.getMinGap(e) < rng:
+            g, vo, s0, kind = lead[1] + traci.vehicle.getMinGap(e), traci.vehicle.getSpeed(lead[0]), float(self.rw.get("tg_s0_car", 2.0)), "car"
+            # 앞차가 다음 교차로 건너편(또는 교차로 안)에 서 있고 그 뒤에 내 차가 들어갈 자리가 없으면 목표는 교차로 입구 (11/22).
+            #   앞차를 목표로 두면 교차로 앞에 바르게 선 AV가 '멀리 섬' 감점을 받아 꼬리물기를 배운다 (495951447 추돌 유형)
+            road, lroad = traci.vehicle.getRoadID(e), traci.vehicle.getRoadID(lead[0])
+            if vo < 0.5 and not road.startswith(":") and lroad != road:
+                room = traci.vehicle.getLanePosition(lead[0]) - traci.vehicle.getLength(lead[0])                     - traci.vehicle.getLength(e) - traci.vehicle.getMinGap(e)
+                if lroad.startswith(":") or room < 0:
+                    # tg_box_keep_car (11/23): 교차로 입구 목표로 바꿀 때 앞차 목표도 남긴다(더 급한 쪽이 뽑힌다). r_h9 시드 1020:
+                    #   앞차가 다음 엣지 시작점(범퍼 2.6 m)에 서 있는데 목표가 '엣지 끝 1 m 앞'이라 감점 0 → minGap 판정 충돌
+                    if self.rw.get("tg_box_keep_car", False):
+                        cands.append((g, vo, s0, kind))
+                    g = traci.lane.getLength(traci.vehicle.getLaneID(e)) - traci.vehicle.getLanePosition(e)
+                    s0, kind = float(self.rw.get("tg_s0_line", 1.0)), "box"
+            cands.append((g, vo, s0, kind))
+        if tls_after and tls_after[3] in "rRu" and tls_after[2] < rng:
+            cands.append((tls_after[2], 0.0, float(self.rw.get("tg_s0_line", 1.0)), "red"))
+        lane = traci.vehicle.getLaneID(e)
+        if not lane.startswith(":"):
+            to_line = traci.lane.getLength(lane) - traci.vehicle.getLanePosition(e)
+            yr = self._yield_risk()
+            if yr and yr[1] < float(self.rw.get("tg_yield_ttc", 4.0)) and to_line < rng:
+                cands.append((to_line, 0.0, float(self.rw.get("tg_s0_line", 1.0)), "yield"))
+            if self._gate is not None:
+                onc = self._gate.oncoming(e)
+                if onc and onc[1] and onc[0] < rng:
+                    cands.append((onc[0], 0.0, float(self.rw.get("tg_s0_line", 1.0)), "alley"))
+        if lane.startswith(":") and self.rw.get("tg_yield_internal", False):
+            # tg_yield_internal (11/23): 앞 교차로 안(내부 차로)에서도 '다음' 교차로 양보 목표를 켠다. 거리 = 내부 차로 남은 길이 + 진입로 길이.
+            #   r_h11 5만 시드 2000–2999 495951808 충돌 18건: 앞 교차로 4637441266 안에서 양보 목표가 꺼져 6.2 m/s로 지나고,
+            #   진입로(10.4 m) 정지선 9.3 m 앞 5.1 m/s에서야 켜짐(필요 감속 1.6 m/s²) → 감점 0.09~0.89에도 −0.07 감속뿐, 진입
+            ya = self._yield_risk_ahead()
+            if ya and ya[1] < float(self.rw.get("tg_yield_ttc", 4.0)) and ya[2] < rng:
+                cands.append((ya[2], 0.0, float(self.rw.get("tg_s0_line", 1.0)), "yield"))
+                self._tg_yield_ahead = ya
+        if not cands:
+            return 0.0, None, ""
+        T = float(self.rw.get("tg_headway", 1.2))
+        best = None
+        bs = float(self.rw.get("tg_static_decel", 0.0))
+        for gap, vo, s0, kind in cands:
+            if bs > 0 and vo < 0.5:
+                # 서 있는 대상(정지선·서 있는 앞차): 편안한 제동 거리 v²/(2·bs)만. 11/22 r_tg 30만: 움직이는 앞차용 식(1.2 s·v + IDM 항)을
+                # 정지선에도 써서 시속 29 km면 목표 29 m → 정지선 29 m 안이 '가까움' 감점, 정지선까지 중앙 8.1 → 31.3 m로 더 멀리 섰다
+                s_star = s0 + v * v / (2 * bs)
+            else:
+                s_star = s0 + v * T + v * max(v - vo, 0.0) / (2 * 1.73)
+            if best is None or gap - s_star < best[0] - best[1]:
+                best = (gap, s_star, vo, kind)
+        gap, s_star, vo, kind = best
+        if gap < s_star:
+            wc = float(self.rw.get("tg_close", 0.1))
+            if kind == "red":
+                wc = float(self.rw.get("tg_close_line", wc))
+            elif kind == "yield":   # 11/23 r_h5 시드 1075 정문(8577251160): 양보 목표 감점이 tg_close 0.2뿐 → 4.8 m/s로 진입, 직전 2스텝 −0.08·−0.18만
+                wc = float(self.rw.get("tg_close_yield", wc))
+            elif kind == "car" and vo < 0.5:   # 서 있는 앞차 (11/23 r_h5 시험: 사거리 진입로 대기열에서 0.3 m/s로 추돌, 0.5 m에서도 감점 −0.15뿐)
+                wc = float(self.rw.get("tg_close_stop", wc))
+            # tg_close_line (11/23): 빨간불 정지선에 너무 빠르게 다가가면 더 크게. r_h2 10만 시드 1022: 정지선 2 m 앞 3.2 m/s에 감점 −0.04뿐 → 빨간불 진입
+            return wc * min((s_star - gap) / max(s_star, 1.0), 1.0), gap, kind
+        # 멀리 섬: 내가 거의 서 있을 때만 (tg_far_speed 미만). 11/22 r_tg3: 속도 조건이 없어 빨간불·서 있는 앞차를 향해 정상 속도로
+        # 다가가는 중에도 감점이 붙어(범위 100 m면 거의 내내) 급하게 달려들다 추돌 — 시드 200개 충돌 5 → 58
+        if vo < 0.5 and v < float(self.rw.get("tg_far_speed", 99.0)):
+            # tg_band (11/23): 목표 + 이 거리 안에 서 있으면 감점 0 (정지선 1~3 m·앞차 2~3.5 m = 바르게 선 것).
+            #   r_h3: 정지선 3.7 m에 바르게 서 있어도 스텝당 −0.03 → 빨간불 98초 대기 합 −5.5 > 빨간불 진입 −5 → 진입을 배움
+            band = float(self.rw.get("tg_band_line", 0.0)) if kind in ("red", "yield", "box") else float(self.rw.get("tg_band_car", 0.0))
+            if gap - s_star <= band:
+                return 0.0, gap, kind
+            return float(self.rw.get("tg_far", 0.05)) * min((gap - s_star - band) / float(self.rw.get("tg_far_scale", 30.0)), 1.0), gap, kind
+        return 0.0, gap, kind
+
     def _yield_risk(self):
         """양보해야 하는 연결 앞이면 (지금 차로, 우선 차량이 충돌 지점에 오기까지 가장 짧은 시간 s), 아니면 None.
         우선 차량 = getJunctionFoes 중 egoResponse(내가 양보)이고 아직 충돌 지점을 빠져나가지 않은 차 (foeExitDist > 0).
@@ -416,7 +639,11 @@ class SkkuEnv(SumoHighwayEnv):
         links = traci.vehicle.getNextLinks(e)
         if lane.startswith(":") or not links or links[0][5] not in "mswg=":
             return None
-        ttc = [max(x[2], 0.0) / max(traci.vehicle.getSpeed(x[0]), 0.1)
+        # yield_near_m (11/23): 우선 차량이 충돌 지점·정지선 이 거리 안에 있으면 서 있어도 위험(0초)으로 본다. 서 있는 차는 TTC가
+        #   무한대라 코앞(2.6 m)에 있어도 위반이 아니었고, AV가 들어간 순간 출발해 충돌 (495951808 좌회전, 시드 1031·1149)
+        near = float(self.rw.get("yield_near_m", 0.0))
+        tt = lambda d, v: 0.0 if d < near else max(d, 0.0) / max(v, 0.1)
+        ttc = [tt(x[2], traci.vehicle.getSpeed(x[0]))
                for x in traci.vehicle.getJunctionFoes(e, self.FOE_RANGE) if x[7] and x[4] > 0]
         if self.foe_lanes:   # 관측 보완과 같은 차량 목록: getJunctionFoes가 빠뜨리는 우선도로 접근 차량 (11/18 seed 1024: TTC 99 → 0.4초)
             try:
@@ -425,21 +652,174 @@ class SkkuEnv(SumoHighwayEnv):
                     for v in traci.lane.getLastStepVehicleIDs(fl):
                         d = length - traci.vehicle.getLanePosition(v)
                         if d <= self.FOE_RANGE:
-                            ttc.append(d / max(traci.vehicle.getSpeed(v), 0.1))
+                            ttc.append(tt(d, traci.vehicle.getSpeed(v)))
             except traci.TraCIException:
                 pass
         return lane, min(ttc, default=float("inf"))
+
+    _INTERNAL = None
+
+    def _merge_leader(self):
+        """교차로 내부 차로에서 같은 다음 차로로 합류하는 다른 내부 차로의 차 중 가장 가까운 것: (id, 실제 범퍼 간격 m) 또는 None.
+        간격 = 내 남은 내부 차로 길이 − 상대 남은 길이 − 상대 길이 (합류 지점 기준). 나란하거나 겹치면 0."""
+        e = self.ego_id
+        lane = traci.vehicle.getLaneID(e)
+        if not lane.startswith(":"):
+            return None
+        out = traci.lane.getLinks(lane)
+        if not out:
+            return None
+        succ = out[0][0]
+        if SkkuEnv._INTERNAL is None:
+            SkkuEnv._INTERNAL = {}
+            for l in traci.lane.getIDList():
+                if l.startswith(":"):
+                    lk = traci.lane.getLinks(l)
+                    if lk:
+                        SkkuEnv._INTERNAL.setdefault(lk[0][0], []).append(l)
+        ego_rem = traci.lane.getLength(lane) - traci.vehicle.getLanePosition(e)
+        best = None
+        for l2 in SkkuEnv._INTERNAL.get(succ, []):
+            if l2 == lane:
+                continue
+            for v in traci.lane.getLastStepVehicleIDs(l2):
+                rem = traci.lane.getLength(l2) - traci.vehicle.getLanePosition(v)
+                if rem > ego_rem + traci.vehicle.getLength(e):   # 상대 앞범퍼가 내 차 뒤끝보다 뒤 = 합류 지점에서 완전히 뒤
+                    continue                                       # (그 사이면 나란히 겹침 → 간격 0. 시드 2360: 나 0.8 m, 상대 3.4 m 남음)
+                g = max(ego_rem - rem - traci.vehicle.getLength(v), 0.0)
+                if best is None or g < best[1]:
+                    best = (v, g)
+        return best
+
+    def _lead(self, dist):
+        """getLeader와 같은 형식 (id, 간격 − minGap). obs_merge_lead면 합류 차가 더 가까울 때 그 차."""
+        e = self.ego_id
+        ld = traci.vehicle.getLeader(e, dist)
+        if not getattr(self, "merge_lead", False):
+            return ld
+        m = self._merge_leader()
+        if m:
+            mg = m[1] - traci.vehicle.getMinGap(e)
+            if mg <= dist and (not ld or not ld[0] or mg < ld[1]):
+                return (m[0], mg)
+        return ld
+
+    def _neighbor(self, offset, leader):
+        if offset == 0 and leader and getattr(self, "merge_lead", False):
+            ld = self._lead(self.visibility)
+            if not ld or not ld[0]:
+                return None
+            if ld[1] > self.visibility:
+                return None
+            # 수업 코드는 간격 < 0(minGap 안)이면 None → obs_close_fix가 0으로 바꾼다. 합류 차는 여기서 0으로 고정
+            return max(float(ld[1]), 0.0), float(traci.vehicle.getSpeed(ld[0]))
+        return super()._neighbor(offset, leader)
+
+    def _yield_risk_ahead(self):
+        """내부 차로(앞 교차로 안)에 있을 때 다음 교차로 양보 위험: (진입로, 최소 TTC s, 정지선까지 경로 거리 m, 다음 교차로 id) 또는 None.
+        다음 교차로 = getNextLinks 첫 연결의 내부 차로(approachedInternal) 교차로. 교차 차량은 그 교차로 안 충돌만(getJunctionFoes의 egoLane)."""
+        e = self.ego_id
+        lane = traci.vehicle.getLaneID(e)
+        if not lane.startswith(":"):
+            return None
+        out = traci.lane.getLinks(lane)
+        if not out or out[0][0].startswith(":"):
+            return None
+        appr = out[0][0]
+        links = traci.vehicle.getNextLinks(e)
+        if not links or links[0][5] not in "mswg=" or not links[0][4]:
+            return None
+        jpref = links[0][4].rsplit("_", 2)[0] + "_"           # ':495951808_5_0' -> ':495951808_'
+        if lane.startswith(jpref):
+            return None
+        near = float(self.rw.get("yield_near_m", 0.0))
+        tt = lambda d, v: 0.0 if d < near else max(d, 0.0) / max(v, 0.1)
+        ttc = [tt(x[2], traci.vehicle.getSpeed(x[0])) for x in traci.vehicle.getJunctionFoes(e, self.FOE_RANGE)
+               if x[7] and x[4] > 0 and str(x[5]).startswith(jpref)]
+        if self.foe_lanes:
+            try:
+                for fl in traci.lane.getFoes(appr, links[0][0]):
+                    length = traci.lane.getLength(fl)
+                    for v in traci.lane.getLastStepVehicleIDs(fl):
+                        d = length - traci.vehicle.getLanePosition(v)
+                        if d <= self.FOE_RANGE:
+                            ttc.append(tt(d, traci.vehicle.getSpeed(v)))
+            except traci.TraCIException:
+                pass
+        to_line = traci.lane.getLength(lane) - traci.vehicle.getLanePosition(e) + traci.lane.getLength(appr)
+        return appr, min(ttc, default=float("inf")), to_line, jpref.strip(":_")
+
+    _NET = None
+
+    # (골목 엣지, 금지 엣지, 대신 갈 엣지): 이 골목에서 나온 차는 금지 엣지로 못 가고 대신 갈 엣지로 간 뒤 목적지까지 다시 길을 찾는다
+    NO_TURN = [("-7050175700", "701384410", "700812830")]
+
+    def _hv_no_turn(self):
+        """금지 방향 (11/23 사용자): 서부로 골목(-7050175700)에서 495951447로 우회전 합류한 차는 사거리에서 직진·우회전만.
+        합류 직후(5552317710#2 0차로, 30 m)에서 좌회전 차로(2차로)까지 두 번 차선을 바꾸느라 대기열을 막고 AV와 얽혔다 (시드 2017 r245·r270).
+        경로는 출발할 때 SUMO가 정해서 미리 거를 수 없다(정적 최단 경로로는 22대 중 18대 좌회전, 매번 다름) → 골목에 들어선 차의 경로를
+        '직진 엣지까지 + 거기서 목적지까지 다시 찾은 길'로 바꾼다 (traci.vehicle.setRoute, simulation.findRoute)."""
+        for side, bad, alt in self.NO_TURN:
+            for v in traci.edge.getLastStepVehicleIDs(side):
+                if v in self._no_turn_done or v == self.ego_id:
+                    continue
+                self._no_turn_done.add(v)
+                rt = list(traci.vehicle.getRoute(v)); i = traci.vehicle.getRouteIndex(v)
+                if bad not in rt[i:]:
+                    continue
+                j = rt.index(bad, i)
+                head = rt[i:j]
+                nxt = {l[0].rsplit("_", 1)[0] for k in range(traci.edge.getLaneNumber(head[-1])) for l in traci.lane.getLinks(f"{head[-1]}_{k}")} if head else set()
+                if alt not in nxt:
+                    continue
+                try:
+                    tail = traci.simulation.findRoute(alt, rt[-1]).edges
+                    if tail:
+                        traci.vehicle.setRoute(v, head + list(tail))
+                except traci.TraCIException:
+                    pass
+
+    def _drop_broken_departures(self):
+        """상태 파일을 불러온 뒤 경로가 끊긴 채 들어오는 흐름 차량을 지운다 (11/23).
+        0~300초 구간 흐름(…_0)의 차가 600초 상태를 불러온 뒤 다시 들어오는데, 경로가 경유지(via) 목록 그대로라 엣지가 이어지지 않는다
+        (예: 회전교차로 진입로 → 출구, 고리 없음). 진입로 끝에 300초 서서 길을 막다가 순간이동. 시드 30개에 약 20대.
+        userdoc/Simulation/SaveAndLoad.html Known Issues: 흐름은 상태 파일만으로 이어 불러올 수 없다. 원래 나오면 안 되는 차라 지운다"""
+        import sumolib
+        if SkkuEnv._NET is None:
+            SkkuEnv._NET = sumolib.net.readNet(os.path.join(MAP, "skku.net.xml"))
+        net = SkkuEnv._NET
+        for v in traci.simulation.getDepartedIDList():
+            if v == self.ego_id:
+                continue
+            rt = traci.vehicle.getRoute(v)
+            if any(not net.getEdge(a).getConnections(net.getEdge(b)) for a, b in zip(rt, rt[1:])):
+                traci.vehicle.remove(v)
 
     def step(self, action):
         before = self._tls_ahead()
         ywt = float(self.rw.get("yield_penalty", 0.0))
         yrisk = self._yield_risk() if ywt > 0 else None
+        # 골목 입구 직전(아직 교차로 밖)에서만 본다: 교차로 안에서 계속 보면 들어선 뒤 스텝마다 감점된다
+        alley_before = self._gate.oncoming(self.ego_id) if (self._gate is not None and ywt > 0
+                                                            and self.ego_id in traci.vehicle.getIDList()
+                                                            and not traci.vehicle.getLaneID(self.ego_id).startswith(":")) else None
+        if self._gate is not None:
+            self._gate.step()
         obs, reward, terminated, truncated, info = super().step(action)
+        if self.drop_broken:
+            self._drop_broken_departures()
+        if self.hv_no_turn:
+            self._hv_no_turn()
         # 양보 위반: 양보해야 하는 연결 앞에서, 우선 차량이 YIELD_TTC초 안에 오는데 교차로에 들어갔으면 1회 감점.
         # 충돌 감점은 실제로 부딪힐 때만 붙어 드물다 (11/18 임재성: 충돌 감점 크기로는 양보 실패가 안 줄어듦).
         # 신호 위반 감점(red_light_penalty)을 무신호 교차로·회전교차로에 적용한 것
         info["yield_violation"] = False
-        if yrisk and self.ego_id in traci.vehicle.getIDList():
+        # 골목: 반대 방향 차가 골목 안에 있거나 들어오는 중인데 입구 교차로에 들어서면 양보 위반 (같은 감점)
+        if ywt > 0 and alley_before and alley_before[1] and self.ego_id in traci.vehicle.getIDList():
+            if traci.vehicle.getLaneID(self.ego_id).startswith(":") and alley_before[0] < 15.0:
+                info["yield_violation"] = True
+                reward -= ywt
+        if yrisk and not info["yield_violation"] and self.ego_id in traci.vehicle.getIDList():
             now = traci.vehicle.getLaneID(self.ego_id)
             if now != yrisk[0] and now.startswith(":") and yrisk[1] < self.rw.get("yield_ttc", self.YIELD_TTC):
                 info["yield_violation"] = True
@@ -524,12 +904,24 @@ class SkkuEnv(SumoHighwayEnv):
                 stopped_ok = v < 0.5 and not (self.rw.get("queue_strict", False) and v >= 0.1 and g < 1.5)
                 if g < float(self.rw["close_gap_threshold"]) and (stopped_ok or creep):
                     reward += float(self.rw["close_gap_penalty"])
+        # 목표 간격 (target_gap, 11/22): 상황별 땜질 항 대신 하나의 기준. AV 앞의 '멈춰야 할 대상' 중 가장 가까운 것 —
+        # 앞차(골목 마주 오는 차 포함), 빨간불 정지선, 양보할 차가 곧 오는 교차로 입구, 반대 방향 차가 있는 골목 입구 — 까지의 간격을
+        # 목표 간격 s* = s0 + v·T + v·(v − v대상)/(2√(ab)) (IDM 형태)와 비교한다. 가까우면(넘으면) tg_close 비례 감점, 서 있는 대상보다
+        # 멀리 있으면 tg_far 비례 감점 (멀리 서기·찔끔 진입 둘 다). 앞이 비면 0 → 속도 보상만 남아 빈 교차로는 제 속도로.
+        # docs/lessons.md 문제 1·2, 11/22 사용자 지적(신호 앞 멀리 정차, 빈 교차로 느림, 교차로 찔끔 진입 충돌)
+        info["tg_gap"], info["tg_kind"] = None, ""
+        self._tg_obstacle = False
+        if self.rw.get("target_gap", False) and not terminated and self.ego_id in traci.vehicle.getIDList():
+            pen, gap, kind = self._target_gap_penalty(after)
+            reward -= pen
+            info["tg_gap"], info["tg_kind"], info["tg_pen"] = gap, kind, pen
+            self._tg_obstacle = kind != ""
         # 정차 감점: 거의 서 있는데 앞이 비어 있으면 감점 (갈 수 있는데 안 가는 것).
         # 앞 = 같은 차로 앞차, 빨강·노랑 신호의 정지선 중 가까운 것. 양보할 교차 차량이 있으면 기다리는 게 맞으므로 감점 없음.
         # 막힘 감점(수업 코드)은 앞차 20 m 안에서만 붙어서 멀리 떨어져 서 있으면 피할 수 있었다 (11/18 정차 분석)
         idle = float(self.rw.get("idle_penalty", 0.0))
         info["idle"] = False
-        if idle > 0 and info["speed"] is not None and self.ego_id in traci.vehicle.getIDList():
+        if idle > 0 and info["speed"] is not None and self.ego_id in traci.vehicle.getIDList() and not self._tg_obstacle:
             e = self.ego_id
             lim = traci.lane.getMaxSpeed(traci.vehicle.getLaneID(e))
             if info["speed"] < self.rw.get("idle_speed_frac", 0.3) * lim:

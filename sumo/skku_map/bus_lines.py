@@ -173,6 +173,25 @@ def period(iv):
     return 60 * sum(nums) / len(nums) if nums else 900
 
 
+# 지도로 확인한 노선 보정 (11/22 사용자 지적): 성대할인마트 앞 삼각 섬에서 노선 좌표가 섬 동쪽(율전로98번길 입구·짧은 연결로)에
+#   붙어 버스가 섬을 돌아갔다. 실제 노선은 율전로 본선(섬 서쪽)으로 곧게 간다 → 그 구간을 본선 엣지로 바꾼다
+ROUTE_FIX = [(("5039133870#4", "4526039590#0", "-4694200400", "5039133870#7"),
+              ("5039133870#4", "5039133870#5", "5039133870#6", "5039133870#7")),
+             (("4526039540#2", "4694200400", "-4526039590#0", "-5039133870#4"),
+              ("4526039540#2", "-5039133870#6", "-5039133870#5", "-5039133870#4"))]
+# 정류장을 둘 엣지를 직접 정한다. 섬 서쪽 길은 교차로 면에 먹혀 엣지가 6 m뿐이라 버스 뒤쪽은 교차로 안에 걸친다
+STOP_EDGES = {"성대할인마트": ("5039133870#6", "-5039133870#6")}   # 섬 서쪽 길 양쪽에 마주 보고 (카카오 지도, 11/22 사용자 지적)
+
+
+def fix_route(net, edges):
+    ids = [e.getID() for e in edges]
+    for old, new in ROUTE_FIX:
+        for i in range(len(ids) - len(old) + 1):
+            if tuple(ids[i:i + len(old)]) == old:
+                ids[i:i + len(old)] = new
+    return [net.getEdge(x) for x in ids]
+
+
 def build(net_file, rou_out, stops_out, report=print):
     net = sumolib.net.readNet(net_file)
     data = json.load(open(os.path.join(HERE, "bus_kakao.json"), encoding="utf-8"))["lines"]
@@ -190,6 +209,7 @@ def build(net_file, rou_out, stops_out, report=print):
           for pr in problems:
               report(f"  {line['n']}: {pr}")
           for edges in segs:
+            edges = fix_route(net, edges)
             k += 1
             on = {e.getID(): i for i, e in enumerate(edges)}
             # 이 구간 근처 정류장: 경로 엣지 위 25 m 안, 경로 순서대로
@@ -198,11 +218,17 @@ def build(net_file, rou_out, stops_out, report=print):
                 if min(math.dist(p, q) for q in run) > 40:
                     continue
                 cand = [(e, dd) for e, dd in net.getNeighboringEdges(p[0], p[1], 25) if e.getID() in on]
-                if not cand:
+                fixed = [x for x in STOP_EDGES.get(nm, ()) if x in on]
+                if fixed:      # 같은 이름이 노선에 두 번(가는 길·오는 길) 나오면 경로 순서대로 하나씩
+                    fixed.sort(key=lambda x: on[x])
+                    nth = sum(1 for _, n2, _ in named[:named.index((order, nm, p))] if n2 == nm)
+                    e, de = net.getEdge(fixed[min(nth, len(fixed) - 1)]), 0.0
+                elif not cand:
                     continue
-                e, de = min(cand, key=lambda c: c[1])
-                if opposite_side(net, p, e, de):
-                    continue                    # 길 건너편 = 반대 방향 정류장 (노선 정류장 목록에는 오가는 방향이 다 들어 있다)
+                else:
+                    e, de = min(cand, key=lambda c: c[1])
+                    if opposite_side(net, p, e, de):
+                        continue                    # 길 건너편 = 반대 방향 정류장 (노선 정류장 목록에는 오가는 방향이 다 들어 있다)
                 sh = [q[:2] for q in e.getShape()]
                 pos = geomhelper.polygonOffsetAndDistanceToPoint(p, sh)[0]
                 pos = min(max(pos * e.getLength() / max(geomhelper.polyLength(sh), 0.1), 15), e.getLength() - 1)
