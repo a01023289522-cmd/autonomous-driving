@@ -218,7 +218,8 @@ def write_routes(net, groups):
 
 
 def write_cfg():
-    # ignore-junction-blocker 60: 교차로를 막고 60초 넘게 선 차는 무시하고 지나간다 ("결국 막은 차를 비켜 가는 실제 행동",
+    # ignore-junction-blocker 100 (11/23 60→100, 사용자: 정체면 그만큼 기다리는 게 맞다. 495951447에서 정체로 84~89초 선 AV를 골목 합류 차가 무시하고 들어와 충돌.
+    #   시드 60개 비교: 충돌 4→1, 순간이동 9→9, 멈춘 차 126.6→127.3): 교차로를 막고 100초 넘게 선 차는 무시하고 지나간다 ("결국 막은 차를 비켜 가는 실제 행동",
     #   userdoc/Simulation/Intersections.html). G2 동쪽 골목 교차로(우측 우선)에서 네 방향이 서로 양보하다 멈춰 G2까지 막혔다
     with open(P("skku.sumocfg"), "w", encoding="utf-8") as f:
         f.write("""<configuration>
@@ -229,7 +230,7 @@ def write_cfg():
         <gui-settings-file value="skku.gui.xml"/>
     </input>
     <time><begin value="0"/><end value="3600"/><step-length value="0.2"/></time>
-    <processing><time-to-teleport value="300"/><ignore-junction-blocker value="60"/><collision.action value="warn"/><ignore-route-errors value="true"/></processing>
+    <processing><time-to-teleport value="300"/><ignore-junction-blocker value="100"/><collision.action value="warn"/><ignore-route-errors value="true"/></processing>
     <random_number><seed value="42"/></random_number>
 </configuration>
 """)
