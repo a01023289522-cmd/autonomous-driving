@@ -233,6 +233,7 @@ class SkkuEnv(SumoHighwayEnv):
         self._prev_lane, self._entry_yield = "", 0.0
         self._no_turn_done = set()
         self._box_prev_lane = ""
+        self._rsb_done = None
         for _ in range(3):
             if self._started:
                 traci.close()
@@ -625,7 +626,11 @@ class SkkuEnv(SumoHighwayEnv):
             band = float(self.rw.get("tg_band_line", 0.0)) if kind in ("red", "yield", "box") else float(self.rw.get("tg_band_car", 0.0))
             if gap - s_star <= band:
                 return 0.0, gap, kind
-            return float(self.rw.get("tg_far", 0.05)) * min((gap - s_star - band) / float(self.rw.get("tg_far_scale", 30.0)), 1.0), gap, kind
+            # tg_far_red (11/24): 빨간불 정지선 대상에만 쓰는 '멀리 섬' 가중치 (없으면 tg_far). 스텝마다 쌓이는 감점이라 정지선 5 m 앞에
+            #   서서 1분 기다리면 할인합 약 −4.7로 빨간불 진입 −5와 같아지고, 그보다 멀면 진입이 이득. 진입하면 빨간불 대상이 사라져 감점도 끝난다.
+            #   obs_red_wall(금지) 없이 이 경쟁을 없애려고 빨간불만 따로 끌 수 있게 한다
+            far = float(self.rw.get("tg_far_red", self.rw.get("tg_far", 0.05))) if kind == "red" else float(self.rw.get("tg_far", 0.05))
+            return far * min((gap - s_star - band) / float(self.rw.get("tg_far_scale", 30.0)), 1.0), gap, kind
         return 0.0, gap, kind
 
     def _yield_risk(self):
@@ -916,6 +921,21 @@ class SkkuEnv(SumoHighwayEnv):
             reward -= pen
             info["tg_gap"], info["tg_kind"], info["tg_pen"] = gap, kind, pen
             self._tg_obstacle = kind != ""
+        # tg_red_stop_bonus (11/25): 빨간·노란불 정지선 tg_red_stop_max m 안에 (앞차 없이) 멈추면 신호마다 1회 보너스.
+        #   tg_far_red 0(js_nw7)으로 '멀리 섬' 감점을 끈 뒤 10만 스텝을 넘기면 정지선 2.7 → 7.3(15만) → 28.2 m(30만)로 멀어졌다.
+        #   스텝마다 쌓이는 감점이 아니라 1회라 대기 시간과 경쟁하지 않는다 (11/24 컨설팅: 원하지 않는 거리 보상/패널티 가능)
+        rb = float(self.rw.get("tg_red_stop_bonus", 0.0))
+        info["red_stop_bonus"] = False
+        if rb > 0 and not terminated and after and after[3] in "rRyYu" and self.ego_id in traci.vehicle.getIDList():
+            e = self.ego_id
+            key = (after[0], after[1])
+            if (key != getattr(self, "_rsb_done", None) and traci.vehicle.getSpeed(e) < 0.1
+                    and after[2] <= float(self.rw.get("tg_red_stop_max", 6.0))):
+                ld = traci.vehicle.getLeader(e, after[2] + 5.0)
+                if not (ld and ld[0] and ld[1] + traci.vehicle.getMinGap(e) < after[2]):
+                    reward += rb
+                    self._rsb_done = key
+                    info["red_stop_bonus"] = True
         # 정차 감점: 거의 서 있는데 앞이 비어 있으면 감점 (갈 수 있는데 안 가는 것).
         # 앞 = 같은 차로 앞차, 빨강·노랑 신호의 정지선 중 가까운 것. 양보할 교차 차량이 있으면 기다리는 게 맞으므로 감점 없음.
         # 막힘 감점(수업 코드)은 앞차 20 m 안에서만 붙어서 멀리 떨어져 서 있으면 피할 수 있었다 (11/18 정차 분석)
