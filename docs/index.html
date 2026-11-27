@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SKKU Autonomous Driving | Final Project</title>
+<style>
+:root{--ink:#181818;--muted:#666;--line:#d8d8d8;--soft:#f4f4f4;--max:1080px}*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:#fff;color:var(--ink);font-family:Pretendard,'Noto Sans KR','Malgun Gothic',Arial,sans-serif;line-height:1.65}a{color:inherit}header{border-bottom:1px solid var(--line)}nav{max-width:var(--max);margin:auto;padding:18px 24px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}.brand{font-size:13px;font-weight:800;letter-spacing:.12em;text-decoration:none}.navlinks{display:flex;gap:18px;flex-wrap:wrap;font-size:13px}.navlinks a{text-decoration:none;color:var(--muted)}.navlinks a:hover{text-decoration:underline}main{max-width:var(--max);margin:auto;padding:0 24px}.hero{padding:68px 0 48px;border-bottom:2px solid var(--ink);text-align:center}.hero .links{justify-content:center}.hero .link{border-radius:999px}.hero .placeholder{max-width:900px;margin-left:auto;margin-right:auto}.hero p{max-width:850px;margin-left:auto;margin-right:auto}.eyebrow,.section-no{font-size:12px;letter-spacing:.16em;font-weight:700;color:var(--muted)}h1{font-size:clamp(38px,5.5vw,65px);line-height:1.07;letter-spacing:-.05em;margin:18px 0 24px}h2{font-size:clamp(26px,4vw,38px);line-height:1.2;letter-spacing:-.035em;margin:6px 0 25px}h3{font-size:19px;margin:0 0 10px}p{margin:8px 0 16px}.muted{color:var(--muted)}.links{display:flex;flex-wrap:wrap;gap:10px;margin:26px 0}.link{border:1px solid var(--ink);padding:10px 16px;text-decoration:none;font-size:14px;font-weight:650}.link.primary{background:var(--ink);color:white}.link.pending{border-color:var(--line);color:var(--muted);background:var(--soft)}section{padding:58px 0;border-bottom:1px solid var(--line)}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}.three{grid-template-columns:repeat(3,minmax(0,1fr))}.panel{border:1px solid var(--line);padding:20px;min-width:0}.placeholder{display:grid;place-content:center;text-align:center;min-height:180px;aspect-ratio:16/9;background:var(--soft);border:1px dashed #aaa;color:var(--muted);padding:20px;font-size:14px}.hero .placeholder{margin-top:32px;min-height:240px;aspect-ratio:2.65/1}.slot{color:var(--muted);font-size:14px;padding:10px 0;border-bottom:1px dashed var(--line)}.slot:last-child{border-bottom:0}.caption{font-size:13px;color:var(--muted);margin:8px 0}.tablewrap{overflow:auto}table{width:100%;border-collapse:collapse;font-size:14px;text-align:left}th,td{padding:13px 12px;border-bottom:1px solid var(--line);vertical-align:top}th{background:var(--soft);font-weight:650}.metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:22px}.metric{padding:20px;border-top:2px solid var(--ink);background:var(--soft)}.metric strong{display:block;font-size:32px;line-height:1.4}.metric span{font-size:13px;color:var(--muted)}.flow{display:flex;align-items:center;flex-wrap:wrap;gap:10px;margin:18px 0}.flow span{padding:9px 14px;border:1px solid var(--line);font-size:14px}.flow b{color:#999;font-size:14px}footer{max-width:var(--max);padding:30px 24px;margin:auto;font-size:12px;color:var(--muted)}code{font-family:Consolas,monospace;font-size:13px;overflow-wrap:anywhere}.note{font-size:13px;border-left:2px solid var(--ink);padding-left:12px;color:var(--muted)}@media(max-width:660px){.grid,.three,.metrics{grid-template-columns:1fr}.hero{padding-top:50px}section{padding:40px 0}.navlinks{gap:12px}.hero .placeholder{aspect-ratio:16/9}}
+
+.resources { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:12px; margin:26px 0; text-align:left }
+.resources > div { border-top:2px solid var(--ink); background:var(--soft); padding:14px 16px }
+.resources span { display:block; font-size:12px; color:var(--muted) }
+.resources strong,.resources a { font-size:15px; font-weight:650 }
+video { display:block; width:100%; max-width:900px; margin:32px auto 0 }
+</style>
+</head>
+<body>
+<header><nav><a class="brand" href="#top">SKKU / AUTONOMOUS DRIVING</a><div class="navlinks"><a href="#road">Environment</a><a href="#method">Method</a><a href="#results">Results</a><a href="#dataset">Dataset</a><a href="#team">Team</a></div></nav></header>
+<main id="top">
+<div class="hero"><div class="eyebrow">2026 · FINAL PROJECT · 11.28</div><h1>Autonomous Driving<br>in SKKU</h1><p>성균관대학교 주변 실제 도로 기반 자율주행 프로젝트</p><p class="muted">[팀명] · [팀원 이름] · [프로젝트 한 줄 소개]</p>
+<div class="resources" aria-label="프로젝트 제출 자료">
+  <div><span>01 / 필수</span><a href="https://github.com/a01023289522-cmd/autonomous-driving">GitHub / Code ↗</a></div>
+  <div><span>02 / 필수</span><strong data-pdf>Presentation PDF · 준비 중</strong></div>
+  <div><span>03 / 필수</span><a href="https://huggingface.co/datasets/jnsoo/autonomous_driving/tree/main/nw7_10m">Hugging Face ↗</a></div>
+  <div><span>04 / 권장</span><strong data-video>Driving Video · 준비 중</strong></div>
+</div>
+<div id="demo" class="placeholder" style="aspect-ratio:16/9;min-height:200px">
+  <strong>SUMO Driving Demo</strong><span>최종 NW7 주행 영상 준비 중</span>
+</div>
+</div>
+<section id="overview"><div class="section-no">01 / PROJECT OVERVIEW</div><h2>Abstract · 프로젝트 개요</h2><div class="grid"><div class="panel"><h3>도로 선정 이유</h3><div class="slot">[선정 배경 및 자율주행 문제]</div><div class="slot">[프로젝트 목표]</div></div><div class="panel"><h3>프로젝트 진행 과정</h3><div class="flow"><span>도로 구축</span><b>→</b><span>AV 설계</span><b>→</b><span>학습</span><b>→</b><span>평가</span><b>→</b><span>데이터 수집</span></div></div></div></section>
+<section id="road"><div class="section-no">02 / ROAD ENVIRONMENT</div><h2>도로 환경 구축</h2><div class="grid"><div><div class="placeholder">[실제 도로 지도 / 사진]</div><p class="caption">Actual road</p></div><div><div class="placeholder">[SUMO 구현 도로 이미지]</div><p class="caption">SUMO environment</p></div></div><div class="grid"><div class="panel"><h3>도로 구조 및 경로</h3><div class="slot">[출발지 / 목적지 / 주요 구간]</div><div class="slot">[교차로 / 신호등 / 차선 구조]</div></div><div class="panel"><h3>일반 차량 및 교통 구성</h3><div class="slot">[일반 차량 종류 / 교통량 / 경로]</div><div class="slot">[주행 환경 및 시뮬레이션 설정]</div></div></div><h3 style="margin-top:28px">Vehicle Interaction</h3><div class="grid three"><div><div class="placeholder">[상호작용 장면 1]</div><p class="caption">[상황 및 AV 의사결정]</p></div><div><div class="placeholder">[상호작용 장면 2]</div><p class="caption">[상황 및 AV 의사결정]</p></div><div><div class="placeholder">[상호작용 장면 3]</div><p class="caption">[상황 및 AV 의사결정]</p></div></div></section>
+<section id="method"><div class="section-no">03 / AV DESIGN & TRAINING</div><h2>AV 설계 및 강화학습</h2><div class="grid three"><div class="panel"><h3>Observation</h3><div class="slot">[관측 벡터 구성 / 차원]</div></div><div class="panel"><h3>Action</h3><div class="slot">[행동 공간 및 범위]</div></div><div class="panel"><h3>Reward</h3><div class="slot">[보상 및 감점 항목]</div></div></div><div class="grid" style="margin-top:20px"><div><div class="placeholder">[학습 구조 또는 학습 곡선]</div></div><div class="panel"><h3>학습 방법</h3><div class="slot">[알고리즘 및 하이퍼파라미터]</div><div class="slot">[학습량 / 시드 / 설정]</div><div class="slot">[최종 모델 선정 과정]</div></div></div></section>
+<section id="results"><div class="section-no">04 / EVALUATION</div><h2>문제 해결 및 최종 주행 성능</h2><div class="metrics"><div class="metric"><span>Collision rate</span><strong>— %</strong><span>목표: 5% 미만</span></div><div class="metric"><span>Completion rate</span><strong>— %</strong><span>[평가 횟수]</span></div><div class="metric"><span>Timeout rate</span><strong>— %</strong><span>[평가 시드]</span></div></div><div class="tablewrap"><table><thead><tr><th>평가 지표</th><th>기존 모델</th><th>최종 NW7</th></tr></thead><tbody><tr><td>충돌률 (%)</td><td>—</td><td>—</td></tr><tr><td>완주율 (%)</td><td>—</td><td>—</td></tr><tr><td>시간초과율 (%)</td><td>—</td><td>—</td></tr><tr><td>평균 주행속도 (m/s)</td><td>—</td><td>—</td></tr></tbody></table></div><h3 style="margin-top:28px">문제 해결 과정</h3><div class="tablewrap"><table><thead><tr><th>문제점</th><th>원인 및 개선 방법</th><th>실험 결과</th></tr></thead><tbody><tr><td>[문제 1]</td><td>[내용]</td><td>[결과]</td></tr><tr><td>[문제 2]</td><td>[내용]</td><td>[결과]</td></tr><tr><td>[문제 3]</td><td>[내용]</td><td>[결과]</td></tr></tbody></table></div><p class="caption">[대표 주행 영상은 페이지 상단에 삽입]</p></section>
+<section id="dataset"><div class="section-no">05 / DATASET</div><h2>주행 데이터 수집</h2><div class="metrics"><div class="metric"><span>Transitions 목표</span><strong>10M</strong><span>실제 수집량 집계 예정</span></div><div class="metric"><span>Episodes</span><strong>—</strong><span>주행 횟수 집계 예정</span></div><div class="metric"><span>Total size</span><strong>4.27 GB</strong><span>업로드 용량</span></div></div><div class="grid"><div class="panel"><h3>수집 방식</h3><div class="slot">[최종 모델 / 시드 / 프로세스 / 저장 단위]</div><div class="slot"><code>metadata.json</code>, <code>transitions.jsonl.gz</code>, <code>transitions.npz</code></div><div class="slot">[데이터 검증 방법]</div></div><div><div class="placeholder">[실제 데이터 샘플 또는 POMDP transition 구조]</div></div></div><h3 style="margin-top:28px">Data schema</h3><div class="tablewrap"><table><thead><tr><th>필드 / 그룹</th><th>의미</th><th>형식 / 단위</th></tr></thead><tbody><tr><td>episode, t</td><td>[설명]</td><td>[형식]</td></tr><tr><td>state, next_state</td><td>[설명]</td><td>[형식]</td></tr><tr><td>observation, next_observation</td><td>[설명]</td><td>[형식]</td></tr><tr><td>action_raw, action</td><td>[설명]</td><td>[형식]</td></tr><tr><td>reward, terminated, truncated</td><td>[설명]</td><td>[형식]</td></tr><tr><td>detected_vehicles, event</td><td>[설명]</td><td>[형식]</td></tr><tr><td>[팀 추가 항목]</td><td>[설명]</td><td>[단위]</td></tr></tbody></table></div><p class="caption"><a href="https://huggingface.co/datasets/jnsoo/autonomous_driving/tree/main/nw7_10m">Hugging Face에서 데이터셋 열기 ↗</a></p></section>
+<section id="reproduce"><div class="section-no">06 / REPRODUCIBILITY</div><h2>실행 방법 및 결과물</h2><div class="panel"><h3>How to run</h3><div class="slot">1. [설치 환경 및 의존성]</div><div class="slot">2. [환경 구축 및 학습 명령어]</div><div class="slot">3. [최종 모델 평가 명령어]</div><div class="slot">4. [데이터 수집 명령어]</div></div><div class="links"><a class="link primary" href="https://github.com/a01023289522-cmd/autonomous-driving">GitHub / Code ↗</a><span class="link pending" data-pdf>Presentation PDF · 준비 중</span><a class="link" href="https://huggingface.co/datasets/jnsoo/autonomous_driving/tree/main/nw7_10m">Hugging Face ↗</a></div></section>
+<section id="conclusion"><div class="section-no">07 / CONCLUSION</div><h2>결론 및 한계</h2><div class="grid"><div class="panel"><h3>최종 성과</h3><div class="slot">[핵심 성과 및 목표 달성 여부]</div></div><div class="panel"><h3>한계 및 향후 개선</h3><div class="slot">[남은 문제 / 개선 방향]</div></div></div></section>
+<section id="team"><div class="section-no">08 / TEAM</div><h2>팀원 및 역할</h2><div class="tablewrap"><table><thead><tr><th>팀원</th><th>담당 역할</th></tr></thead><tbody><tr><td>[이름]</td><td>[역할]</td></tr><tr><td>[이름]</td><td>[역할]</td></tr><tr><td>[이름]</td><td>[역할]</td></tr><tr><td>[이름]</td><td>[역할]</td></tr></tbody></table></div><p class="caption">[필요에 따라 행 추가 또는 삭제]</p></section>
+</main><footer>2026 · Artificial Intelligence and Control for Autonomous Driving · [팀명]</footer>
+
+<script>
+async function assetAvailable(path, type) {
+  try {
+    const response = await fetch(path, {method: 'HEAD'});
+    return response.ok && (response.headers.get('Content-Type') || '').split(';')[0] === type;
+  } catch {
+    return false;
+  }
+}
+
+function enableLink(element, title, href) {
+  const link = document.createElement('a');
+  link.href = href;
+  link.textContent = title;
+  if (element.classList.contains('link')) link.className = 'link';
+  element.replaceWith(link);
+}
+
+const pdf = 'assets/presentation.pdf';
+assetAvailable(pdf, 'application/pdf').then(available => {
+  if (available) {
+    document.querySelectorAll('[data-pdf]').forEach(item => enableLink(item, 'Presentation PDF ↗', pdf));
+  }
+});
+
+const movie = 'assets/driving.mp4';
+assetAvailable(movie, 'video/mp4').then(available => {
+  if (available) {
+    const video = document.createElement('video');
+    video.id = 'demo';
+    video.controls = true;
+    video.preload = 'metadata';
+    video.playsInline = true;
+    video.setAttribute('aria-label', 'SUMO Driving Demo');
+    video.src = movie;
+    document.getElementById('demo').replaceWith(video);
+    enableLink(document.querySelector('[data-video]'), 'Driving Video ↓', '#demo');
+  }
+});
+</script>
+</body></html>
