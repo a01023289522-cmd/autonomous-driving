@@ -48,12 +48,17 @@ td,th { padding:9px 12px; border-bottom:1px solid var(--line) }
 thead th { background:var(--tint) }
 code { font-size:.94em; white-space:normal }
 footer { padding-block:22px; color:var(--sub) }
-@media(max-width:760px) { .hero,.grid { grid-template-columns:1fr } .hero { gap:22px } }
+.kpis { grid-column:1/-1; grid-template-columns:repeat(5,minmax(0,1fr)); margin:4px 0 0 }
+.kpis strong { font-size:clamp(1.3rem,2.4vw,1.9rem) }
+pre { margin:8px 0 14px; padding:12px 14px; background:var(--tint); border-left:2px solid var(--green); overflow-x:auto; font-size:.88rem; line-height:1.55 }
+pre code { white-space:pre }
+ul.plain { margin:8px 0 0; padding-left:1.2em } ul.plain li + li { margin-top:4px }
+@media(max-width:760px) { .hero,.grid { grid-template-columns:1fr } .hero { gap:22px } .kpis { grid-template-columns:repeat(2,minmax(0,1fr)) } }
 @media(max-width:520px) { nav { gap:7px } .navlinks { gap:8px 14px } .stats { grid-template-columns:1fr; gap:6px } .stats div { display:flex; justify-content:space-between; align-items:center } td,th { padding:7px } }
 </style>
 </head>
 <body>
-<header><nav aria-label="주요 메뉴"><a class="brand" href="#top">SKKU · Autonomous Driving</a><div class="navlinks"><a href="#road">도로 환경</a><a href="#method">학습</a><a href="#results">평가</a><a href="#dataset">데이터</a><a href="#team">팀</a></div></nav></header>
+<header><nav aria-label="주요 메뉴"><a class="brand" href="#top">SKKU · Autonomous Driving</a><div class="navlinks"><a href="#road">도로 환경</a><a href="#method">학습</a><a href="#process">개선 과정</a><a href="#results">평가</a><a href="#dataset">데이터</a><a href="#run">실행 방법</a><a href="#team">팀</a></div></nav></header>
 <main id="top">
 <section class="hero">
   <div><p class="meta">13조 · 2026.11.28</p><h1>성균관대역에서<br>교내 주차장까지</h1>
@@ -61,10 +66,12 @@ footer { padding-block:22px; color:var(--sub) }
     <div class="links"><a href="assets/presentation.pdf">최종 발표 PDF · 17장</a><a href="https://github.com/a01023289522-cmd/autonomous-driving">GitHub 코드</a><a href="https://huggingface.co/datasets/jnsoo/autonomous_driving/tree/main/nw7_10m">Hugging Face 데이터</a></div>
   </div>
   <figure><video controls playsinline preload="metadata" poster="assets/driving-poster.jpg" src="assets/driving.mp4" aria-label="NW7 최종 주행 영상"></video><figcaption>NW7 최종 주행 · <a href="assets/driving.mp4">영상 열기</a></figcaption></figure>
+  <div class="stats kpis" aria-label="핵심 성과"><div><span>주행 거리</span><strong>2.8 km</strong></div><div><span>완주율</span><strong>97.5%</strong></div><div><span>충돌률</span><strong>2.5%</strong></div><div><span>적색 신호 진입</span><strong>0회</strong></div><div><span>수집 데이터</span><strong>1,000만+</strong></div></div>
+  <p class="note" style="grid-column:1/-1">완주율·충돌률·적색 신호 진입은 학습에 쓰지 않은 교통 시드 2000–2999의 1,000회 평가, 수집 데이터는 공개한 transition 10,003,156개다.</p>
 </section>
 <section id="road">
   <h2>도로 환경과 차량 간 상호작용</h2>
-  <p>서부로에서 골목과 회전교차로를 지나 율전로64번길, 일월로, 교내 도로로 이어진다. 경로에는 신호 교차로 5곳, 무신호 교차로 3곳, 회전교차로 1곳, 버스 정류장 2곳이 있다.</p>
+  <p>서부로에서 골목과 회전교차로를 지나 율전로64번길, 일월로, 교내 도로로 이어진다. 경로에는 신호 교차로 5곳, 무신호 교차로 3곳, 회전교차로 1곳, 버스 정류장 2곳이 있다. 큰길·골목·회전교차로·교내 도로가 짧은 간격으로 바뀌어, 자율주행차가 경로 내내 멈출지 진입할지를 판단해야 한다는 점에서 이 도로를 골랐다.</p>
   <div class="grid maps">
     <figure><a href="assets/route-map.png"><img src="assets/route-map.png" loading="lazy" width="1600" height="1430" alt="성균관대역과 교내 주차장 사이의 실제 도로 및 주행 경로"></a><figcaption>실제 도로 · © OpenStreetMap 기여자</figcaption></figure>
     <figure><a href="assets/route-sumo.png"><img src="assets/route-sumo.png" loading="lazy" width="1600" height="1430" alt="같은 범위에서 빨간 점선으로 경로를 표시한 SUMO 도로망"></a><figcaption>같은 범위의 SUMO 도로망 · 빨간 점선은 자율주행차 경로</figcaption></figure>
@@ -86,6 +93,26 @@ footer { padding-block:22px; color:var(--sub) }
   <p>완주에는 +2점, 충돌에는 −5점, 적색 신호 진입에는 −30점, 양보 위반에는 −2점을 적용했다. 속도, 과속, 앞차·정지선과의 간격도 보상에 반영했다.</p>
   <p>학습 시드 0–499와 출발 지점 12곳을 사용했다. PPO 정책은 256 × 256 ReLU 신경망을 사용하며, 2,048스텝마다 크기 128의 미니배치로 5회 반복해 갱신했다. <a href="assets/presentation.pdf#page=11">학습 조건 · 11장</a></p>
 </section>
+<section id="process">
+  <h2>문제 해결과 성능 개선 과정</h2>
+  <p>문제 장면을 찾아 보상 계산으로 원인을 확인한 뒤, 관측이나 보상을 하나씩 바꿔 직전 모델에서 이어 학습했다.</p>
+  <div class="tablewrap"><table><thead><tr><th scope="col">단계</th><th scope="col">문제</th><th scope="col">해결 방법</th><th scope="col">평가</th><th scope="col">충돌률 · 완주율</th></tr></thead><tbody>
+    <tr><th scope="row">11/17 신호 관측 추가</th><td>수업 기본 관측에는 신호가 없어 적색 신호를 그대로 통과했다.</td><td>신호·교차 차량·제한 속도 관측 12개 추가, 신호 위반 −5, 과속 감점</td><td>20회</td><td>20% · 70%</td></tr>
+    <tr><th scope="row">11/18 정차 보상 개선</th><td>정차 감점이 저속 스텝 대부분에 붙었고, 100회 중 회전교차로 진입 충돌이 9–15건이었다.</td><td>막힘 감점 0.02, 정차 감점을 앞쪽 빈 공간에 비례하도록 변경</td><td>100회</td><td>13% · 82% (회전교차로 충돌 9–15건 → 0건)</td></tr>
+    <tr><th scope="row">11/19 출발점 다양화</th><td>위험 교차로와 일월로 진입 장면을 학습에서 거의 겪지 못했다.</td><td>위험 교차로 2곳과 일월로 앞을 출발점에 추가, 교통량 1.4배 섞기</td><td>1,000회</td><td>3.1% · 96.9% (적색 진입 21회)</td></tr>
+    <tr><th scope="row">11/23 양보 목표 유지</th><td>무신호 좌회전 충돌 40건 중 18건: 앞 교차로 안에서 양보 목표가 꺼졌다.</td><td>교차로 안에서도 다음 교차로의 양보 목표를 계산</td><td>1,000회</td><td>2.2% · 97.8%</td></tr>
+    <tr><th scope="row">11/25 NW7 (최종)</th><td>11/23 단계는 적색 정지선을 가상 정지 차량으로 보여 주는 관측을 썼고, 2차 컨설팅에서 금지되었다. 이 관측만 끄면 200회 중 적색 진입이 465회였다.</td><td>적색 진입 −30, 적색 대기 중 '멀리 섬' 감점 0, 10만 스텝 이어 학습</td><td>1,000회</td><td>2.5% · 97.5% (적색 진입 0회)</td></tr>
+  </tbody></table></div>
+  <p class="note">단계마다 평가 횟수와 환경 버전, 교통 시드가 다르다. 20·100회 결과는 오차가 크므로 같은 조건의 직접 성능 비교로 읽지 않는다. 1,000회 평가는 모두 교통 시드 2000–2999를 사용했다.</p>
+  <h3>NW7을 최종 모델로 고른 이유</h3>
+  <ul class="plain">
+    <li><strong>규정 준수:</strong> 금지된 가상 정지 차량 없이 신호·정지선 관측과 보상만으로 시드 2000–2999 1,000회에서 적색 진입 0회였다.</li>
+    <li><strong>같은 조건 비교:</strong> 같은 시드 1,000회에서 11/19 모델은 충돌 3.1%, 적색 진입 21회, NW7은 2.5%, 0회였다. 충돌률의 95% 신뢰구간은 겹치며, 평균 완주 시간은 495초에서 513초로 늘었다.</li>
+    <li><strong>체크포인트:</strong> 같은 설정으로 15만·22.5만·30만 스텝까지 학습하면 개발 시드 1000–1199에서 정지선 앞 정차 거리 중앙값이 7.3 m, 15.1 m, 28.2 m로 멀어졌다. 그래서 10만 스텝 모델을 채택했다.</li>
+    <li><strong>다른 시드 확인:</strong> 시드 1000–1999 1,000회에서도 완주 97.6%, 충돌 2.4%, 적색 진입 0회였다.</li>
+  </ul>
+  <a class="source" href="assets/presentation.pdf#page=12">개선 과정 · 12장</a>
+</section>
 <section id="results">
   <h2>NW7 최종 주행 성능</h2>
   <p>학습에 쓰지 않은 교통 시드 2000–2999에서 1,000회 평가했다. 975회 완주했고 충돌률은 목표인 5% 미만이었다.</p>
@@ -96,19 +123,66 @@ footer { padding-block:22px; color:var(--sub) }
     <tr><th scope="row">평균 완주 시간</th><td>513초</td></tr>
     <tr><th scope="row">정지선까지 거리 (중앙값)</th><td>2.7 m</td></tr>
     <tr><th scope="row">정지한 앞차 뒤 간격 (중앙값)</th><td>6.9 m</td></tr>
-  </tbody></table></div><a class="source" href="assets/presentation.pdf#page=13">평가 결과 · 13장</a>
+    <tr><th scope="row">다른 시드 1000–1999 (1,000회)</th><td>완주 97.6% · 충돌 2.4% · 적색 진입 0회</td></tr>
+  </tbody></table></div>
+  <h3>시뮬레이션 안정성</h3>
+  <p>평가 1,000회는 모두 도착 또는 충돌로 끝났고 시간초과는 0회였다. 순간이동은 평가와 별도로 시드 2004–2023 20회를 다시 돌려 SUMO 기록으로 셌다. 자율주행차의 순간이동은 0건이었다. 배경 차량은 20회 중 6회 주행에서 모두 9건이 있었다. 이는 300초 넘게 막힌 차량을 SUMO가 옮기는 기본 동작이다.</p>
+  <a class="source" href="assets/presentation.pdf#page=13">평가 결과 · 13장</a>
 </section>
 <section id="dataset">
-  <h2>공개 주행 데이터</h2><p>학습·평가와 구분한 교통 시드 4000–13874에서 NW7의 결정적 정책으로 주행했다. 0.5초 단위 기록을 <code>transitions.jsonl.gz</code>와 <code>transitions.npz</code>로 공개했다.</p>
-  <div class="stats"><div><span>주행 스텝</span><strong>10,003,156</strong></div><div><span>에피소드</span><strong>9,875</strong></div></div>
-  <div class="tablewrap"><table><thead><tr><th scope="col">필드</th><th scope="col">기록 내용</th></tr></thead><tbody>
-    <tr><th scope="row"><code>episode, t, reward</code></th><td>주행 번호, 스텝 번호, 해당 스텝의 보상</td></tr>
-    <tr><th scope="row"><code>terminated, truncated</code></th><td>충돌·도착에 의한 종료와 1,200초 시간 제한에 의한 종료</td></tr>
-    <tr><th scope="row"><code>action_raw, action</code></th><td>가감속·차로 변경 출력, 적용된 명령과 적용 여부</td></tr>
-    <tr><th scope="row"><code>observation, state</code></th><td>45차원 정책 입력과 시뮬레이터 상태. 자차 위치·속도·차로, 주변 100 m 차량, 신호 6곳의 상태와 남은 시간, 교통 시드 등을 포함한다.</td></tr>
-    <tr><th scope="row"><code>detected_vehicles, event</code></th><td>감지 차량, 충돌·도착 여부, 행동 전후 차로</td></tr>
-    <tr><th scope="row"><code>next_observation, next_state</code></th><td>중간 스텝에서는 다음 행에서, 마지막 스텝에서는 그 행의 필드에서 읽는다.</td></tr>
-  </tbody></table></div><a class="source" href="assets/presentation.pdf#page=14">데이터 구성 · 14장</a>
+  <h2>공개 주행 데이터</h2><p>학습(시드 0–499)·평가(1000–2999)와 겹치지 않는 교통 시드 4000–13874에서 NW7을 결정적 정책으로 주행하며, 0.5초마다 한 행씩 기록했다. 5회 주행을 한 묶음으로 1,975개 묶음을 저장했다.</p>
+  <div class="stats"><div><span>Transition</span><strong>10,003,156</strong></div><div><span>에피소드</span><strong>9,875</strong></div><div><span>파일 용량</span><strong>4.27 GB</strong></div><div><span>기록 간격</span><strong>0.5초</strong></div></div>
+  <p class="note">용량은 Hugging Face에 올라간 5,926개 파일(묶음마다 <code>transitions.jsonl.gz</code>, <code>transitions.npz</code>, <code>metadata.json</code>)의 크기 합 4,273,160,564바이트다. transition 수는 1,975개 <code>metadata.json</code>의 합계다.</p>
+  <h3>Observation과 State</h3>
+  <p><code>observation</code>은 정책이 실제로 받은 부분 관측 45개(−1~1)다. <code>state</code>는 시뮬레이터만 아는 전체 상태로, 정책 입력에는 쓰지 않는다. 둘을 함께 남겨 자율주행차가 본 정보와 실제 상황을 비교할 수 있게 했다.</p>
+  <div class="tablewrap"><table><thead><tr><th scope="col">필드</th><th scope="col">의미 · 단위</th><th scope="col">형식</th></tr></thead><tbody>
+    <tr><th scope="row"><code>episode, t</code></th><td>주행 번호, 주행 안 스텝 번호 (1스텝 = 0.5초)</td><td>정수</td></tr>
+    <tr><th scope="row"><code>observation</code></th><td>정책 입력: 자차 속도, 주변 차로 앞뒤 차, 다음 신호·교차로, 제한 속도, 앞차·정지선 근접도</td><td>실수 45개</td></tr>
+    <tr><th scope="row"><code>action_raw, action.*</code></th><td>정책 출력 [가감속, 차로 변경] (−1~1), 적용된 가감속 값, 차로 명령 −1/0/+1, 적용 여부</td><td>실수 2개 · 객체</td></tr>
+    <tr><th scope="row"><code>reward</code></th><td>해당 스텝의 보상</td><td>실수</td></tr>
+    <tr><th scope="row"><code>terminated, truncated</code></th><td>충돌·도착에 의한 종료, 1,200초 시간 제한에 의한 종료</td><td>참·거짓</td></tr>
+    <tr><th scope="row"><code>state</code></th><td>자차 위치(m)·속도(m/s)·가속도(m/s²)·방향(°)·차로·제한 속도, 다음 교차로 거리(m)·양보 여부, 주변 100 m 차량, 신호 6곳의 현시·연결별 신호·남은 시간(s), 교통 시드, 시뮬레이션 시각(s)</td><td>객체</td></tr>
+    <tr><th scope="row"><code>detected_vehicles</code></th><td>관측 시점에 감지된 주변 차량의 위치(m), 상대 위치, 속도(m/s), 차종</td><td>목록</td></tr>
+    <tr><th scope="row"><code>event.*</code></th><td>충돌 여부, 도착 여부, 행동 전후 차로</td><td>참·거짓 · 정수</td></tr>
+    <tr><th scope="row"><code>next_observation, next_state</code></th><td>다음 스텝 값. JSONL에서는 용량을 줄이려고 마지막 스텝에만 쓰고, 나머지는 다음 행의 값을 쓴다.</td><td>실수 45개 · 객체</td></tr>
+  </tbody></table></div>
+  <p><code>transitions.jsonl.gz</code>는 위 항목을 모두 담은 전체 기록이고, <code>transitions.npz</code>는 학습용 배열(observation, action_raw, lane_change, reward, next_observation, terminated, truncated, episode, t, detected_xy, detected_offsets)이다.</p>
+  <h3>수업 필수 항목과 비교</h3>
+  <p>수업 <code>collect_pomdp_data.py</code>의 기본 항목 19개와 NPZ 배열 11개가 모두 들어 있다. LMS 제출 표본의 첫 묶음(시드 4000–4004)에서 확인했다. 기본과 다른 점은 observation을 19개에서 45개로 늘린 것과, state에 교통 시드(<code>sumo_seed</code>)·신호 상태(<code>traffic_signals</code>)를 더한 것이다.</p>
+  <h3>활용</h3>
+  <ul class="plain">
+    <li>모방학습: observation → action_raw</li>
+    <li>오프라인 강화학습: observation, action, reward, next_observation, 종료 여부</li>
+    <li>주행 행동 분석: state로 교차로별 정지 위치, 양보 시점, 신호 대기 확인</li>
+  </ul>
+  <div class="links"><a href="https://huggingface.co/datasets/jnsoo/autonomous_driving/tree/main/nw7_10m">Hugging Face에서 데이터 받기</a><a href="assets/presentation.pdf#page=14">데이터 구성 · 14장</a></div>
+</section>
+<section id="run">
+  <h2>실행 방법</h2>
+  <p>최종 모델 NW7과 평가 설정은 커밋 <code>fc472d0</code>에 있다. 3·4번 명령은 이 커밋을 새로 받은 폴더에서 실제로 실행해 확인했다. 5번 수집기는 공개 데이터를 만든 코드다.</p>
+  <h3>1. 실행 환경</h3>
+  <p>Windows, Python 3.10, SUMO 1.27.1에서 확인했다. SUMO는 설치할 때 <code>SUMO_HOME</code>을 설정하고, 패키지는 수업 안내대로 설치한다. 데이터 수집에는 <code>libsumo</code>가 더 필요하다.</p>
+  <pre><code>python -m pip install torch gymnasium traci sumolib tensorboard
+python -m pip install libsumo</code></pre>
+  <h3>2. 저장소 준비</h3>
+  <p>팀 저장소와 수업 저장소를 같은 상위 폴더에 받는다. 팀 코드가 옆 폴더의 수업 코드를 불러 쓴다. 다른 위치에 두면 환경 변수 <code>COURSE_REPO</code>에 수업 저장소 경로를 지정한다.</p>
+  <pre><code>git clone https://github.com/a01023289522-cmd/autonomous-driving.git
+git clone https://github.com/bmil-ssu/Artificial-Intelligence-and-Control-for-Autonomous-Driving.git
+cd autonomous-driving
+git switch --detach fc472d0c3552f16f9653cbf9d5b0c451fbe41bbc</code></pre>
+  <h3>3. SUMO 화면으로 주행 보기</h3>
+  <p>첫 실행은 시드마다 배경 교통 600초를 미리 만들어 저장하므로 몇 분 걸린다.</p>
+  <pre><code>python -X utf8 rl/test_skku.py models/jaeseong_1125_nw7.pt --config js_nw7 --episodes 1</code></pre>
+  <h3>4. 화면 없이 정량 평가</h3>
+  <pre><code>python -X utf8 rl/quick_eval.py models/jaeseong_1125_nw7.pt --config js_nw7 --seeds 2000-2999 --procs 4
+python -X utf8 rl/test_skku.py models/jaeseong_1125_nw7.pt --config js_nw7 --episodes 100 --nogui</code></pre>
+  <p class="note"><code>quick_eval.py</code>는 도착·충돌 수, 적색 신호 진입, 정지선까지 거리, 평균 주행 시간을 출력한다. <code>test_skku.py --nogui</code>는 충돌률·완주율·시간초과율을 출력한다.</p>
+  <h3>5. 주행 데이터 수집</h3>
+  <p>수집기는 <code>mingi/local-b</code> 브랜치에 있다. 커밋 <code>fc472d0</code>의 환경과 모델을 꺼내 시드 4000부터 5회씩 묶어 저장하고, 중단해도 이어서 수집한다. 파일 잠금에 Windows 기능을 쓰므로 Windows에서 실행한다.</p>
+  <pre><code>git switch mingi/local-b
+python -X utf8 rl/collect_nw7.py --workers 2</code></pre>
+  <p class="note">기본값은 transition 10,000,000개, 저장 위치는 <code>data/nw7_10m</code>이다. 수업 저장소가 사용자 폴더 바로 아래가 아니면 <code>COURSE_REPO</code>를 지정한다.</p>
+  <div class="links"><a href="https://github.com/a01023289522-cmd/autonomous-driving/blob/main/docs/work_guide.md">작업 가이드</a><a href="https://github.com/a01023289522-cmd/autonomous-driving/blob/fc472d0c3552f16f9653cbf9d5b0c451fbe41bbc/models/jaeseong_1125_nw7.md">NW7 모델 설명</a><a href="https://github.com/a01023289522-cmd/autonomous-driving/blob/fc472d0c3552f16f9653cbf9d5b0c451fbe41bbc/rl/configs/js_nw7.py">평가 설정 js_nw7</a><a href="https://github.com/a01023289522-cmd/autonomous-driving/blob/mingi/local-b/rl/collect_nw7.py">데이터 수집기</a></div>
 </section>
 <section id="conclusion">
   <h2>남은 과제</h2>
