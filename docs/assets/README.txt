@@ -1,3 +1,2 @@
-이미지 및 영상 파일을 이 폴더에 저장하세요.
-
-발표 자료는 presentation.pdf, 주행 영상은 driving.mp4로 저장하면 페이지에서 자동으로 연결됩니다.
+presentation.pdf는 13조 최종 발표 자료다. driving.mp4는 17장의 NW7 완주 영상이며, left-turn.mp4와 roundabout.mp4는 각각 6장과 7장의 비교 영상이다.
+페이지의 동영상 플레이어는 각 영상과 이름이 같은 -poster.jpg를 재생 전 이미지로 사용한다.
