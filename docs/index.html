@@ -12,31 +12,112 @@
 .resources span { display:block; font-size:12px; color:var(--muted) }
 .resources strong,.resources a { font-size:15px; font-weight:650 }
 video { display:block; width:100%; max-width:900px; margin:32px auto 0 }
+figure{margin:0}figure img{width:100%;height:auto;display:block}section .grid+h3,.panel pre+h3{margin-top:24px}.panel ol{padding-left:1.4em}.panel li+li{margin-top:8px}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:var(--soft);padding:12px}th[scope=row]{background:white;font-weight:600}.metric strong{font-variant-numeric:tabular-nums;font-size:clamp(24px,3vw,32px)}
 </style>
 </head>
 <body>
 <header><nav><a class="brand" href="#top">SKKU / AUTONOMOUS DRIVING</a><div class="navlinks"><a href="#road">Environment</a><a href="#method">Method</a><a href="#results">Results</a><a href="#dataset">Dataset</a><a href="#team">Team</a></div></nav></header>
 <main id="top">
-<div class="hero"><div class="eyebrow">2026 · FINAL PROJECT · 11.28</div><h1>Autonomous Driving<br>in SKKU</h1><p>성균관대학교 주변 실제 도로 기반 자율주행 프로젝트</p><p class="muted">[팀명] · [팀원 이름] · [프로젝트 한 줄 소개]</p>
+<div class="hero"><div class="eyebrow">2026 · FINAL PROJECT · 11.28</div><h1>Autonomous Driving<br>in SKKU</h1><p>성균관대학교 주변 실제 도로 기반 자율주행 프로젝트</p><p class="muted">박준수 · 최민기 · 임재성 · 임수진</p>
 <div class="resources" aria-label="프로젝트 제출 자료">
   <div><span>01 / 필수</span><a href="https://github.com/a01023289522-cmd/autonomous-driving">GitHub / Code ↗</a></div>
   <div><span>02 / 필수</span><strong data-pdf>Presentation PDF · 준비 중</strong></div>
   <div><span>03 / 필수</span><a href="https://huggingface.co/datasets/jnsoo/autonomous_driving/tree/main/nw7_10m">Hugging Face ↗</a></div>
   <div><span>04 / 권장</span><strong data-video>Driving Video · 준비 중</strong></div>
 </div>
-<div id="demo" class="placeholder" style="aspect-ratio:16/9;min-height:200px">
+<div id="demo" class="placeholder" style="aspect-ratio:auto;min-height:90px">
   <strong>SUMO Driving Demo</strong><span>최종 NW7 주행 영상 준비 중</span>
 </div>
 </div>
-<section id="overview"><div class="section-no">01 / PROJECT OVERVIEW</div><h2>Abstract · 프로젝트 개요</h2><div class="grid"><div class="panel"><h3>도로 선정 이유</h3><div class="slot">[선정 배경 및 자율주행 문제]</div><div class="slot">[프로젝트 목표]</div></div><div class="panel"><h3>프로젝트 진행 과정</h3><div class="flow"><span>도로 구축</span><b>→</b><span>AV 설계</span><b>→</b><span>학습</span><b>→</b><span>평가</span><b>→</b><span>데이터 수집</span></div></div></div></section>
-<section id="road"><div class="section-no">02 / ROAD ENVIRONMENT</div><h2>도로 환경 구축</h2><div class="grid"><div><div class="placeholder">[실제 도로 지도 / 사진]</div><p class="caption">Actual road</p></div><div><div class="placeholder">[SUMO 구현 도로 이미지]</div><p class="caption">SUMO environment</p></div></div><div class="grid"><div class="panel"><h3>도로 구조 및 경로</h3><div class="slot">[출발지 / 목적지 / 주요 구간]</div><div class="slot">[교차로 / 신호등 / 차선 구조]</div></div><div class="panel"><h3>일반 차량 및 교통 구성</h3><div class="slot">[일반 차량 종류 / 교통량 / 경로]</div><div class="slot">[주행 환경 및 시뮬레이션 설정]</div></div></div><h3 style="margin-top:28px">Vehicle Interaction</h3><div class="grid three"><div><div class="placeholder">[상호작용 장면 1]</div><p class="caption">[상황 및 AV 의사결정]</p></div><div><div class="placeholder">[상호작용 장면 2]</div><p class="caption">[상황 및 AV 의사결정]</p></div><div><div class="placeholder">[상호작용 장면 3]</div><p class="caption">[상황 및 AV 의사결정]</p></div></div></section>
-<section id="method"><div class="section-no">03 / AV DESIGN & TRAINING</div><h2>AV 설계 및 강화학습</h2><div class="grid three"><div class="panel"><h3>Observation</h3><div class="slot">[관측 벡터 구성 / 차원]</div></div><div class="panel"><h3>Action</h3><div class="slot">[행동 공간 및 범위]</div></div><div class="panel"><h3>Reward</h3><div class="slot">[보상 및 감점 항목]</div></div></div><div class="grid" style="margin-top:20px"><div><div class="placeholder">[학습 구조 또는 학습 곡선]</div></div><div class="panel"><h3>학습 방법</h3><div class="slot">[알고리즘 및 하이퍼파라미터]</div><div class="slot">[학습량 / 시드 / 설정]</div><div class="slot">[최종 모델 선정 과정]</div></div></div></section>
-<section id="results"><div class="section-no">04 / EVALUATION</div><h2>문제 해결 및 최종 주행 성능</h2><div class="metrics"><div class="metric"><span>Collision rate</span><strong>— %</strong><span>목표: 5% 미만</span></div><div class="metric"><span>Completion rate</span><strong>— %</strong><span>[평가 횟수]</span></div><div class="metric"><span>Timeout rate</span><strong>— %</strong><span>[평가 시드]</span></div></div><div class="tablewrap"><table><thead><tr><th>평가 지표</th><th>기존 모델</th><th>최종 NW7</th></tr></thead><tbody><tr><td>충돌률 (%)</td><td>—</td><td>—</td></tr><tr><td>완주율 (%)</td><td>—</td><td>—</td></tr><tr><td>시간초과율 (%)</td><td>—</td><td>—</td></tr><tr><td>평균 주행속도 (m/s)</td><td>—</td><td>—</td></tr></tbody></table></div><h3 style="margin-top:28px">문제 해결 과정</h3><div class="tablewrap"><table><thead><tr><th>문제점</th><th>원인 및 개선 방법</th><th>실험 결과</th></tr></thead><tbody><tr><td>[문제 1]</td><td>[내용]</td><td>[결과]</td></tr><tr><td>[문제 2]</td><td>[내용]</td><td>[결과]</td></tr><tr><td>[문제 3]</td><td>[내용]</td><td>[결과]</td></tr></tbody></table></div><p class="caption">[대표 주행 영상은 페이지 상단에 삽입]</p></section>
-<section id="dataset"><div class="section-no">05 / DATASET</div><h2>주행 데이터 수집</h2><div class="metrics"><div class="metric"><span>Transitions 목표</span><strong>10M</strong><span>실제 수집량 집계 예정</span></div><div class="metric"><span>Episodes</span><strong>—</strong><span>주행 횟수 집계 예정</span></div><div class="metric"><span>Total size</span><strong>4.27 GB</strong><span>업로드 용량</span></div></div><div class="grid"><div class="panel"><h3>수집 방식</h3><div class="slot">[최종 모델 / 시드 / 프로세스 / 저장 단위]</div><div class="slot"><code>metadata.json</code>, <code>transitions.jsonl.gz</code>, <code>transitions.npz</code></div><div class="slot">[데이터 검증 방법]</div></div><div><div class="placeholder">[실제 데이터 샘플 또는 POMDP transition 구조]</div></div></div><h3 style="margin-top:28px">Data schema</h3><div class="tablewrap"><table><thead><tr><th>필드 / 그룹</th><th>의미</th><th>형식 / 단위</th></tr></thead><tbody><tr><td>episode, t</td><td>[설명]</td><td>[형식]</td></tr><tr><td>state, next_state</td><td>[설명]</td><td>[형식]</td></tr><tr><td>observation, next_observation</td><td>[설명]</td><td>[형식]</td></tr><tr><td>action_raw, action</td><td>[설명]</td><td>[형식]</td></tr><tr><td>reward, terminated, truncated</td><td>[설명]</td><td>[형식]</td></tr><tr><td>detected_vehicles, event</td><td>[설명]</td><td>[형식]</td></tr><tr><td>[팀 추가 항목]</td><td>[설명]</td><td>[단위]</td></tr></tbody></table></div><p class="caption"><a href="https://huggingface.co/datasets/jnsoo/autonomous_driving/tree/main/nw7_10m">Hugging Face에서 데이터셋 열기 ↗</a></p></section>
-<section id="reproduce"><div class="section-no">06 / REPRODUCIBILITY</div><h2>실행 방법 및 결과물</h2><div class="panel"><h3>How to run</h3><div class="slot">1. [설치 환경 및 의존성]</div><div class="slot">2. [환경 구축 및 학습 명령어]</div><div class="slot">3. [최종 모델 평가 명령어]</div><div class="slot">4. [데이터 수집 명령어]</div></div><div class="links"><a class="link primary" href="https://github.com/a01023289522-cmd/autonomous-driving">GitHub / Code ↗</a><span class="link pending" data-pdf>Presentation PDF · 준비 중</span><a class="link" href="https://huggingface.co/datasets/jnsoo/autonomous_driving/tree/main/nw7_10m">Hugging Face ↗</a></div></section>
-<section id="conclusion"><div class="section-no">07 / CONCLUSION</div><h2>결론 및 한계</h2><div class="grid"><div class="panel"><h3>최종 성과</h3><div class="slot">[핵심 성과 및 목표 달성 여부]</div></div><div class="panel"><h3>한계 및 향후 개선</h3><div class="slot">[남은 문제 / 개선 방향]</div></div></div></section>
-<section id="team"><div class="section-no">08 / TEAM</div><h2>팀원 및 역할</h2><div class="tablewrap"><table><thead><tr><th>팀원</th><th>담당 역할</th></tr></thead><tbody><tr><td>[이름]</td><td>[역할]</td></tr><tr><td>[이름]</td><td>[역할]</td></tr><tr><td>[이름]</td><td>[역할]</td></tr><tr><td>[이름]</td><td>[역할]</td></tr></tbody></table></div><p class="caption">[필요에 따라 행 추가 또는 삭제]</p></section>
-</main><footer>2026 · Artificial Intelligence and Control for Autonomous Driving · [팀명]</footer>
+<section id="overview">
+  <div class="section-no">01 / PROJECT OVERVIEW</div>
+  <h2>성균관대역에서 교내 주차장까지</h2>
+  <p>서부로에서 출발해 성균관대역 사거리와 율전동 골목을 지나 교내 L1 주차장 통로까지 가는 약 2.8 km를 SUMO에 구현했다. 이 짧은 경로에서 자율주행차는 버스 뒤에서 속도를 줄이고, 신호가 없는 교차로에서 양보하고, 정문 앞 신호를 기다려 좌회전해야 한다.</p>
+  <p>팀은 같은 경로에 서로 다른 배경 교통을 생성해 정책을 학습하고, 처음 보는 교통 시드에서 충돌·완주·신호 위반을 측정했다. 최종 정책의 주행 기록은 다른 사람이 상태와 행동을 분석할 수 있도록 공개했다.</p>
+</section>
+<section id="road">
+  <div class="section-no">02 / ROAD ENVIRONMENT</div>
+  <h2>도로와 배경 교통</h2>
+  <div class="grid">
+    <figure><a href="https://raw.githubusercontent.com/a01023289522-cmd/autonomous-driving/fc472d0c3552f16f9653cbf9d5b0c451fbe41bbc/sumo/skku_map/img/s5_result.png"><img src="https://raw.githubusercontent.com/a01023289522-cmd/autonomous-driving/fc472d0c3552f16f9653cbf9d5b0c451fbe41bbc/sumo/skku_map/img/s5_result.png" alt="성균관대역 일대 도로와 교차로를 구현한 SUMO 화면" loading="lazy"></a><figcaption class="caption">팀이 구축한 SUMO 도로망. 이미지를 누르면 원본을 볼 수 있다.</figcaption></figure>
+    <div class="panel"><h3>약 2.8 km의 주행 경로</h3>
+      <ol><li>성균관대역 사거리 약 300 m 전, 서부로 남행 차로에서 출발한다.</li><li>사거리와 버스 정류장을 지나 골목 오거리와 율전로 회전교차로를 통과한다.</li><li>율전로64번길과 일월로를 거쳐 학교 정문에서 좌회전한다.</li><li>교내 L1 주차장 통로 끝에 도착하면 완주로 기록한다.</li></ol>
+    </div>
+  </div>
+  <p>OpenStreetMap 도로망을 바탕으로 지도와 로드뷰에서 차로 수, 일방통행 방향, 버스 노선과 정류장을 확인했다. 고속도로는 배경 차량의 진입로로 사용한다. 교통 수요와 차량 신호 시간은 시뮬레이션의 가정값이다. <a href="https://github.com/a01023289522-cmd/autonomous-driving/blob/fc472d0c3552f16f9653cbf9d5b0c451fbe41bbc/sumo/skku_map/README.md">도로망 제작 기록 ↗</a></p>
+</section>
+<section id="method">
+  <div class="section-no">03 / AV DESIGN &amp; TRAINING</div>
+  <h2>NW7은 신호와 앞차를 어떻게 구분하나</h2>
+  <div class="grid three">
+    <div class="panel"><h3>관측</h3><p>정책은 45개 수치를 입력받는다. 실제 앞차까지의 거리와 감속 필요도, 정지선까지의 거리와 감속 필요도를 각각 관측한다.</p></div>
+    <div class="panel"><h3>행동</h3><p>정책은 매 스텝 가감속과 차선 변경을 출력한다. 수집 기록에는 두 원시 출력과 차선 변경이 실제로 적용됐는지가 함께 남는다.</p></div>
+    <div class="panel"><h3>보상</h3><p>적색 신호에 진입하면 30점을 감점한다. 적색 대기 중 정지선에서 멀다는 이유로 매 스텝 쌓이던 감점은 없애고, 정지선에 접근하는 보상은 유지했다.</p></div>
+  </div>
+  <h3>10만 스텝 체크포인트를 선택한 이유</h3>
+  <p>기존 PPO 정책 <code>js_h13e_30k</code>에서 정지선을 가상의 앞차로 표시하던 관측을 끄고 추가 학습했다. 개발 시드 1000–1199에서 15만·22.5만·30만 스텝 모델은 정지선 앞 정차 거리 중앙값이 각각 7.3 m, 15.1 m, 28.2 m였다. 팀은 주행이 느려지고 정차 위치가 멀어지는 현상을 보고 10만 스텝 모델을 채택했다. <a href="https://github.com/a01023289522-cmd/autonomous-driving/blob/fc472d0c3552f16f9653cbf9d5b0c451fbe41bbc/models/jaeseong_1125_nw7.md">학습 설정과 체크포인트 선택 기록 ↗</a></p>
+</section>
+<section id="results">
+  <div class="section-no">04 / EVALUATION</div>
+  <h2>새로운 교통 시드 1,000개에서의 주행</h2>
+  <p>시드 2000–2999에서 최종 NW7 모델로 전체 경로를 한 번씩 주행했다. 충돌률과 완주율은 주행 횟수를 기준으로 계산했고, 적색 신호 진입은 발생 횟수를 셌다.</p>
+  <div class="metrics">
+    <div class="metric"><span>완주율</span><strong>97.5%</strong><span>1,000회 중 975회 도착</span></div>
+    <div class="metric"><span>충돌률</span><strong>2.5%</strong><span>1,000회 중 25회 충돌</span></div>
+    <div class="metric"><span>적색 신호 진입</span><strong>0회</strong><span>평가 전 구간</span></div>
+  </div>
+  <h3>멈출 때 남긴 거리</h3>
+  <div class="tablewrap"><table><thead><tr><th>같은 시드에서 평가한 정책</th><th>완주율</th><th>충돌률</th><th>정지선까지</th><th>앞차까지</th></tr></thead><tbody>
+    <tr><th scope="row">NW7 · 수집에 사용</th><td>97.5%</td><td>2.5%</td><td>2.7 m</td><td>6.9 m</td></tr>
+    <tr><th scope="row">Soup3 · 세 모델의 가중치 평균</th><td>97.8%</td><td>2.2%</td><td>6.2 m</td><td>15.0 m</td></tr>
+  </tbody></table></div>
+  <p class="caption">거리는 정차 순간의 중앙값이다. NW7은 앞차 없이 적색·황색 신호에 멈춘 1,300건과 정지한 앞차 뒤에 멈춘 220건을 각각 집계했다. <a href="https://github.com/a01023289522-cmd/autonomous-driving/blob/fc472d0c3552f16f9653cbf9d5b0c451fbe41bbc/models/jaeseong_1125_nw7.md">모델별 평가 원문 ↗</a></p>
+</section>
+<section id="dataset">
+  <div class="section-no">05 / DATASET</div>
+  <h2>공개 주행 데이터셋</h2>
+  <p>한 행은 자율주행차가 주변을 관측하고 행동을 한 번 선택한 뒤 보상과 다음 상태를 얻기까지의 한 스텝이다. 평가와 별도로 NW7 정책을 시드 4000–13874에서 실행했다.</p>
+  <div class="metrics">
+    <div class="metric"><span>Transitions</span><strong>10,003,156</strong><span>전체 주행 스텝</span></div>
+    <div class="metric"><span>Episodes</span><strong>9,875</strong><span>서로 다른 교통 시드</span></div>
+    <div class="metric"><span>저장 용량</span><strong>4.27 GB</strong><span>압축 JSONL 및 NPZ 합계</span></div>
+  </div>
+  <p>5회 주행을 한 묶음으로 저장했다. 공개된 1,975개 묶음의 <code>metadata.json</code>에서 스텝 수와 시드를 합산했다. 첫 묶음은 시드 4000–4004의 5,154스텝이다. 상세 기록은 <code>transitions.jsonl.gz</code>, 배열 분석용 데이터는 <code>transitions.npz</code>에 들어 있다. <a href="https://huggingface.co/datasets/jnsoo/autonomous_driving/tree/3560bdf14d1e0db52d2b4566a52c11d9d30771f8/nw7_10m/batch-000000">첫 묶음의 파일 보기 ↗</a></p>
+  <div class="tablewrap"><table><thead><tr><th>JSONL 필드</th><th>한 스텝에서 읽을 수 있는 내용</th></tr></thead><tbody>
+    <tr><th scope="row"><code>episode, t</code></th><td>주행 번호와 해당 주행 안에서의 스텝 번호</td></tr>
+    <tr><th scope="row"><code>observation, state</code></th><td>정책에 입력한 45개 관측값과 시뮬레이터의 상세 상태. 상세 상태에는 자차 속도, 교통 시드, 신호별 남은 시간이 있다.</td></tr>
+    <tr><th scope="row"><code>action_raw, action</code></th><td>정책의 가감속·차선 변경 출력과 차선 변경 적용 여부</td></tr>
+    <tr><th scope="row"><code>reward, terminated, truncated</code></th><td>해당 스텝의 보상과 주행 종료·시간 제한 여부</td></tr>
+    <tr><th scope="row"><code>detected_vehicles, event</code></th><td>감지한 주변 차량과 충돌·도착 여부, 행동 전후 차로</td></tr>
+    <tr><th scope="row"><code>next_observation, next_state</code></th><td>중간 스텝에서는 같은 주행의 다음 행에서 읽고, 마지막 스텝에서는 해당 행의 필드에서 읽는다.</td></tr>
+  </tbody></table></div>
+</section>
+<section id="reproduce">
+  <div class="section-no">06 / REPRODUCIBILITY</div>
+  <h2>같은 모델로 주행해 보기</h2>
+  <p>팀 저장소와 수업 저장소를 같은 상위 폴더에 두고 SUMO와 Python 의존성을 설치한다. 새로 받은 팀 저장소에서 아래 명령을 순서대로 실행하면 공개 데이터 수집에 사용한 버전으로 이동해 NW7 주행을 볼 수 있다. <a href="https://github.com/a01023289522-cmd/autonomous-driving/blob/fc472d0c3552f16f9653cbf9d5b0c451fbe41bbc/docs/work_guide.md">환경 설치 안내 ↗</a></p>
+  <div class="panel"><h3>모델 버전 선택 및 1회 재생</h3><pre><code>git switch --detach fc472d0c3552f16f9653cbf9d5b0c451fbe41bbc
+python -X utf8 rl/test_skku.py models/jaeseong_1125_nw7.pt --config js_nw7 --episodes 1</code></pre>
+  <h3>평가 시드 2000–2999의 완주·충돌 집계</h3><pre><code>python -X utf8 rl/quick_eval.py models/jaeseong_1125_nw7.pt --config js_nw7 --seeds 2000-2999 --procs 4</code></pre></div>
+  <div class="links"><a class="link primary" href="https://github.com/a01023289522-cmd/autonomous-driving/blob/fc472d0c3552f16f9653cbf9d5b0c451fbe41bbc/models/jaeseong_1125_nw7.md">모델 및 학습 명령 ↗</a><span class="link pending" data-pdf>Presentation PDF · 준비 중</span><a class="link" href="https://huggingface.co/datasets/jnsoo/autonomous_driving/tree/3560bdf14d1e0db52d2b4566a52c11d9d30771f8/nw7_10m">공개 데이터 받기 ↗</a></div>
+</section>
+<section id="conclusion">
+  <div class="section-no">07 / CONCLUSION</div>
+  <h2>남은 과제는 무신호 좌회전에서의 양보</h2>
+  <p>NW7은 새 교통 시드 1,000회에서 충돌률 5% 미만이라는 목표를 달성했다. 남은 충돌 25건 중 15건은 같은 무신호 좌회전 지점에서 발생했다. 오른쪽에서 우선권을 가진 차량이 접근할 때 진입을 보류하는 판단이 다음 개선 과제다.</p>
+  <p>이 결과는 팀이 설정한 신호 주기와 교통량을 사용한 SUMO 경로에서 측정했다. 시간대별 실측 교통량이나 다른 도로망에서 같은 성능을 내는지는 별도의 평가가 필요하다.</p>
+</section>
+<section id="team">
+  <div class="section-no">08 / TEAM</div>
+  <h2>팀원과 작업 기록</h2>
+  <div class="tablewrap"><table><thead><tr><th>팀원</th><th>저장소에서 볼 수 있는 작업</th></tr></thead><tbody>
+    <tr><th scope="row">박준수</th><td><a href="https://github.com/a01023289522-cmd/autonomous-driving/tree/junsoo/skku-map">성균관대역 일대 SUMO 도로망 구축</a></td></tr>
+    <tr><th scope="row">최민기</th><td><a href="https://github.com/a01023289522-cmd/autonomous-driving/tree/mingi/local-b">Local B 모델 추가 학습과 정차 평가</a></td></tr>
+    <tr><th scope="row">임재성</th><td><a href="https://github.com/a01023289522-cmd/autonomous-driving/blob/fc472d0c3552f16f9653cbf9d5b0c451fbe41bbc/models/jaeseong_1125_nw7.md">NW7 보상 조정과 최종 체크포인트 평가</a></td></tr>
+    <tr><th scope="row">임수진</th><td><a href="https://github.com/a01023289522-cmd/autonomous-driving/tree/sujin/signal-experiments">정문 신호와 정지선 반복 평가</a></td></tr>
+  </tbody></table></div>
+</section>
+</main><footer>2026 · Artificial Intelligence and Control for Autonomous Driving</footer>
 
 <script>
 async function assetAvailable(path, type) {
