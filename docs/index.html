@@ -131,8 +131,8 @@ ul.plain { margin:8px 0 0; padding-left:1.2em } ul.plain li + li { margin-top:4p
 </section>
 <section id="dataset">
   <h2>공개 주행 데이터</h2><p>학습(시드 0–499)·평가(1000–2999)와 겹치지 않는 교통 시드 4000–13874에서 NW7을 결정적 정책으로 주행하며, 0.5초마다 한 행씩 기록했다. 5회 주행을 한 묶음으로 1,975개 묶음을 저장했다.</p>
-  <div class="stats"><div><span>Transition</span><strong>10,003,156</strong></div><div><span>에피소드</span><strong>9,875</strong></div><div><span>파일 용량</span><strong>4.27 GB</strong></div><div><span>기록 간격</span><strong>0.5초</strong></div></div>
-  <p class="note">용량은 Hugging Face에 올라간 5,926개 파일(묶음마다 <code>transitions.jsonl.gz</code>, <code>transitions.npz</code>, <code>metadata.json</code>)의 크기 합 4,273,160,564바이트다. transition 수는 1,975개 <code>metadata.json</code>의 합계다.</p>
+  <div class="stats"><div><span>Transition</span><strong>10,003,156</strong></div><div><span>에피소드</span><strong>9,875</strong></div><div><span>기록 간격</span><strong>0.5초</strong></div></div>
+  <p class="note">transition 수는 공개된 1,975개 묶음의 <code>metadata.json</code>을 합산한 값이다.</p>
   <h3>Observation과 State</h3>
   <p><code>observation</code>은 정책이 실제로 받은 부분 관측 45개(−1~1)다. <code>state</code>는 시뮬레이터만 아는 전체 상태로, 정책 입력에는 쓰지 않는다. 둘을 함께 남겨 자율주행차가 본 정보와 실제 상황을 비교할 수 있게 했다.</p>
   <div class="tablewrap"><table><thead><tr><th scope="col">필드</th><th scope="col">의미 · 단위</th><th scope="col">형식</th></tr></thead><tbody>
