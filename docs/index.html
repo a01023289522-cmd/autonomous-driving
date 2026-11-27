@@ -38,6 +38,7 @@ figcaption { margin-top:7px }
 .scenes { margin-top:20px }
 .scenes strong { display:block; color:var(--ink); font-size:1.05rem }
 .stats { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; margin:20px 0 }
+@media (min-width:521px) { #dataset .stats { grid-template-columns:repeat(2,minmax(0,1fr)) } }
 .stats div { padding:12px 16px; background:var(--tint); border-top:2px solid var(--green) }
 .stats strong { display:block; font-size:clamp(1.45rem,3vw,2.25rem); color:var(--green); font-variant-numeric:tabular-nums }
 .stats span,th,td,.source { font-size:.94rem }
@@ -99,7 +100,7 @@ footer { padding-block:22px; color:var(--sub) }
 </section>
 <section id="dataset">
   <h2>공개 주행 데이터</h2><p>학습·평가와 구분한 교통 시드 4000–13874에서 NW7의 결정적 정책으로 주행했다. 0.5초 단위 기록을 <code>transitions.jsonl.gz</code>와 <code>transitions.npz</code>로 공개했다.</p>
-  <div class="stats"><div><span>주행 스텝</span><strong>10,003,156</strong></div><div><span>에피소드</span><strong>9,875</strong></div><div><span>데이터 용량</span><strong>4.27 GB</strong></div></div>
+  <div class="stats"><div><span>주행 스텝</span><strong>10,003,156</strong></div><div><span>에피소드</span><strong>9,875</strong></div></div>
   <div class="tablewrap"><table><thead><tr><th scope="col">필드</th><th scope="col">기록 내용</th></tr></thead><tbody>
     <tr><th scope="row"><code>episode, t, reward</code></th><td>주행 번호, 스텝 번호, 해당 스텝의 보상</td></tr>
     <tr><th scope="row"><code>terminated, truncated</code></th><td>충돌·도착에 의한 종료와 1,200초 시간 제한에 의한 종료</td></tr>
