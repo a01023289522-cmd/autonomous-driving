@@ -19,10 +19,22 @@
 
 | 이름 | GitHub ID | 담당 |
 |---|---|---|
-| 박준수 | a01023289522-cmd | 미정 |
-| 최민기 | mingi-eee | 미정 |
-| 임재성 | imjaeseong970-cpu | 미정 |
-| 임수진 | sUUjin-L | 미정 |
+| 박준수 | a01023289522-cmd | SUMO 도로망 구축 · 학습 환경 연결 · 주행 데이터 수집과 Hugging Face 공개 |
+| 최민기 | mingi-eee | 모델 추가 학습과 정차 평가 · 데이터 수집기 · 프로젝트 웹페이지 |
+| 임재성 | imjaeseong970-cpu | 보상·관측 설계 · NW7 학습 · 최종 모델 선정과 평가 · 주행 영상 |
+| 임수진 | sUUjin-L | 정문 신호·정지선 반복 평가 · 적색 진입과 정지 위치 평가 도구 |
+
+## 🏁 최종 모델 NW7
+
+- 모델: [`models/jaeseong_1125_nw7.pt`](models/jaeseong_1125_nw7.pt), 설정 `js_nw7`, 설명·학습 명령: [`models/jaeseong_1125_nw7.md`](models/jaeseong_1125_nw7.md)
+- 결과 (학습에 쓰지 않은 교통 시드 2000–2999, 1,000회): 완주 97.5%, 충돌 2.5%, 적색 신호 진입 0회
+- 프로젝트 페이지: https://a01023289522-cmd.github.io/autonomous-driving/docs/ · 주행 데이터: https://huggingface.co/datasets/jnsoo/autonomous_driving
+
+```
+python -X utf8 rl/test_skku.py models/jaeseong_1125_nw7.pt --config js_nw7 --episodes 1                     # SUMO 화면 주행
+python -X utf8 rl/quick_eval.py models/jaeseong_1125_nw7.pt --config js_nw7 --seeds 2000-2999 --procs 4    # 화면 없이 평가
+python -X utf8 rl/collect_nw7.py --workers 2                                                                 # 주행 데이터 수집 (Windows)
+```
 
 ## 🚀 시작하기
 
