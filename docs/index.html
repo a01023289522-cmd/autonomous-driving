@@ -146,9 +146,18 @@ ul.plain { margin:8px 0 0; padding-left:1.2em } ul.plain li + li { margin-top:4p
     <tr><th scope="row"><code>event.*</code></th><td>충돌 여부, 도착 여부, 행동 전후 차로</td><td>참·거짓 · 정수</td></tr>
     <tr><th scope="row"><code>next_observation, next_state</code></th><td>다음 스텝 값. JSONL에서는 용량을 줄이려고 마지막 스텝에만 쓰고, 나머지는 다음 행의 값을 쓴다.</td><td>실수 45개 · 객체</td></tr>
   </tbody></table></div>
-  <p><code>transitions.jsonl.gz</code>는 위 항목을 모두 담은 전체 기록이고, <code>transitions.npz</code>는 학습용 배열(observation, action_raw, lane_change, reward, next_observation, terminated, truncated, episode, t, detected_xy, detected_offsets)이다.</p>
+  <p><code>transitions.jsonl.gz</code>는 위 항목을 모두 담은 전체 기록이고, <code>transitions.npz</code>는 학습용 배열(observation, action_raw, lane_change, reward, next_observation, terminated, truncated, episode, t, detected_xy, detected_offsets)이다. 묶음마다 신호 숫자 칼럼을 담은 <code>signals.npz</code>가 따로 있다.</p>
+  <h3>신호 칼럼 (signals.npz)</h3>
+  <p>교수님 공지에 따라 신호는 문자 대신 숫자로, 신호등마다 칼럼을 나눠 저장했다. 수집기가 state에 남긴 신호 문자열(예: <code>GGGgrrr</code>)과 현시·남은 시간에서 <code>rl/add_signals.py</code>가 경로 신호 5곳의 숫자 칼럼 15개를 계산해 묶음마다 <code>signals.npz</code>로 저장한다. 원본 파일은 바꾸지 않고, 행 순서와 <code>episode</code>, <code>t</code>가 <code>transitions.npz</code>와 같다. Hugging Face 전체 1,975묶음과 LMS 제출 표본 198묶음 모두에 들어 있다.</p>
+  <div class="tablewrap"><table><thead><tr><th scope="col">칼럼</th><th scope="col">의미 · 단위</th><th scope="col">형식</th></tr></thead><tbody>
+    <tr><th scope="row"><code>tls_{이름}_color</code></th><td>자율주행차가 지나가는 연결의 신호색: 빨강 0, 노랑 0.5, 초록 1</td><td>실수</td></tr>
+    <tr><th scope="row"><code>tls_{이름}_phase</code></th><td>현재 현시 번호</td><td>정수</td></tr>
+    <tr><th scope="row"><code>tls_{이름}_remain</code></th><td>다음 현시까지 남은 시간(s)</td><td>실수</td></tr>
+    <tr><th scope="row"><code>episode, t</code></th><td>정렬용. <code>transitions.npz</code>와 같은 값</td><td>정수</td></tr>
+  </tbody></table></div>
+  <p class="note">이름은 경로 순서로 hayul(서부로×하률로), sageori(성대역 사거리), seobu2123(서부로×서부로2123번길), ilwol(서부로×일월로), gate(일월로×학교 정문)이다. LMS 제출 표본 198묶음(1,000,936행)의 값을 따로 계산한 값과 비교해 모두 일치했고, 자율주행차가 신호 교차로에 들어간 순간의 신호색은 표본 3묶음 75회 모두 초록(1) 또는 노랑(0.5)이었다.</p>
   <h3>수업 필수 항목과 비교</h3>
-  <p>수업 <code>collect_pomdp_data.py</code>의 기본 항목 19개와 NPZ 배열 11개가 모두 들어 있다. LMS 제출 표본의 첫 묶음(시드 4000–4004)에서 확인했다. 기본과 다른 점은 observation을 19개에서 45개로 늘린 것과, state에 교통 시드(<code>sumo_seed</code>)·신호 상태(<code>traffic_signals</code>)를 더한 것이다.</p>
+  <p>수업 <code>collect_pomdp_data.py</code>의 기본 항목 19개와 NPZ 배열 11개가 모두 들어 있다. LMS 제출 표본의 첫 묶음(시드 4000–4004)에서 확인했다. 기본과 다른 점은 observation을 19개에서 45개로 늘린 것, state에 교통 시드(<code>sumo_seed</code>)·신호 상태(<code>traffic_signals</code>)를 더한 것, 신호 숫자 칼럼 파일 <code>signals.npz</code>를 더한 것이다.</p>
   <h3>활용</h3>
   <ul class="plain">
     <li>모방학습: observation → action_raw</li>
@@ -182,6 +191,9 @@ python -X utf8 rl/test_skku.py models/jaeseong_1125_nw7.pt --config js_nw7 --epi
   <pre><code>git switch mingi/local-b
 python -X utf8 rl/collect_nw7.py --workers 2</code></pre>
   <p class="note">기본값은 transition 10,000,000개, 저장 위치는 <code>data/nw7_10m</code>이다. 수업 저장소가 사용자 폴더 바로 아래가 아니면 <code>COURSE_REPO</code>를 지정한다.</p>
+  <h3>6. 신호를 숫자 칼럼으로 변환</h3>
+  <p>수집이 끝난 폴더에서 묶음(<code>batch-*</code>)마다 <code>signals.npz</code>를 만든다. 원본 파일은 바꾸지 않는다. 변환기는 <code>main</code> 브랜치에 있다.</p>
+  <pre><code>python -X utf8 rl/add_signals.py data/nw7_10m</code></pre>
   <div class="links"><a href="https://github.com/a01023289522-cmd/autonomous-driving/blob/main/docs/work_guide.md">작업 가이드</a><a href="https://github.com/a01023289522-cmd/autonomous-driving/blob/fc472d0c3552f16f9653cbf9d5b0c451fbe41bbc/models/jaeseong_1125_nw7.md">NW7 모델 설명</a><a href="https://github.com/a01023289522-cmd/autonomous-driving/blob/fc472d0c3552f16f9653cbf9d5b0c451fbe41bbc/rl/configs/js_nw7.py">평가 설정 js_nw7</a><a href="https://github.com/a01023289522-cmd/autonomous-driving/blob/mingi/local-b/rl/collect_nw7.py">데이터 수집기</a></div>
 </section>
 <section id="conclusion">
