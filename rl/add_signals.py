@@ -2,7 +2,8 @@
 state.traffic_signals의 link_states 문자열에서 AV 경로 연결의 신호색(빨강 0, 노랑 0.5, 초록 1), 현시 번호, 남은 초를
 신호 5곳마다 계산해 batch 폴더마다 signals.npz로 저장한다. 원본 파일은 바꾸지 않는다.
     python rl/add_signals.py data/nw7_10m [출력 폴더(기본: 같은 폴더)]
-AV 경로 연결 번호는 sumolib으로 skku.net.xml의 신호 연결 중 경로 엣지 k → k+1을 잇는 것 (sumo/skku_map/verify/av_route_full.json)."""
+AV 경로 연결 번호: 실제 AV 경로(7754567510 → 9669057440#0, 34구간, traci.vehicle.getRoute)의 엣지 k → k+1을 잇는 신호 연결.
+(verify/av_route_full.json은 왕복 경로라 정문에서 나가는 연결 1, 2번이 섞이므로 쓰지 않는다.)"""
 import gzip, json, os, sys
 from concurrent.futures import ProcessPoolExecutor
 import numpy as np
@@ -10,7 +11,7 @@ TLS = [("hayul", "cluster_495951062_5357160054", [13, 14, 15]),
        ("sageori", "cluster_4650845824_4655421093_4662858740_4662858741_#2more", [1]),
        ("seobu2123", "cluster_1184134292_726912991_837163934", [0]),
        ("ilwol", "cluster_452394408_4871043595", [15, 16, 17]),
-       ("gate", "520991292", [1, 2, 10])]
+       ("gate", "520991292", [10])]
 COLOR = {"r": 0.0, "R": 0.0, "u": 0.0, "y": 0.5, "Y": 0.5, "g": 1.0, "G": 1.0, "s": 1.0, "o": 1.0, "O": 1.0}
 
 
