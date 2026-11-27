@@ -2,141 +2,126 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>성균관대역에서 교내 주차장까지 | 13조 자율주행 프로젝트</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>성균관대역에서 교내 주차장까지 · 13조 자율주행 프로젝트</title>
 <style>
-:root{--ink:#181818;--muted:#666;--line:#d8d8d8;--soft:#f4f4f4;--max:1080px}*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:#fff;color:var(--ink);font-family:Pretendard,'Noto Sans KR','Malgun Gothic',Arial,sans-serif;line-height:1.65}a{color:inherit}header{border-bottom:1px solid var(--line)}nav{max-width:var(--max);margin:auto;padding:18px 24px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}.brand{font-size:13px;font-weight:800;letter-spacing:.12em;text-decoration:none}.navlinks{display:flex;gap:18px;flex-wrap:wrap;font-size:13px}.navlinks a{text-decoration:none;color:var(--muted)}.navlinks a:hover{text-decoration:underline}main{max-width:var(--max);margin:auto;padding:0 24px}.hero{padding:68px 0 48px;border-bottom:2px solid var(--ink);text-align:center}.hero .links{justify-content:center}.hero .link{border-radius:999px}.hero .placeholder{max-width:900px;margin-left:auto;margin-right:auto}.hero p{max-width:850px;margin-left:auto;margin-right:auto}.eyebrow,.section-no{font-size:12px;letter-spacing:.16em;font-weight:700;color:var(--muted)}h1{font-size:clamp(38px,5.5vw,65px);line-height:1.07;letter-spacing:-.05em;margin:18px 0 24px}h2{font-size:clamp(26px,4vw,38px);line-height:1.2;letter-spacing:-.035em;margin:6px 0 25px}h3{font-size:19px;margin:0 0 10px}p{margin:8px 0 16px}.muted{color:var(--muted)}.links{display:flex;flex-wrap:wrap;gap:10px;margin:26px 0}.link{border:1px solid var(--ink);padding:10px 16px;text-decoration:none;font-size:14px;font-weight:650}.link.primary{background:var(--ink);color:white}.link.pending{border-color:var(--line);color:var(--muted);background:var(--soft)}section{padding:58px 0;border-bottom:1px solid var(--line)}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}.three{grid-template-columns:repeat(3,minmax(0,1fr))}.panel{border:1px solid var(--line);padding:20px;min-width:0}.placeholder{display:grid;place-content:center;text-align:center;min-height:180px;aspect-ratio:16/9;background:var(--soft);border:1px dashed #aaa;color:var(--muted);padding:20px;font-size:14px}.hero .placeholder{margin-top:32px;min-height:240px;aspect-ratio:2.65/1}.slot{color:var(--muted);font-size:14px;padding:10px 0;border-bottom:1px dashed var(--line)}.slot:last-child{border-bottom:0}.caption{font-size:13px;color:var(--muted);margin:8px 0}.tablewrap{overflow:auto}table{width:100%;border-collapse:collapse;font-size:14px;text-align:left}th,td{padding:13px 12px;border-bottom:1px solid var(--line);vertical-align:top}th{background:var(--soft);font-weight:650}.metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:22px}.metric{padding:20px;border-top:2px solid var(--ink);background:var(--soft)}.metric strong{display:block;font-size:32px;line-height:1.4}.metric span{font-size:13px;color:var(--muted)}.flow{display:flex;align-items:center;flex-wrap:wrap;gap:10px;margin:18px 0}.flow span{padding:9px 14px;border:1px solid var(--line);font-size:14px}.flow b{color:#999;font-size:14px}footer{max-width:var(--max);padding:30px 24px;margin:auto;font-size:12px;color:var(--muted)}code{font-family:Consolas,monospace;font-size:13px;overflow-wrap:anywhere}.note{font-size:13px;border-left:2px solid var(--ink);padding-left:12px;color:var(--muted)}@media(max-width:660px){.grid,.three,.metrics{grid-template-columns:1fr}.hero{padding-top:50px}section{padding:40px 0}.navlinks{gap:12px}.hero .placeholder{aspect-ratio:16/9}}
-
-.resources { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:12px; margin:26px 0; text-align:left }
-.resources > div { border-top:2px solid var(--ink); background:var(--soft); padding:14px 16px }
-.resources span { display:block; font-size:12px; color:var(--muted) }
-.resources strong,.resources a { font-size:15px; font-weight:650 }
-video { display:block; width:100%; max-width:900px; margin:32px auto 0 }
-figure{margin:0}figure img{width:100%;height:auto;display:block}section .grid+h3,.panel pre+h3{margin-top:24px}.panel ol{padding-left:1.4em}.panel li+li{margin-top:8px}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:var(--soft);padding:12px}th[scope=row]{background:white;font-weight:600}.metric strong{font-variant-numeric:tabular-nums;font-size:clamp(24px,3vw,32px)}
-.hero figure { max-width:900px; margin:32px auto 0 }
-.hero video,.scene video { width:100%; margin:0; height:auto; background:#171717 }
-.hero figcaption,.scene figcaption { text-align:left; margin-top:8px }
-.scene { margin:0 }
-.scene h3 { margin-top:12px }
-.route-images { margin:24px 0 }
-.route-images img { border:1px solid var(--line) }
-details summary { cursor:pointer; font-weight:650; margin:20px 0 10px }
+:root { --ink:#17251f; --sub:#48584e; --line:#cad3cc; --paper:#fff; --tint:#f1f5f1; --green:#16513b; }
+* { box-sizing:border-box }
+body { margin:0; color:var(--ink); background:var(--paper); font:16px/1.7 "Malgun Gothic","Apple SD Gothic Neo",sans-serif; word-break:keep-all; overflow-wrap:anywhere }
+main,nav,footer { max-width:1160px; margin:auto; padding-inline:clamp(18px,4vw,56px) }
+header { border-bottom:1px solid var(--line) }
+nav,.navlinks,.links { display:flex; align-items:center; flex-wrap:wrap; gap:12px 22px }
+nav { justify-content:space-between; padding-block:14px }
+a { color:var(--green); text-underline-offset:4px }
+a:focus-visible,video:focus-visible { outline:3px solid #ca7900; outline-offset:3px }
+.brand,.navlinks a { text-decoration:none; font-size:14px }
+.brand { font-weight:750; letter-spacing:.035em }
+.navlinks a:hover,.brand:hover { text-decoration:underline }
+h1,h2,h3,p,figure { margin:0 }
+h1,h2,h3 { line-height:1.3 }
+h1 { font-size:clamp(2.35rem,5vw,4.1rem); letter-spacing:-.065em; margin:14px 0 }
+h2 { font-size:clamp(1.65rem,3.4vw,2.5rem); letter-spacing:-.045em; margin-bottom:20px }
+h3 { font-size:1.15rem; margin:18px 0 6px }
+p + p { margin-top:10px }
+section { padding-block:clamp(32px,5vw,60px); border-bottom:1px solid var(--line) }
+.hero { display:grid; grid-template-columns:1fr 1.12fr; gap:32px; align-items:center }
+.meta,figcaption,.note { color:var(--sub); font-size:.9rem }
+.links { gap:8px; margin-top:22px }
+.links a { padding:7px 13px; border:1px solid var(--line); border-radius:4px; text-decoration:none; font-weight:650 }
+.links a:first-child,.links a:hover { background:var(--green); color:white }
+video,img { display:block; width:100%; height:auto }
+video { background:#16231c; aspect-ratio:16/9 }
+figcaption { margin-top:7px }
+.grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:20px }
+.maps { margin:18px 0 }
+.maps img { border:1px solid var(--line) }
+.scenes { margin-top:20px }
+.scenes strong { display:block; color:var(--ink); font-size:1.05rem }
+.stats { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; margin:20px 0 }
+.stats div { padding:12px 16px; background:var(--tint); border-top:2px solid var(--green) }
+.stats strong { display:block; font-size:clamp(1.45rem,3vw,2.25rem); color:var(--green); font-variant-numeric:tabular-nums }
+.stats span,th,td,.source { font-size:.94rem }
+.tablewrap { overflow-x:auto; margin-block:12px }
+table { border-collapse:collapse; width:100%; text-align:left }
+td,th { padding:9px 12px; border-bottom:1px solid var(--line) }
+thead th { background:var(--tint) }
+code { font-size:.94em; white-space:normal }
+footer { padding-block:22px; color:var(--sub) }
+@media(max-width:760px) { .hero,.grid { grid-template-columns:1fr } .hero { gap:22px } }
+@media(max-width:520px) { nav { gap:7px } .navlinks { gap:8px 14px } .stats { grid-template-columns:1fr; gap:6px } .stats div { display:flex; justify-content:space-between; align-items:center } td,th { padding:7px } }
 </style>
 </head>
 <body>
-<header><nav><a class="brand" href="#top">SKKU / AUTONOMOUS DRIVING</a><div class="navlinks"><a href="#road">Environment</a><a href="#method">Method</a><a href="#results">Results</a><a href="#dataset">Dataset</a><a href="#team">Team</a></div></nav></header>
+<header><nav aria-label="주요 메뉴"><a class="brand" href="#top">SKKU · Autonomous Driving</a><div class="navlinks"><a href="#road">도로 환경</a><a href="#method">학습</a><a href="#results">평가</a><a href="#dataset">데이터</a><a href="#team">팀</a></div></nav></header>
 <main id="top">
-<div class="hero"><div class="eyebrow">13조 · 2026.11.28</div><h1>Autonomous Driving<br>in SKKU</h1><p>성균관대역에서 교내 주차장까지, SUMO에서 학습한 자율주행차의 2.8 km</p><p class="muted">박준수 · 임수진 · 임재성 · 최민기</p>
-<div class="resources" aria-label="프로젝트 제출 자료">
-  <div><span>코드와 모델</span><a href="https://github.com/a01023289522-cmd/autonomous-driving">GitHub 저장소</a> · <a href="https://github.com/a01023289522-cmd/autonomous-driving/blob/fc472d0c3552f16f9653cbf9d5b0c451fbe41bbc/models/jaeseong_1125_nw7.md">실행 안내</a></div>
-  <div><span>발표 자료 · 20장</span><a href="assets/presentation.pdf">최종 발표 PDF</a></div>
-  <div><span>주행 데이터</span><a href="https://huggingface.co/datasets/jnsoo/autonomous_driving/tree/main/nw7_10m">Hugging Face 데이터셋</a></div>
-  <div><span>교차로 주행 영상</span><a href="#interactions">충돌과 정상 통과 비교</a></div>
-</div>
-<figure id="demo">
-  <video controls playsinline preload="metadata" poster="assets/driving-poster.jpg" src="assets/driving.mp4" aria-label="NW7 최종 모델 완주 영상"></video>
-  <figcaption><strong>NW7 최종 주행</strong> · 서부로에서 교내 주차장까지의 경로를 16배속으로 담았다. <a href="assets/driving.mp4">원본 영상 열기 (37초)</a></figcaption>
-</figure>
-</div>
-<section id="overview">
-  <div class="section-no">01 / PROJECT OVERVIEW</div>
-  <h2>성균관대역에서 교내 주차장까지</h2>
-  <p>서부로에서 출발해 성균관대역 사거리와 율전동 골목을 지나 교내 주차장까지 가는 약 2.8 km를 SUMO에 구현했다. 이 짧은 경로에서 자율주행차는 버스 뒤에서 속도를 줄이고, 신호가 없는 교차로에서 양보하고, 정문 앞 신호를 기다려 좌회전해야 한다.</p>
-  <p>팀은 같은 경로에 서로 다른 배경 교통을 생성해 정책을 학습하고, 처음 보는 교통 시드에서 충돌·완주·신호 위반을 측정했다. 최종 정책의 주행 기록은 다른 사람이 상태와 행동을 분석할 수 있도록 공개했다.</p>
+<section class="hero">
+  <div><p class="meta">13조 · 2026.11.28</p><h1>성균관대역에서<br>교내 주차장까지</h1>
+    <p>실제 도로를 옮긴 SUMO 환경에서 신호와 양보 규칙을 지키며 2.8 km 경로를 완주하는 PPO 자율주행 정책을 학습했다.</p>
+    <div class="links"><a href="assets/presentation.pdf">최종 발표 PDF · 17장</a><a href="https://github.com/a01023289522-cmd/autonomous-driving">GitHub 코드</a><a href="https://huggingface.co/datasets/jnsoo/autonomous_driving/tree/main/nw7_10m">Hugging Face 데이터</a></div>
+  </div>
+  <figure><video controls playsinline preload="metadata" poster="assets/driving-poster.jpg" src="assets/driving.mp4" aria-label="NW7 최종 주행 영상"></video><figcaption>NW7 최종 주행 · <a href="assets/driving.mp4">영상 열기</a></figcaption></figure>
 </section>
 <section id="road">
-  <div class="section-no">02 / ROAD ENVIRONMENT</div>
-  <h2>도로와 배경 교통</h2>
-  <div class="grid route-images">
-    <figure><a href="assets/route-map.png"><img src="assets/route-map.png" alt="성균관대역에서 교내 주차장으로 이어지는 실제 도로 지도" loading="lazy"></a><figcaption class="caption">실제 도로 · © OpenStreetMap 기여자</figcaption></figure>
-    <figure><a href="assets/route-sumo.png"><img src="assets/route-sumo.png" alt="같은 범위의 SUMO 도로망과 빨간 점선으로 표시한 자율주행 경로" loading="lazy"></a><figcaption class="caption">같은 범위의 SUMO 환경 · 빨간 점선은 AV 경로</figcaption></figure>
+  <h2>도로 환경과 차량 간 상호작용</h2>
+  <p>서부로에서 골목과 회전교차로를 지나 율전로64번길, 일월로, 교내 도로로 이어진다. 경로에는 신호 교차로 5곳, 무신호 교차로 3곳, 회전교차로 1곳, 버스 정류장 2곳이 있다.</p>
+  <div class="grid maps">
+    <figure><a href="assets/route-map.png"><img src="assets/route-map.png" loading="lazy" width="1600" height="1430" alt="성균관대역과 교내 주차장 사이의 실제 도로 및 주행 경로"></a><figcaption>실제 도로 · © OpenStreetMap 기여자</figcaption></figure>
+    <figure><a href="assets/route-sumo.png"><img src="assets/route-sumo.png" loading="lazy" width="1600" height="1430" alt="같은 범위에서 빨간 점선으로 경로를 표시한 SUMO 도로망"></a><figcaption>같은 범위의 SUMO 도로망 · 빨간 점선은 자율주행차 경로</figcaption></figure>
   </div>
-  <div class="grid">
-    <div class="panel"><h3>약 2.8 km의 주행 경로</h3>
-      <ol><li>서부로 남행 차로에서 출발해 0.36 km 지점의 성균관대역 사거리를 지난다.</li><li>서부로 버스 정류장을 지나 골목 오거리로 들어간다. 율전로에서 무신호 좌회전을 한 뒤 회전교차로를 통과한다.</li><li>율전로64번길과 일월로를 거쳐 학교 정문에서 좌회전한다.</li><li>교내 무신호 교차로를 지나 2.80 km 지점의 교내 주차장에 도착한다.</li></ol>
-    </div>
-    <div class="panel"><h3>일반 차량이 만드는 교통</h3><p>경로에는 신호 교차로 5곳, 무신호 교차로 3곳, 회전교차로 1곳, 버스 정류장 2곳이 있다. 승용차는 시간당 약 1,440대를 기준으로 생성하고, 실제 노선을 따른 버스는 정류장에서 20초간 정차한다.</p><p>17개 버스 노선과 주차장 출입 차량을 포함해 배경 교통을 600초간 먼저 채운 뒤 AV를 투입했다.</p></div>
-  </div>
-  <p>시간대에 따라 승용차 교통량에 0.95–1.3배의 배율을 적용했다. 회전교차로에는 시간당 250–450대, 오거리에는 150–180대, 정문 앞에는 250대의 흐름을 설정했다. <a href="assets/presentation.pdf#page=8">발표 자료 8장</a></p>
-  <h3 id="interactions">교차로에서 언제 기다리고 언제 진입하는가</h3>
-  <div class="grid">
-    <figure class="scene"><video controls playsinline preload="none" poster="assets/left-turn-poster.jpg" src="assets/left-turn.mp4" aria-label="무신호 좌회전 충돌과 정상 통과 비교"></video><figcaption><strong>율전로 진입 · 무신호 좌회전</strong><p>충돌 사례에서는 골목에서 내려오는 차가 지나가기 전에 좌회전했다. 정상 사례에서는 진입로 맨 앞에 멈춰 우선 차량을 보낸 뒤 좌회전한다. <a href="assets/left-turn.mp4">영상 열기 (22초)</a></p></figcaption></figure>
-    <figure class="scene"><video controls playsinline preload="none" poster="assets/roundabout-poster.jpg" src="assets/roundabout.mp4" aria-label="율전로 회전교차로 충돌과 정상 통과 비교"></video><figcaption><strong>율전로 회전교차로 · 진입 대기</strong><p>충돌 사례에서는 대기 중인 앞차에 2.5 m 이내로 접근했다. 정상 사례에서는 진입선 앞에서 기다리다가 회전 차량이 지나간 뒤 들어간다. <a href="assets/roundabout.mp4">영상 열기 (45초)</a></p></figcaption></figure>
+  <h3>배경 교통</h3>
+  <p>승용차는 시간당 약 1,440대가 무작위로 출발·도착한다. 버스는 실제 17개 노선을 따라 정류장마다 20초씩 서고, 주차 차량은 주차장을 드나든다. 주요 판단 지점에 교통 흐름 12개를 설정하고 600초 동안 배경 교통을 생성한 뒤 자율주행차를 투입했다.</p>
+  <div class="grid scenes">
+    <figure><video controls playsinline preload="none" poster="assets/left-turn-poster.jpg" src="assets/left-turn.mp4" aria-label="율전로 무신호 좌회전 충돌과 정상 통과"></video><figcaption><strong>율전로 진입 · 무신호 좌회전</strong>골목에서 내려오는 차가 지나가기 전에 좌회전해 충돌했다. 정상 주행에서는 맨 앞에서 멈춰 우선 차량을 먼저 보낸다. <a href="assets/left-turn.mp4">영상 열기</a></figcaption></figure>
+    <figure><video controls playsinline preload="none" poster="assets/roundabout-poster.jpg" src="assets/roundabout.mp4" aria-label="11월 19일 모델과 NW7의 회전교차로 진입 비교"></video><figcaption><strong>율전로 회전교차로 · 진입선에서의 양보</strong>11/19 모델은 회전 차량이 다가올 때 진입선을 넘어 충돌했다. NW7은 진입선 앞에 정차해 회전 차량을 먼저 보낸 뒤 진입했다. <a href="assets/roundabout.mp4">영상 열기</a></figcaption></figure>
   </div>
 </section>
 <section id="method">
-  <div class="section-no">03 / AV DESIGN &amp; TRAINING</div>
-  <h2>NW7은 신호와 앞차를 어떻게 구분하나</h2>
-  <div class="grid three">
-    <div class="panel"><h3>관측</h3><p>정책은 0.5초마다 45개 수치를 입력받는다. 기본 관측 31개에 신호, 교차로, 제한 속도, 앞차와 정지선 근접 정보 14개를 추가했다.</p></div>
-    <div class="panel"><h3>행동</h3><p>정책은 −1에서 1 사이의 값 두 개를 출력한다. 하나는 연속 가감속에, 다른 하나는 오른쪽·유지·왼쪽 중 차로 행동을 고르는 데 쓴다. 차로 변경은 수업 환경의 안전 확인을 통과할 때 실행된다.</p></div>
-    <div class="panel"><h3>보상</h3><p>완주는 +2점, 충돌은 −5점, 양보 위반은 −2점이다. NW7에서는 적색 진입 벌점을 −5점에서 −30점으로 바꾸고, 적색 정지선에서 멀리 멈췄을 때의 감점을 0으로 설정했다.</p></div>
+  <h2>관측과 행동, PPO 학습</h2>
+  <div class="grid">
+    <div><h3>45차원 관측</h3><p>자차 속도와 주변 차로 정보 등 기본 관측 31개에 신호, 교차로, 제한 속도, 앞차와 정지선 근접 정보 14개를 더했다. 정책은 −1에서 1 사이로 정규화한 값을 입력받는다.</p></div>
+    <div><h3>0.5초마다 두 가지 출력</h3><p>한 값은 가감속에, 다른 값은 오른쪽·유지·왼쪽 중 차로 행동을 고르는 데 쓴다. 차로 변경은 기본 안전 확인을 통과하면 실행된다. 정차, 차간거리 유지, 양보는 정책이 결정한다.</p></div>
   </div>
-  <h3>PPO 학습 조건</h3>
-  <p>교통 시드 0–499와 출발 지점 12곳을 사용했다. 은닉층은 256 × 256이며, 2,048스텝을 모을 때마다 크기 128의 미니배치로 5회 반복해 갱신했다. 학습률은 0.0001에서 0.000025까지 선형으로 줄였다.</p>
-  <h3>11월 19일 모델에서 NW7까지</h3>
-  <p>11월 19일에는 위험 교차로와 일월로 앞을 출발 지점에 포함하고 교통량을 1.4배로 높인 조건도 섞어 학습했다. 이후에는 적색 대기 중 누적되는 감점을 줄이고, 교차로 안에서도 다음 교차로의 우선 차량을 고려해 양보하도록 바꿨다. <a href="assets/presentation.pdf#page=12">실험 과정 · 12–14장</a></p>
-  <p>최종 NW7은 <code>js_h13e_30k</code>에서 가상 정지 차량 관측을 끄고 10만 스텝 더 학습한 모델이다. 더 오래 학습하면 주행이 느려지고 정지선에서 멀리 멈춰, 정지선까지 거리 중앙값이 2.7 m인 10만 스텝 모델을 선택했다. <a href="assets/presentation.pdf#page=15">모델 선정 근거 · 15장</a></p>
+  <h3>보상과 학습 조건</h3>
+  <p>완주에는 +2점, 충돌에는 −5점, 적색 신호 진입에는 −30점, 양보 위반에는 −2점을 적용했다. 속도, 과속, 앞차·정지선과의 간격도 보상에 반영했다.</p>
+  <p>학습 시드 0–499와 출발 지점 12곳을 사용했다. PPO 정책은 256 × 256 ReLU 신경망을 사용하며, 2,048스텝마다 크기 128의 미니배치로 5회 반복해 갱신했다. <a href="assets/presentation.pdf#page=11">학습 조건 · 11장</a></p>
 </section>
 <section id="results">
-  <div class="section-no">04 / EVALUATION</div>
-  <h2>새로운 교통 시드 1,000개에서의 주행</h2>
-  <p>시드 2000–2999에서 최종 NW7 모델로 전체 경로를 한 번씩 주행했다. 충돌률과 완주율은 주행 횟수를 기준으로 계산했고, 적색 신호 진입은 발생 횟수를 셌다.</p>
-  <div class="metrics">
-    <div class="metric"><span>완주율</span><strong>97.5%</strong><span>1,000회 중 975회 도착</span></div>
-    <div class="metric"><span>충돌률</span><strong>2.5%</strong><span>1,000회 중 25회 충돌</span></div>
-    <div class="metric"><span>시간초과율</span><strong>0%</strong><span>1,000회 중 0회 · 제한 1,200초</span></div>
-  </div>
-  <h3>11월 19일 모델과 최종 NW7 비교</h3>
-  <p>두 모델 모두 같은 교통 시드 2000–2999에서 1,000회씩 주행했다. NW7에서는 적색 진입이 21회에서 0회로 줄었고, 평균 완주 시간은 495초에서 513초로 늘었다. 두 모델의 충돌률 95% 신뢰구간은 겹친다.</p>
-  <div class="tablewrap"><table><thead><tr><th scope="col">평가 항목</th><th scope="col">11/19 · traf30k</th><th scope="col">최종 · NW7</th></tr></thead><tbody>
-    <tr><th scope="row">평가 에피소드 수</th><td>1,000회</td><td>1,000회</td></tr>
-    <tr><th scope="row">완주율</th><td>96.9%</td><td>97.5%</td></tr>
-    <tr><th scope="row">충돌률</th><td>3.1%</td><td>2.5%</td></tr>
-    <tr><th scope="row">적색 신호 진입</th><td>21회</td><td>0회</td></tr>
-    <tr><th scope="row">평균 주행속도</th><td>20.4 km/h</td><td>19.6 km/h</td></tr>
-    <tr><th scope="row">평균 완주 시간</th><td>495초</td><td>513초</td></tr>
-    <tr><th scope="row">정지선까지 거리 (중앙값)</th><td>—</td><td>2.7 m</td></tr>
-    <tr><th scope="row">정지한 앞차 뒤 간격 (중앙값)</th><td>—</td><td>6.9 m</td></tr>
-    <tr><th scope="row">시간초과 (1,200초)</th><td>0회</td><td>0회</td></tr>
-  </tbody></table></div>
-  <p class="caption">11/19 모델은 <code>jaeseong_1119_traf30k</code>다. 표의 ‘—’는 정차 거리 측정 방식이 달라 직접 비교를 생략한 항목이다. <a href="assets/presentation.pdf#page=16">발표 자료 16장</a></p>
+  <h2>NW7 최종 주행 성능</h2>
+  <p>학습에 쓰지 않은 교통 시드 2000–2999에서 1,000회 평가했다. 975회 완주했고 충돌률은 목표인 5% 미만이었다.</p>
+  <div class="stats"><div><span>완주율</span><strong>97.5%</strong></div><div><span>충돌률</span><strong>2.5%</strong></div><div><span>적색 신호 진입</span><strong>0회</strong></div></div>
+  <div class="tablewrap"><table><thead><tr><th scope="col">평가 항목</th><th scope="col">NW7</th></tr></thead><tbody>
+    <tr><th scope="row">시간초과</th><td>0회</td></tr>
+    <tr><th scope="row">평균 주행속도</th><td>19.6 km/h</td></tr>
+    <tr><th scope="row">평균 완주 시간</th><td>513초</td></tr>
+    <tr><th scope="row">정지선까지 거리 (중앙값)</th><td>2.7 m</td></tr>
+    <tr><th scope="row">정지한 앞차 뒤 간격 (중앙값)</th><td>6.9 m</td></tr>
+  </tbody></table></div><a class="source" href="assets/presentation.pdf#page=13">평가 결과 · 13장</a>
 </section>
 <section id="dataset">
-  <div class="section-no">05 / DATASET</div>
-  <h2>공개 주행 데이터셋</h2>
-  <p>한 행은 자율주행차가 주변을 관측하고 행동을 한 번 선택한 뒤 보상과 다음 상태를 얻기까지의 한 스텝이다. 학습·평가와 겹치지 않는 교통 시드 4000–13874에서 NW7 정책의 결정적 행동으로 수집했다. 한 스텝은 0.5초다.</p>
-  <div class="metrics">
-    <div class="metric"><span>Transitions</span><strong>10,003,156</strong><span>전체 주행 스텝</span></div>
-    <div class="metric"><span>Episodes</span><strong>9,875</strong><span>서로 다른 교통 시드</span></div>
-    <div class="metric"><span>저장 용량</span><strong>4.27 GB</strong><span>공개 데이터 규모</span></div>
-  </div>
-  <p>5회 주행을 한 묶음으로 저장해 총 1,975개 묶음을 만들었다. 첫 묶음은 시드 4000–4004의 5,154스텝이다. 상세 기록은 <code>transitions.jsonl.gz</code>, 배열 분석용 데이터는 <code>transitions.npz</code>에 들어 있다. <a href="https://huggingface.co/datasets/jnsoo/autonomous_driving/tree/3560bdf14d1e0db52d2b4566a52c11d9d30771f8/nw7_10m/batch-000000">첫 묶음의 파일 보기 ↗</a></p>
-  <div class="tablewrap"><table><thead><tr><th>JSONL 필드</th><th>한 스텝에서 읽을 수 있는 내용</th></tr></thead><tbody>
-    <tr><th scope="row"><code>episode, t</code></th><td>주행 번호와 해당 주행 안에서의 스텝 번호</td></tr>
-    <tr><th scope="row"><code>observation, state</code></th><td>정책에 입력한 45개 관측값과 시뮬레이터의 상세 상태. 상세 상태에는 자차의 위치·속도·가속도·차로·제한 속도, 주변 100 m의 차량, 신호 6곳의 현시·연결별 색·남은 시간, 교통 시드가 있다.</td></tr>
-    <tr><th scope="row"><code>action_raw, action</code></th><td>정책의 가감속·차선 변경 출력과 차선 변경 적용 여부</td></tr>
-    <tr><th scope="row"><code>reward, terminated, truncated</code></th><td>해당 스텝의 보상과 주행 종료·시간 제한 여부</td></tr>
-    <tr><th scope="row"><code>detected_vehicles, event</code></th><td>감지한 주변 차량과 충돌·도착 여부, 행동 전후 차로</td></tr>
-    <tr><th scope="row"><code>next_observation, next_state</code></th><td>중간 스텝에서는 같은 주행의 다음 행에서 읽고, 마지막 스텝에서는 해당 행의 필드에서 읽는다.</td></tr>
-  </tbody></table></div>
+  <h2>공개 주행 데이터</h2><p>학습·평가와 구분한 교통 시드 4000–13874에서 NW7의 결정적 정책으로 주행했다. 0.5초 단위 기록을 <code>transitions.jsonl.gz</code>와 <code>transitions.npz</code>로 공개했다.</p>
+  <div class="stats"><div><span>주행 스텝</span><strong>10,003,156</strong></div><div><span>에피소드</span><strong>9,875</strong></div><div><span>데이터 용량</span><strong>4.27 GB</strong></div></div>
+  <div class="tablewrap"><table><thead><tr><th scope="col">필드</th><th scope="col">기록 내용</th></tr></thead><tbody>
+    <tr><th scope="row"><code>episode, t, reward</code></th><td>주행 번호, 스텝 번호, 해당 스텝의 보상</td></tr>
+    <tr><th scope="row"><code>terminated, truncated</code></th><td>충돌·도착에 의한 종료와 1,200초 시간 제한에 의한 종료</td></tr>
+    <tr><th scope="row"><code>action_raw, action</code></th><td>가감속·차로 변경 출력, 적용된 명령과 적용 여부</td></tr>
+    <tr><th scope="row"><code>observation, state</code></th><td>45차원 정책 입력과 시뮬레이터 상태. 자차 위치·속도·차로, 주변 100 m 차량, 신호 6곳의 상태와 남은 시간, 교통 시드 등을 포함한다.</td></tr>
+    <tr><th scope="row"><code>detected_vehicles, event</code></th><td>감지 차량, 충돌·도착 여부, 행동 전후 차로</td></tr>
+    <tr><th scope="row"><code>next_observation, next_state</code></th><td>중간 스텝에서는 다음 행에서, 마지막 스텝에서는 그 행의 필드에서 읽는다.</td></tr>
+  </tbody></table></div><a class="source" href="assets/presentation.pdf#page=14">데이터 구성 · 14장</a>
 </section>
 <section id="conclusion">
-  <div class="section-no">06 / CONCLUSION</div>
-  <h2>남은 과제는 무신호 좌회전에서의 양보</h2>
-  <p>NW7은 새 교통 시드 1,000회에서 충돌률 5% 미만이라는 목표를 달성했다. 남은 충돌 25건 중 15건은 같은 무신호 좌회전 지점에서 발생했다. 오른쪽에서 우선권을 가진 차량이 접근할 때 진입을 보류하는 판단이 다음 개선 과제다. 교통량을 늘린 조건에서 추가 학습하는 것도 남은 과제다.</p>
-  <p>이 결과는 팀이 설정한 신호 주기와 교통량을 사용한 SUMO 경로에서 측정했다. 시간대별 실측 교통량이나 다른 도로망에서 같은 성능을 내는지는 별도의 평가가 필요하다.</p>
+  <h2>남은 과제</h2>
+  <p>충돌 25건 중 15건이 무신호 좌회전에 집중됐다. 우선 차량이 접근할 때의 진입 판단과 정지한 앞차 뒤의 정차 간격을 더 개선할 필요가 있다.</p>
+  <p>교통량과 신호 주기는 가정값을 사용했다. 실측 교통과 다른 도로망에서 성능을 검증하고, 고밀도 교통에서 추가 학습·평가하는 것이 다음 과제다.</p>
 </section>
 <section id="team">
-  <div class="section-no">07 / TEAM</div>
-  <h2>팀원과 작업 기록</h2>
-  <div class="tablewrap"><table><thead><tr><th>팀원</th><th>담당 역할과 작업 기록</th></tr></thead><tbody>
-    <tr><th scope="row">박준수</th><td><a href="https://github.com/a01023289522-cmd/autonomous-driving/tree/junsoo/skku-map">성균관대역 일대 SUMO 도로망 구축</a> · 학습 환경 연결 · 주행 데이터 수집 및 공개</td></tr>
-    <tr><th scope="row">임수진</th><td><a href="https://github.com/a01023289522-cmd/autonomous-driving/tree/sujin/signal-experiments">정문 신호와 정지선 반복 평가</a> · 적색 진입 및 정지 위치 평가 도구 제작</td></tr>
-    <tr><th scope="row">임재성</th><td><a href="https://github.com/a01023289522-cmd/autonomous-driving/blob/fc472d0c3552f16f9653cbf9d5b0c451fbe41bbc/models/jaeseong_1125_nw7.md">NW7 관측·보상 설계와 최종 모델 평가</a> · 주행 영상 제작</td></tr>
-    <tr><th scope="row">최민기</th><td><a href="https://github.com/a01023289522-cmd/autonomous-driving/tree/mingi/local-b">Local B 모델 추가 학습과 정차 평가</a> · 프로젝트 웹페이지 제작</td></tr>
+  <h2>13조 팀원과 역할</h2>
+  <div class="tablewrap"><table><thead><tr><th scope="col">팀원</th><th scope="col">담당</th></tr></thead><tbody>
+    <tr><th scope="row">박준수</th><td>SUMO 도로망 구축 · Hugging Face 데이터 공개</td></tr>
+    <tr><th scope="row">임수진</th><td>정문 신호·정지선 반복 평가 · 적색 진입과 정지 위치 평가 도구</td></tr>
+    <tr><th scope="row">임재성</th><td>보상·관측 설계 · NW7 학습 · 최종 모델 선정과 평가 · 주행 영상</td></tr>
+    <tr><th scope="row">최민기</th><td>모델 추가 학습과 정차 평가 · 프로젝트 웹페이지 제작</td></tr>
   </tbody></table></div>
 </section>
-</main><footer>2026 · Artificial Intelligence and Control for Autonomous Driving</footer>
-
+</main><footer><a href="#top">맨 위로</a></footer>
 </body></html>
