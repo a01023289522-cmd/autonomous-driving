@@ -24,7 +24,7 @@ REQUIRED = ["episode", "t", "observation", "action_raw", "action.accel_raw", "ac
 TLS = {
     "hayul":     ("cluster_495951062_5357160054", "서부로×하률로 (출발 직후, 경로 1번째 신호)"),
     "sageori":   ("cluster_4650845824_4655421093_4662858740_4662858741_#2more", "성대역 사거리"),
-    "crosswalk": ("726912998", "서부로 횡단보도 (사거리 남쪽)"),
+    # crosswalk (726912998, 사거리 남쪽 = G1)은 11/22 신호 제거(실제 도로에 신호 없음)로 뺐다
     "seobu2123": ("cluster_1184134292_726912991_837163934", "서부로×서부로2123번길 (골목 진입)"),
     "ilwol":     ("cluster_452394408_4871043595", "서부로×일월로"),
     "gate":      ("520991292", "일월로×학교 정문"),
@@ -66,7 +66,7 @@ def route_links(traci, edges):
 
 
 def tls_values(traci, edges):
-    """신호 6개의 (AV 방향 신호색, 현시 번호, 남은 초)를 TEAM 칼럼 순서대로."""
+    """신호 5개의 (AV 방향 신호색, 현시 번호, 남은 초)를 TEAM 칼럼 순서대로."""
     now, out, links = traci.simulation.getTime(), [], route_links(traci, edges)
     for tid, _ in TLS.values():
         state = traci.trafficlight.getRedYellowGreenState(tid)
